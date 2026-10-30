@@ -160,17 +160,17 @@ background:var(--wall,linear-gradient(180deg,#FFB65C 0%,#FF8A3D 48%,#F2557A 100%
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, EmailAuthProvider, linkWithCredential, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, orderBy, onSnapshot, serverTimestamp, arrayUnion, deleteField } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-/* ====== FIREBASE AYARI: fotoğraftan okundu, harfleri kontrol et ====== */
+/* ====== FIREBASE AYARI: yeni proje: ozelchat-dec5f; fotoğraftan okundu, apiKey harflerini kontrol et ====== */
 const firebaseConfig = {
-  apiKey: "AIzaSyC-jpAPazi8_pQtnILbzrrs38_JxeE4l-c",
-  authDomain: "ozelchat-6ed59.firebaseapp.com",
-  projectId: "ozelchat-6ed59",
-  storageBucket: "ozelchat-6ed59.firebasestorage.app",
-  messagingSenderId: "950209595266",
-  appId: "1:950209595266:web:68d436d2f26ed08773319b"
+  apiKey: "AIzaSyAu0c2N5ljYt_0QjD6kc6ZMr30EPF-ZbX8",
+  authDomain: "ozelchat-dec5f.firebaseapp.com",
+  projectId: "ozelchat-dec5f",
+  storageBucket: "ozelchat-dec5f.firebasestorage.app",
+  messagingSenderId: "848854251800",
+  appId: "1:848854251800:web:6a51e477224204c9f9466d"
 };
 /* ================================================================ */
 
@@ -226,17 +226,52 @@ function joinScreen(msg){
     try{await enterRoom(name,code)}catch(err){console.error(err);joinScreen(errText(err));}
   };
 }
+function authScreen(msg,mode,em0){
+  mode=mode||'in';const reg=mode==='reg',cu=auth&&auth.currentUser;
+  app.innerHTML=`<section class="scr sun fade"><div class="center stag">
+   <div class="logo" style="--i:0;width:72px;height:72px;font-size:34px;border-radius:24px">A</div>
+   <h1 class="big" style="--i:1;font-size:30px">${reg?'Hesap oluştur':'Giriş yap'}</h1>
+   <form class="card" id="af" style="--i:2">
+    <label for="em">E-posta</label><input class="in" id="em" type="email" autocomplete="email" value="${esc(em0||'')}" required autocapitalize="off">
+    <label for="pw">Şifre${reg?' (en az 6 karakter)':''}</label><input class="in" id="pw" type="password" minlength="6" autocomplete="${reg?'new-password':'current-password'}" required>
+    <div class="err" id="er">${esc(msg||'')}</div>
+    <button class="cta" id="go" type="submit">${reg?'Kayıt ol':'Giriş yap'}</button>
+    <button class="btn2" id="sw" type="button">${reg?'Zaten hesabım var':'Hesabım yok, kayıt ol'}</button>
+    ${reg?'':'<button class="btn2" id="fp" type="button">Şifremi unuttum</button>'}
+   </form></div></section>`;
+  $('#sw').onclick=()=>authScreen('',reg?'in':'reg',$('#em').value);
+  const fp=$('#fp');if(fp)fp.onclick=async()=>{const em=$('#em').value.trim();if(!em){$('#er').textContent='Önce e-postanı yaz.';return}
+    try{await sendPasswordResetEmail(auth,em);$('#er').textContent='Sıfırlama bağlantısı e-postana gönderildi.'}catch(err){$('#er').textContent=errText(err)}};
+  $('#af').onsubmit=async e=>{e.preventDefault();$('#go').disabled=true;$('#er').textContent='';
+    const em=$('#em').value.trim(),pw=$('#pw').value;
+    try{
+      if(reg&&cu&&cu.isAnonymous){await linkWithCredential(cu,EmailAuthProvider.credential(em,pw));await afterAuth()}
+      else if(reg)await createUserWithEmailAndPassword(auth,em,pw);
+      else await signInWithEmailAndPassword(auth,em,pw);
+    }catch(err){console.error(err);authScreen(errText(err),mode,em)}
+  };
+}
+async function afterAuth(){
+  uid=auth.currentUser.uid;
+  try{const u=await getDoc(doc(db,'users',uid));if(u.exists()){const d=u.data();P.name=d.name||P.name;P.code=d.code||'';save()}}catch(e){console.error(e)}
+  if(P.code&&P.name){try{await enterRoom(P.name,P.code)}catch(e){console.error(e);joinScreen(errText(e))}}else joinScreen();
+}
 function errText(e){
   const c=e&&e.code||'';
   if(c==='full')return 'Oda dolu. Hesabını geri almak için eski adını aynen yaz.';
   if(c.includes('permission'))return 'İzin reddedildi. Firestore kurallarını yayınladın mı?';
   if(c.includes('api-key')||c.includes('invalid-api'))return 'Firebase apiKey hatalı, config’i kontrol et.';
-  if(c.includes('operation-not-allowed')||c.includes('admin-restricted'))return 'Firebase’de Anonymous girişi açılmamış.';
+  if(c.includes('operation-not-allowed')||c.includes('admin-restricted'))return 'Firebase’de E-posta/Parola girişi açılmamış.';
+  if(c==='auth/email-already-in-use')return 'Bu e-posta zaten kayıtlı. Giriş yapmayı dene.';
+  if(['auth/invalid-credential','auth/wrong-password','auth/user-not-found','auth/invalid-login-credentials'].includes(c))return 'E-posta veya şifre yanlış.';
+  if(c==='auth/weak-password')return 'Şifre en az 6 karakter olmalı.';
+  if(c==='auth/invalid-email')return 'E-posta geçersiz.';
+  if(c==='auth/too-many-requests')return 'Çok fazla deneme. Biraz bekle.';
   return 'Bağlanılamadı: '+(c||e.message||e);
 }
 
 async function enterRoom(name,code){
-  if(!uid){await signInAnonymously(auth)}
+  if(!uid&&auth.currentUser)uid=auth.currentUser.uid;
   const ref=doc(db,'rooms',code);
   const snap=await getDoc(ref);
   if(!snap.exists()){
@@ -251,7 +286,7 @@ async function enterRoom(name,code){
       }else await updateDoc(ref,{members:arrayUnion(uid),['names.'+uid]:name});
     }else if((d.names||{})[uid]!==name){await updateDoc(ref,{['names.'+uid]:name})}
   }
-  P.name=name;P.code=code;save();
+  P.name=name;P.code=code;save();setDoc(doc(db,'users',uid),{name,code}).catch(()=>{});
   openChat(code);
 }
 
@@ -499,6 +534,9 @@ function openSettings(){
    <div class="row" id="tt">${[['Kapalı',0],['1 saat',3600],['1 gün',86400]].map(([n,v])=>`<button class="btn2${((room&&room.ttl)||0)===v?' on2':''}" data-ttl="${v}">${n}</button>`).join('')}</div>
    <h3>Yedek</h3>
    <div class="row"><button class="btn2" id="bk">Yedeği indir (.txt)</button></div>
+   <h3>Hesap</h3>
+   <p class="code">${esc((auth.currentUser&&auth.currentUser.email)||'')}</p>
+   <div class="row"><button class="btn2 danger" id="lo">Hesaptan çık</button></div>
    <h3>Oda</h3>
    <p class="code">Kod: ${esc(P.code||'')}</p>
    <div class="row"><button class="btn2 danger" id="lv">Odadan çık</button><button class="btn2" id="cl">Kapat</button></div></div>`;
@@ -513,11 +551,12 @@ function openSettings(){
       el.querySelectorAll('.sw').forEach(x=>x.classList.toggle('on',x===b))}
   };
   $('#bk',el).onclick=backup;
+  $('#lo',el).onclick=async()=>{if(!confirm('Hesaptan çıkılsın mı? Mesajların bulutta kalır, e-posta ve şifreyle tekrar girersin.'))return;unsubRoom&&unsubRoom();unsubMsgs&&unsubMsgs();clearInterval(typingTick);clearInterval(hb);delete P.code;delete P.name;save();uid=null;await signOut(auth);authScreen()};
   $('#th',el).onclick=e=>{P.theme=P.theme==='light'?'dark':'light';save();applyLook();e.target.textContent=P.theme==='light'?'☀️ Açık tema':'🌙 Koyu tema'};
   $('#tt',el).onclick=e=>{const b=e.target.closest('[data-ttl]');if(!b)return;updateDoc(roomRef,{ttl:+b.dataset.ttl}).catch(()=>toast('İşlem yapılamadı'));el.querySelectorAll('[data-ttl]').forEach(x=>x.classList.toggle('on2',x===b))};
   $('#lv',el).onclick=()=>{
     if(!confirm('Odadan çıkılsın mı? Mesajlar bulutta kalır, aynı kodla tekrar girebilirsin.'))return;
-    unsubRoom&&unsubRoom();unsubMsgs&&unsubMsgs();clearInterval(typingTick);clearInterval(hb);delete P.code;save();joinScreen();
+    unsubRoom&&unsubRoom();unsubMsgs&&unsubMsgs();clearInterval(typingTick);clearInterval(hb);delete P.code;save();setDoc(doc(db,'users',uid),{name:P.name||'',code:''}).catch(()=>{});joinScreen();
   };
 }
 function backup(){
@@ -538,12 +577,8 @@ try{
   const fbApp=initializeApp(firebaseConfig);auth=getAuth(fbApp);db=getFirestore(fbApp);
   const wait=new Promise(r=>setTimeout(r,1300));
   onAuthStateChanged(auth,async u=>{
-    if(u){uid=u.uid}
-    else{try{await signInAnonymously(auth)}catch(e){await wait;joinScreen(errText(e));return}return}
     await wait;
-    if(P.code&&P.name){
-      try{await enterRoom(P.name,P.code)}catch(e){console.error(e);joinScreen(errText(e))}
-    }else joinScreen();
+    if(u&&!u.isAnonymous)await afterAuth();else authScreen();
   });
 }catch(e){console.error(e);joinScreen('Başlatılamadı: '+e.message)}
 </script>
