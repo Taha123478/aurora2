@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Aurora</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#FF8A3D">
+<meta name="theme-color" id="tc" content="#FFB65C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--sun:#FFD27A;--amber:#FFB65C;--orange:#FF8A3D;--rose:#F2557A;--ink:#2B1208;--cream:#FFF1E2;--warm:#FFC98F;
@@ -153,6 +155,48 @@ background:var(--wall,linear-gradient(180deg,#FFB65C 0%,#FF8A3D 48%,#F2557A 100%
 .wf{display:inline-flex;align-items:center;gap:2px;height:26px;margin-right:8px;vertical-align:middle}.wf i{width:3px;border-radius:2px;background:currentColor;opacity:.35;transition:opacity .2s}.wf i.on{opacity:1}
 .bub a{color:inherit;text-decoration:underline}.btn2.on2{background:var(--sun);color:var(--ink)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* v6 cila */
+html,body{overscroll-behavior:none}
+button{-webkit-user-select:none;user-select:none}
+.rb svg,.ib svg,.send svg,.dn svg,.fab svg{display:block}
+.rb,.who,.hc,.bar,.nav,.rpb,.pinb{-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.bub{font-size:var(--fs,15px)}
+.bub.st{font-size:64px}
+.tick{display:inline-flex;align-items:center;letter-spacing:0;margin-right:2px}
+.pl{display:inline-flex;align-items:center;justify-content:center}
+.pl svg{margin:0!important}
+.bub svg{vertical-align:-3px;margin-right:2px}
+.ctx button{display:flex;align-items:center;gap:12px}
+.ctx button svg{flex:none;opacity:.9}
+.btn2{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.fab{color:var(--ink);display:flex;align-items:center;justify-content:center;padding:0}
+.dn{display:flex;align-items:center;justify-content:center;padding:0}
+.rb:active,.ib:active{background:rgba(255,255,255,.12)}
+.send.mic{color:#fff}
+.rpb .ib{color:#fff}.lt .rpb .ib{color:var(--ink)}
+/* v7 */
+.av{overflow:hidden}.av img{width:100%;height:100%;object-fit:cover;display:block}
+.av.big{width:104px;height:104px;font-size:42px;border:0;padding:0}
+.slide{animation:slideIn .32s var(--ease) both}.slideb{animation:slideBack .32s var(--ease) both}
+@keyframes slideIn{from{transform:translateX(28px);opacity:0}}
+@keyframes slideBack{from{transform:translateX(-28px);opacity:0}}
+.spin{display:inline-block;width:26px;height:26px;border:3px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite}
+.spin.dk{border-color:rgba(43,18,8,.2);border-top-color:var(--ink);margin-top:8px}
+.spin.sm{width:20px;height:20px;border-width:2.5px;border-color:rgba(43,18,8,.25);border-top-color:var(--ink);vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:sp 1.6s linear infinite!important}}
+.empty{align-self:center;margin-bottom:auto;max-width:82%;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:22px 24px;border-radius:26px;background:var(--pill);color:#fff;animation:rise .45s var(--ease) both}
+.lt .empty{color:var(--ink)}.empty b{font-size:16px}.empty p{font-size:14px;opacity:.85}
+.cdb{background:rgba(0,0,0,.3);padding:8px 14px;border-radius:14px;font-size:15px;font-weight:700;color:#fff;word-break:break-all;user-select:all}
+.m.pend .bub{opacity:.72}
+.t.fail{color:#FFB3C1;gap:8px;font-weight:700}.lt .t.fail{color:#B3263F}
+.t.fail button{border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:10px;padding:4px 10px;font-size:11px;font-weight:700}.lt .t.fail button{background:rgba(0,0,0,.08);color:var(--ink)}
+.pvw{display:flex;align-items:center;justify-content:center;z-index:10;background:rgba(0,0,0,.9)}
+.pvb{width:92%;max-height:92%;display:flex;flex-direction:column;gap:12px}
+.pvg{display:grid;gap:8px;grid-template-columns:1fr 1fr;overflow:auto;max-height:58vh}.pvg.n1{grid-template-columns:1fr}
+.pvi{position:relative}.pvi img{width:100%;max-height:52vh;object-fit:cover;border-radius:16px;display:block}
+.pvi button{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;padding:0;display:flex;align-items:center;justify-content:center}
 </style>
 </head>
 <body>
@@ -193,22 +237,33 @@ const EM2='🥳 😻 🤗 🫶 🐱 🐶 🦊 🐼 🐻 🦄 🌈 💌 🍰 🧸
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const app=$('#app');
+const IC={back:'<path d="M15 18l-6-6 6-6"/>',x:'<path d="M18 6 6 18M6 6l12 12"/>',down:'<path d="M12 5v14M6 13l6 6 6-6"/>',pin:'<path d="M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z"/>',smile:'<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9.5h.01M15 9.5h.01"/>',clip:'<path d="m21 11-9 9a5 5 0 0 1-7-7l9-9a3.5 3.5 0 0 1 5 5l-9 9a2 2 0 0 1-3-3l8-8"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',play:'<path d="M7 4v16l13-8z" fill="currentColor"/>',pause:'<path d="M8 5v14M16 5v14"/>',reply:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v3"/>',copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',zoom:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',moon:'<path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>',more:'<circle cx="12" cy="5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="19" r="1.3"/>',ban:'<circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/>',send:'<path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',dl:'<path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
+const ic=(n,z=22,w=2)=>`<svg width="${z}" height="${z}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+const TK='<svg width="17" height="11" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 9 6 13.5 15 2.5M10 11.5l2 2L22 2.5"/></svg>';
+let actx;function ping(){if(!P.snd)return;try{navigator.vibrate&&navigator.vibrate(40);actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime;o.connect(g);g.connect(actx.destination);o.frequency.value=880;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.25);o.start();o.stop(t+.26)}catch(e){}}
+const BAR={sunset:'#FFB65C',dawn:'#FFE3A8',flame:'#FF8A3D',rose:'#FFC2D4',night:'#120C10',borealis:'#9CF2D0',ocean:'#8EE3F5',forest:'#C8F0A0',lavender:'#E8D4FF',peach:'#FFE0C2'};
+const setBar=k=>{const c=BAR[k]||BAR.sunset,m=document.getElementById('tc');if(m)m.content=c;document.documentElement.style.background=c};
+const applyFs=()=>document.documentElement.style.setProperty('--fs',({s:'13px',m:'15px',l:'18px'})[P.fs]||'15px');
 const load=()=>{try{return JSON.parse(localStorage.getItem('aurora.v3')||'{}')}catch(e){return {}}};
-const P=Object.assign({wall:'sunset',bubble:'cream'},load());
+const P=Object.assign({wall:'sunset',bubble:'cream',fs:'m',snd:1},load());
 const save=()=>{try{localStorage.setItem('aurora.v3',JSON.stringify(P))}catch(e){}};
 
+let outbox=[],msgsLoaded=false,outTried=false;
+const layers=[];let skip=0,exitT=0;
+function layer(fn){const L={fn};layers.push(L);history.pushState({l:1},'');return()=>{const i=layers.indexOf(L);if(i<0)return;layers.splice(i,1);fn();skip++;history.back()}}
 let db,auth,uid=null,roomRef=null,unsubMsgs=null,unsubRoom=null;
 let replyTo=null,rec=null,cur=null,curBtn=null,seen=new Set(),seenReady=false,lastTyp=false,view='home',tab='chats',newCnt=0,hb=null,emoMode='e';
 let msgs=[],room=null,otherTypingUntil=0,lastTypingVal=null,lastTypingSent=0,typingTick=null,emojiOpen=false;
 
 function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;app.appendChild(d);setTimeout(()=>d.remove(),2600)}
-const wallStyle=()=>{const w=WALLS[P.wall]||WALLS.sunset;return {cls:'scr '+(w.cls||'')+(w.dark?' night':'')+(P.theme==='light'&&!w.dark?' lt':''),style:(w.bg?`--wall:${w.bg};`:'')+(w.dark?'--outbg:linear-gradient(135deg,#FFB65C,#FF7A3D 60%,#F2557A);':`--outbg:${(BUB[P.bubble]||BUB.cream)[1]};`)}};
+const wallStyle=()=>{const w=WALLS[P.wall]||WALLS.sunset;setBar(P.wall);return {cls:'scr '+(w.cls||'')+(w.dark?' night':'')+(P.theme==='light'&&!w.dark?' lt':''),style:(w.bg?`--wall:${w.bg};`:'')+(w.dark?'--outbg:linear-gradient(135deg,#FFB65C,#FF7A3D 60%,#F2557A);':`--outbg:${(BUB[P.bubble]||BUB.cream)[1]};`)}};
 
 /* ---------- ekranlar ---------- */
 function splash(){
-  app.innerHTML=`<section class="scr sun fade"><div class="center stag"><div class="logo" style="--i:0">A</div><h1 class="big" style="--i:1">Aurora</h1><p class="sub" style="--i:2">Sadece ikimiz için</p></div></section>`;
+  app.innerHTML=`<section class="scr sun fade"><div class="center stag"><div class="logo" style="--i:0">A</div><h1 class="big" style="--i:1">Aurora</h1><p class="sub" style="--i:2">Sadece ikimiz için</p><span class="spin dk" style="--i:3"></span></div></section>`;
 }
 function joinScreen(msg){
+  layers.length=0;view='auth';setBar('sunset');
   app.innerHTML=`<section class="scr sun fade"><div class="center stag">
    <div class="logo" style="--i:0;width:72px;height:72px;font-size:34px;border-radius:24px">A</div>
    <h1 class="big" style="--i:1;font-size:30px">Odaya katıl</h1>
@@ -222,11 +277,12 @@ function joinScreen(msg){
     e.preventDefault();
     const name=$('#nm').value.trim(),code=$('#cd').value.trim().toLowerCase().replace(/\s+/g,'-');
     if(code.length<8){$('#er').textContent='Kod en az 8 karakter olmalı.';return}
-    $('#go').disabled=true;$('#er').textContent='';
+    $('#go').disabled=true;$('#go').innerHTML='<span class="spin sm"></span>';$('#er').textContent='';
     try{await enterRoom(name,code)}catch(err){console.error(err);joinScreen(errText(err));}
   };
 }
 function authScreen(msg,mode,em0){
+  layers.length=0;view='auth';setBar('sunset');
   mode=mode||'in';const reg=mode==='reg',cu=auth&&auth.currentUser;
   app.innerHTML=`<section class="scr sun fade"><div class="center stag">
    <div class="logo" style="--i:0;width:72px;height:72px;font-size:34px;border-radius:24px">A</div>
@@ -242,7 +298,7 @@ function authScreen(msg,mode,em0){
   $('#sw').onclick=()=>authScreen('',reg?'in':'reg',$('#em').value);
   const fp=$('#fp');if(fp)fp.onclick=async()=>{const em=$('#em').value.trim();if(!em){$('#er').textContent='Önce e-postanı yaz.';return}
     try{await sendPasswordResetEmail(auth,em);$('#er').textContent='Sıfırlama bağlantısı e-postana gönderildi.'}catch(err){$('#er').textContent=errText(err)}};
-  $('#af').onsubmit=async e=>{e.preventDefault();$('#go').disabled=true;$('#er').textContent='';
+  $('#af').onsubmit=async e=>{e.preventDefault();$('#go').disabled=true;$('#go').innerHTML='<span class="spin sm"></span>';$('#er').textContent='';
     const em=$('#em').value.trim(),pw=$('#pw').value;
     try{
       if(reg&&cu&&cu.isAnonymous){await linkWithCredential(cu,EmailAuthProvider.credential(em,pw));await afterAuth()}
@@ -252,22 +308,22 @@ function authScreen(msg,mode,em0){
   };
 }
 async function afterAuth(){
-  uid=auth.currentUser.uid;
+  splash();uid=auth.currentUser.uid;
   try{const u=await getDoc(doc(db,'users',uid));if(u.exists()){const d=u.data();P.name=d.name||P.name;P.code=d.code||'';save()}}catch(e){console.error(e)}
   if(P.code&&P.name){try{await enterRoom(P.name,P.code)}catch(e){console.error(e);joinScreen(errText(e))}}else joinScreen();
 }
 function errText(e){
-  const c=e&&e.code||'';
-  if(c==='full')return 'Oda dolu. Hesabını geri almak için eski adını aynen yaz.';
-  if(c.includes('permission'))return 'İzin reddedildi. Firestore kurallarını yayınladın mı?';
-  if(c.includes('api-key')||c.includes('invalid-api'))return 'Firebase apiKey hatalı, config’i kontrol et.';
-  if(c.includes('operation-not-allowed')||c.includes('admin-restricted'))return 'Firebase’de E-posta/Parola girişi açılmamış.';
+  const c=(e&&e.code)||'';
+  if(c==='full')return 'Bu oda dolu. Hesabını geri almak için eski adını aynen yaz.';
+  if(c.includes('network')||navigator.onLine===false)return 'İnternet bağlantını kontrol et.';
   if(c==='auth/email-already-in-use')return 'Bu e-posta zaten kayıtlı. Giriş yapmayı dene.';
   if(['auth/invalid-credential','auth/wrong-password','auth/user-not-found','auth/invalid-login-credentials'].includes(c))return 'E-posta veya şifre yanlış.';
   if(c==='auth/weak-password')return 'Şifre en az 6 karakter olmalı.';
-  if(c==='auth/invalid-email')return 'E-posta geçersiz.';
-  if(c==='auth/too-many-requests')return 'Çok fazla deneme. Biraz bekle.';
-  return 'Bağlanılamadı: '+(c||e.message||e);
+  if(c==='auth/invalid-email')return 'E-posta adresi geçersiz.';
+  if(c==='auth/too-many-requests')return 'Çok fazla deneme yaptın. Biraz bekleyip tekrar dene.';
+  if(c.includes('permission'))return 'Bu işlem için izin yok. Biraz sonra tekrar dene.';
+  if(c.includes('api-key')||c.includes('referer')||c.includes('operation-not-allowed')||c.includes('admin-restricted'))return 'Şu an bağlanılamıyor. Biraz sonra tekrar dene.';
+  return 'Bir sorun oluştu. Tekrar dene.';
 }
 
 async function enterRoom(name,code){
@@ -291,21 +347,22 @@ async function enterRoom(name,code){
 }
 
 function openChat(code){
-  roomRef=doc(db,'rooms',code);msgs=[];room=null;seen=new Set();seenReady=false;replyTo=null;
+  roomRef=doc(db,'rooms',code);msgsLoaded=false;outTried=false;outLoad();msgs=[];room=null;seen=new Set();seenReady=false;replyTo=null;
   subscribe();showHome();
 }
 function showChat(){
+  if(view!=='chat')history.pushState({v:'chat'},'');
   const w=wallStyle();
-  app.innerHTML=`<section class="${w.cls} fade" id="chat" style="${w.style}">
-   <header class="top"><button class="rb" id="back" aria-label="Geri">←</button><button class="who" id="who" aria-label="Ayarlar"><span class="av" id="av">?</span><span style="min-width:0"><b id="wn">Bekleniyor…</b><small id="ws">Arkadaşın koduyla katılmasını bekle</small></span></button>
+  app.innerHTML=`<section class="${w.cls} slide" id="chat" style="${w.style}">
+   <header class="top"><button class="rb" id="back" aria-label="Geri">${ic('back')}</button><button class="who" id="who" aria-label="Ayarlar"><span class="av" id="av">?</span><span style="min-width:0"><b id="wn">Bekleniyor…</b><small id="ws">Arkadaşın koduyla katılmasını bekle</small></span></button>
    <button class="rb" id="cog" aria-label="Ayarlar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></header>
-   <div class="pinb hidden" id="pin"><span>📌</span><b id="pnt"></b></div><div class="msgs" id="msgs"><div class="sp"></div></div>
-   <button type="button" class="dn hidden" id="dn" aria-label="Aşağı">↓</button><div id="emo" class="emojis hidden"></div>
-   <form class="composer" id="form" autocomplete="off"><div class="rpb hidden" id="rp"><div class="rpt"><b id="rpn"></b><span id="rpt"></span></div><button type="button" class="ib" id="rpx">✕</button></div><div class="bar">
-    <div class="field"><button type="button" class="ib" id="eb" aria-label="Emoji">😊</button><input id="txt" type="text" placeholder="Mesaj yaz" enterkeyhint="send" aria-label="Mesaj"><button type="button" class="ib" id="ab" aria-label="Fotoğraf">📎</button><input type="file" id="fi" accept="image/*" multiple hidden></div><div class="recbox"><i class="rd"></i><span id="rt">0:00</span><button type="button" class="ib" id="rc" aria-label="İptal">🗑️</button></div>
-    <button class="send mic" id="mc" type="button" aria-label="Ses kaydet">🎤</button><button class="send hidden" id="sd" type="submit" aria-label="Gönder"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button>
+   <div class="pinb hidden" id="pin"><span>${ic('pin',16)}</span><b id="pnt"></b></div><div class="msgs" id="msgs"><div class="sp"></div></div>
+   <button type="button" class="dn hidden" id="dn" aria-label="Aşağı">${ic('down',20)}</button><div id="emo" class="emojis hidden"></div>
+   <form class="composer" id="form" autocomplete="off"><div class="rpb hidden" id="rp"><div class="rpt"><b id="rpn"></b><span id="rpt"></span></div><button type="button" class="ib" id="rpx">${ic('x',18)}</button></div><div class="bar">
+    <div class="field"><button type="button" class="ib" id="eb" aria-label="Emoji">${ic('smile')}</button><input id="txt" type="text" placeholder="Mesaj yaz" enterkeyhint="send" aria-label="Mesaj"><button type="button" class="ib" id="ab" aria-label="Fotoğraf">${ic('clip')}</button><input type="file" id="fi" accept="image/*" multiple hidden></div><div class="recbox"><i class="rd"></i><span id="rt">0:00</span><button type="button" class="ib" id="rc" aria-label="İptal">${ic('trash')}</button></div>
+    <button class="send mic" id="mc" type="button" aria-label="Ses kaydet">${ic('mic')}</button><button class="send hidden" id="sd" type="submit" aria-label="Gönder"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button>
    </div></form></section>`;
-  $('#cog').onclick=$('#who').onclick=openSettings;$('#back').onclick=showHome;$('#pin').onclick=()=>room&&room.pin&&goto(room.pin.id);
+  $('#cog').onclick=$('#who').onclick=openSettings;$('#back').onclick=()=>history.back();$('#pin').onclick=()=>room&&room.pin&&goto(room.pin.id);
   $('#dn').onclick=()=>{const b=$('#msgs');b.scrollTo({top:b.scrollHeight,behavior:'smooth'})};$('#msgs').onscroll=updDn;
   const fillEmo=()=>{$('#emo').innerHTML=`<div class="et"><button type="button" data-m="e" class="${emoMode==='e'?'on':''}">Emoji</button><button type="button" data-m="s" class="${emoMode==='s'?'on':''}">Çıkartma</button></div>`+(emoMode==='e'?EMOJIS:EM2).map(e=>`<button type="button" data-e="${e}">${e}</button>`).join('')};
   fillEmo();
@@ -317,12 +374,15 @@ function showChat(){
   $('#txt').oninput=()=>{pingTyping();sync()};
   $('#form').onsubmit=e=>{e.preventDefault();const t=$('#txt'),text=t.value.trim();if(!text)return;t.value='';t.focus();sync();send({text})};
   $('#ab').onclick=()=>$('#fi').click();
-  $('#fi').onchange=e=>{const fs=[...e.target.files];e.target.value='';fs.forEach(pickImg)};
+  $('#fi').onchange=e=>{const fs=[...e.target.files];e.target.value='';pickImgs(fs)};
   $('#mc').onclick=()=>rec?stopRec(false):startRec();
   $('#rc').onclick=()=>stopRec(true);
   $('#rpx').onclick=clearReply;
   box.onclick=e=>{
     if(e.target.closest('a'))return;
+    if(e.target.closest('#cpc')){navigator.clipboard&&navigator.clipboard.writeText(P.code||'').then(()=>toast('Kod kopyalandı')).catch(()=>{});return}
+    const rt=e.target.closest('[data-rt]');if(rt){const it=outbox.find(x=>x.id===rt.dataset.rt);it&&flush(it);return}
+    const rd=e.target.closest('[data-rx]');if(rd){outbox=outbox.filter(x=>x.id!==rd.dataset.rx);outSave();render(false);return}
     const rp=e.target.closest('.rep');if(rp&&rp.dataset.id){goto(rp.dataset.id);return}
     const p=e.target.closest('.pl');if(p){playAud(p.dataset.a,p);return}
     const m=e.target.closest('.m');if(m)openMenu(m.dataset.id);
@@ -350,7 +410,8 @@ function subscribe(){
   },err=>{console.error(err);toast(errText(err))});
   unsubMsgs=onSnapshot(query(collection(roomRef,'messages'),orderBy('ts','asc')),s=>{
     const first=!msgs.length;
-    msgs=s.docs.map(d=>({id:d.id,...d.data({serverTimestamps:'estimate'})}));
+    msgs=s.docs.map(d=>({id:d.id,pw:d.metadata.hasPendingWrites,...d.data({serverTimestamps:'estimate'})}));
+    msgsLoaded=true;if(!outTried){outTried=true;outbox.forEach(it=>{if(!msgs.some(m=>m.id===it.id))flush(it)})}
     render(true,first);seenReady=true;renderHome();markRead();
   },err=>{console.error(err);toast(errText(err))});
   clearInterval(typingTick);typingTick=setInterval(()=>{const t=Date.now()<otherTypingUntil;if(t!==lastTyp){lastTyp=t;render(false)}},700);
@@ -385,16 +446,19 @@ function render(scroll,first){
   const o=otherUid();
   const oRead=o&&room&&room.reads&&room.reads[o]&&room.reads[o].toMillis?room.reads[o].toMillis():0;
   const near=box.scrollHeight-box.scrollTop-box.clientHeight<120;
+  const VL=viewList();
   let html='<div class="sp"></div>',lastDay='';
-  live().forEach(m=>{
+  if(!msgsLoaded)html+='<div class="empty"><span class="spin"></span><p>Mesajlar yükleniyor…</p></div>';
+  else if(!VL.length)html+=o?`<div class="empty">${ic('chat',40,1.6)}<b>Henüz mesaj yok</b><p>${esc((room.names||{})[o]||'Arkadaşın')} ile ilk mesajı sen yaz.</p></div>`:`<div class="empty">${ic('chat',40,1.6)}<b>Arkadaşın bekleniyor</b><p>Ona şu kodu söyle, aynı kodla katılsın:</p><code class="cdb">${esc(P.code||'')}</code><button type="button" class="btn2" id="cpc">Kodu kopyala</button></div>`;
+  VL.forEach(m=>{
     const d=m.ts&&m.ts.toDate?m.ts.toDate():new Date(),dl=dayLbl(d);
     if(dl!==lastDay){html+=`<div class="day">${esc(dl)}</div>`;lastDay=dl}
     const out=canon(m.from)===canon(uid);
-    const tick=out?`<span class="tick ${oRead&&m.ts&&m.ts.toMillis()<=oRead?'r':''}" aria-label="${oRead&&m.ts&&m.ts.toMillis()<=oRead?'Okundu':'Gönderildi'}">✓✓</span>`:'';
-    const nw=seenReady&&!seen.has(m.id);seen.add(m.id);if(nw&&!out&&!near)newCnt++;
+    const tick=out?(m.pend?`<span class="tick" aria-label="Gönderiliyor">${ic('clock',13)}</span>`:`<span class="tick ${oRead&&m.ts&&m.ts.toMillis()<=oRead?'r':''}" aria-label="${oRead&&m.ts&&m.ts.toMillis()<=oRead?'Okundu':'Gönderildi'}">${TK}</span>`):'';
+    const nw=seenReady&&!seen.has(m.id);seen.add(m.id);if(nw&&!out&&!near)newCnt++;if(nw&&!out)ping();
     const rx=Object.values(m.rx||{}),nm=room&&room.names||{};
-    const c=m.del?'🚫 Bu mesaj silindi':(m.re?`<div class="rep" data-id="${m.re.id||''}"><b>${esc(nm[m.re.f]||'?')}</b>${esc(m.re.t)}</div>`:'')+(m.img?`<img class="pic" src="${m.img}" alt="Fotoğraf">`:'')+(m.aud?`<button type="button" class="pl" data-a="${m.id}">▶</button><span class="wf">${wave(m)}</span><span class="dur">${fmtD(m.dur)}</span>`:'')+lnk(m.text||'');
-    html+=`<div class="m ${out?'out':'in'}${nw?' pop':''}" data-id="${m.id}"><div class="bub${m.del?' del':''}${m.st?' st':''}${m.img&&!m.text&&!m.re&&!m.del?' media':''}${rx.length?' hr':''}">${c}${rx.length?`<span class="rx">${[...new Set(rx)].join('')}${rx.length>1?' '+rx.length:''}</span>`:''}</div><div class="t">${m.edited?'düzenlendi · ':''}${fmtT(d)}${tick}</div></div>`;
+    const c=m.del?ic('ban',14)+' Bu mesaj silindi':(m.re?`<div class="rep" data-id="${m.re.id||''}"><b>${esc(nm[m.re.f]||'?')}</b>${esc(m.re.t)}</div>`:'')+(m.img?`<img class="pic" src="${m.img}" alt="Fotoğraf">`:'')+(m.aud?`<button type="button" class="pl" data-a="${m.id}">${ic('play',16)}</button><span class="wf">${wave(m)}</span><span class="dur">${fmtD(m.dur)}</span>`:'')+lnk(m.text||'');
+    html+=`<div class="m ${out?'out':'in'}${nw?' pop':''}${m.pend?' pend':''}" data-id="${m.id}"><div class="bub${m.del?' del':''}${m.st?' st':''}${m.img&&!m.text&&!m.re&&!m.del?' media':''}${rx.length?' hr':''}">${c}${rx.length?`<span class="rx">${[...new Set(rx)].join('')}${rx.length>1?' '+rx.length:''}</span>`:''}</div>${m.pend&&m.pst==='f'?`<div class="t fail"><span>Gönderilemedi</span><button type="button" data-rt="${m.id}">Tekrar dene</button><button type="button" data-rx="${m.id}">Sil</button></div>`:`<div class="t">${m.edited?'düzenlendi · ':''}${fmtT(d)}${tick}</div>`}</div>`;
   });
   const typing=o&&Date.now()<otherTypingUntil;
   if(typing)html+='<div class="typing"><i></i><i></i><i></i></div>';
@@ -412,37 +476,37 @@ const lnk=t=>esc(t).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank
 const wave=m=>(m.wf||'5'.repeat(24)).split('').map(c=>`<i style="height:${4+c*2.4}px"></i>`).join('');
 const renderHome=()=>{if(view==='home')homeBody()};
 function applyLook(){const c=wallStyle(),s=$('#chat,#home');if(s){s.className=c.cls;s.style.cssText=c.style}}
-function setHead(nm){const w=$('#wn');if(!w)return;if(nm){w.textContent=nm;$('#av').textContent=nm.trim().charAt(0).toUpperCase()||'?'}else{w.textContent='Bekleniyor…';$('#ws').textContent='Arkadaşın aynı kodla katılmasını bekle'}}
+function setHead(nm){const w=$('#wn');if(!w)return;if(nm){w.textContent=nm;$('#av').innerHTML=avh(otherUid(),nm)}else{w.textContent='Bekleniyor…';$('#ws').textContent='Arkadaşın aynı kodla katılmasını bekle'}}
 function presence(o){const t=room&&room.pres&&room.pres[o],ms=t&&t.toMillis?t.toMillis():0;return Date.now()-ms<70000&&ms?'çevrimiçi':ms?'son görülme '+fmtT(new Date(ms)):''}
 function pinUI(){const p=$('#pin');if(!p)return;const pn=room&&room.pin;p.classList.toggle('hidden',!pn);if(pn)$('#pnt').textContent=pn.t}
 function updDn(){const b=$('#msgs'),d=$('#dn');if(!b||!d)return;const far=b.scrollHeight-b.scrollTop-b.clientHeight>200;if(!far)newCnt=0;d.classList.toggle('hidden',!far);d.dataset.n=newCnt||''}
 function goto(id){const el=document.querySelector(`.m[data-id="${id}"]`);if(el){el.scrollIntoView({block:'center',behavior:'smooth'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1500)}}
 function showHome(){
-  view='home';const w=wallStyle();
-  app.innerHTML=`<section class="${w.cls} fade" id="home" style="${w.style}"><header class="hh"><h1 class="ht">Aurora</h1><div class="row"><button class="rb" id="hs" aria-label="Ara"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button><button class="rb" id="hm" aria-label="Menü">⋮</button></div></header><input class="in hidden" id="sq" placeholder="Mesajlarda ara" style="margin:12px 16px 0;width:auto"><div class="hbody go" id="hb"></div><button class="fab" id="fb" aria-label="Sohbete gir">💬</button></section>`;
+  const bk=view==='chat';view='home';const w=wallStyle();
+  app.innerHTML=`<section class="${w.cls} ${bk?'slideb':'fade'}" id="home" style="${w.style}"><header class="hh"><h1 class="ht">Aurora</h1><div class="row"><button class="rb" id="hp" aria-label="Profil"><span class="av" id="hpa" style="width:40px;height:40px;font-size:16px">${avh(uid,P.name)}</span></button><button class="rb" id="hs" aria-label="Ara"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button><button class="rb" id="hm" aria-label="Menü">${ic('more')}</button></div></header><input class="in hidden" id="sq" placeholder="Mesajlarda ara" style="margin:12px 16px 0;width:auto"><div class="hbody go" id="hb"></div><button class="fab" id="fb" aria-label="Sohbete gir">${ic('chat',28)}</button></section>`;
   $('#hs').onclick=()=>{const q=$('#sq');q.classList.toggle('hidden');if(q.classList.contains('hidden'))q.value='';else q.focus();homeBody()};
-  $('#hm').onclick=homeMenu;$('#fb').onclick=showChat;$('#sq').oninput=homeBody;
+  $('#hm').onclick=homeMenu;$('#hp').onclick=openProfile;$('#fb').onclick=showChat;$('#sq').oninput=homeBody;
   $('#hb').onclick=e=>{const c=e.target.closest('.hc');if(!c)return;
     if(c.id==='c1')showChat();else if(c.dataset.id){showChat();setTimeout(()=>goto(c.dataset.id),300)}};
   setTimeout(()=>{const h=$('#hb');h&&h.classList.remove('go')},800);homeBody();
 }
 function homeBody(){
-  const hb=$('#hb');if(!hb||!room)return;
+  const hb=$('#hb');if(!hb||!room)return;const hpa=$('#hpa');if(hpa)hpa.innerHTML=avh(uid,P.name);
   const o=otherUid(),nm=o?((room.names||{})[o]||'Arkadaş'):'Bekleniyor…',L=live();
   const rd=room.reads&&room.reads[uid]&&room.reads[uid].toMillis?room.reads[uid].toMillis():0;
   const un=L.filter(m=>!mineM(m)&&!m.del&&m.ts&&m.ts.toMillis&&m.ts.toMillis()>rd).length;
   const q=($('#sq').value||'').trim().toLowerCase();
   if(q){const r=L.filter(m=>!m.del&&(m.text||'').toLowerCase().includes(q)).slice(-30).reverse();
-    hb.innerHTML=r.length?r.map(m=>{const n=mineM(m)?'Sen':nm;return `<button class="hc" data-id="${m.id}"><span class="av">${esc(n.charAt(0).toUpperCase())}</span><span class="hm"><b>${esc(n)}</b><small>${esc(m.text)}</small></span><span class="hx">${fmtT(mdate(m))}</span></button>`}).join(''):'<p class="sub" style="text-align:center">Sonuç yok</p>';return}
+    hb.innerHTML=r.length?r.map(m=>{const n=mineM(m)?'Sen':nm;return `<button class="hc" data-id="${m.id}"><span class="av">${avh(mineM(m)?uid:o,n)}</span><span class="hm"><b>${esc(n)}</b><small>${esc(m.text)}</small></span><span class="hx">${fmtT(mdate(m))}</span></button>`}).join(''):'<p class="sub" style="text-align:center">Sonuç yok</p>';return}
   const last=L[L.length-1];
-  const pv=last?(mineM(last)?'Sen: ':'')+(last.del?'🚫 Silindi':last.text||(last.img?'📷 Fotoğraf':last.aud?'🎤 Sesli mesaj ('+fmtD(last.dur)+')':'')):'Henüz mesaj yok';
-  hb.innerHTML=`<button class="hc" id="c1"><span class="av">${esc(nm.charAt(0).toUpperCase())}</span><span class="hm"><b>${esc(nm)}</b><small>${esc(pv)}</small></span><span class="hx"><time>${last?fmtT(mdate(last)):''}</time>${un?`<i class="bd">${un}</i>`:''}</span></button>`;
+  const pv=last?(mineM(last)?'Sen: ':'')+(last.del?'Silindi':last.text||(last.img?'Fotoğraf':last.aud?'Sesli mesaj ('+fmtD(last.dur)+')':'')):'Henüz mesaj yok';
+  hb.innerHTML=`<button class="hc" id="c1"><span class="av">${avh(o,nm)}</span><span class="hm"><b>${esc(nm)}</b><small>${esc(pv)}</small></span><span class="hx"><time>${last?fmtT(mdate(last)):''}</time>${un?`<i class="bd">${un}</i>`:''}</span></button>`;
 }
 function homeMenu(){
   const el=document.createElement('div');
-  el.innerHTML=`<div class="shade" id="mh"></div><div class="ctx"><button data-x="th">${P.theme==='light'?'🌙 Koyu temaya geç':'☀️ Açık temaya geç'}</button><button data-x="st">⚙️ Ayarlar</button></div>`;
-  app.appendChild(el);
-  el.onclick=e=>{const x=e.target.closest('[data-x]');if(!x&&e.target.id!=='mh')return;el.remove();if(!x)return;
+  el.innerHTML=`<div class="shade" id="mh"></div><div class="ctx"><button data-x="th">${P.theme==='light'?ic('moon',20)+' Koyu temaya geç':ic('sun',20)+' Açık temaya geç'}</button><button data-x="st">${ic('gear',20)} Ayarlar</button></div>`;
+  app.appendChild(el);const closeL=layer(()=>el.remove());
+  el.onclick=e=>{const x=e.target.closest('[data-x]');if(!x&&e.target.id!=='mh')return;closeL();if(!x)return;
     if(x.dataset.x==='th'){P.theme=P.theme==='light'?'dark':'light';save();applyLook()}else openSettings()};
 }
 
@@ -450,24 +514,19 @@ function homeMenu(){
 const fmtD=s=>Math.floor((s||0)/60)+':'+String((s||0)%60).padStart(2,'0');
 const toURL=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
 async function send(x){
-  const d={from:uid,ts:serverTimestamp(),...x};if(room&&room.ttl)d.exp=Date.now()+room.ttl*1000;
+  if(!roomRef)return;
+  const d={from:uid,...x};if(room&&room.ttl)d.exp=Date.now()+room.ttl*1000;
   if(replyTo){d.re={f:replyTo.f,t:replyTo.t,id:replyTo.id};clearReply()}
-  try{await addDoc(collection(roomRef,'messages'),d);updateDoc(roomRef,{['typing.'+uid]:0}).catch(()=>{})}
-  catch(err){console.error(err);toast('Gönderilemedi')}
+  const it={id:doc(collection(roomRef,'messages')).id,d,t:Date.now(),st:'s',code:P.code};
+  outbox.push(it);outSave();render(true);flush(it);
+  updateDoc(roomRef,{['typing.'+uid]:0}).catch(()=>{});
 }
 function setReply(m){
-  replyTo={id:m.id,f:m.from,t:(m.text||(m.img?'📷 Fotoğraf':'🎤 Ses mesajı')).slice(0,60)};
+  replyTo={id:m.id,f:m.from,t:(m.text||(m.img?'Fotoğraf':'Ses mesajı')).slice(0,60)};
   $('#rpn').textContent=((room.names||{})[m.from])||'?';$('#rpt').textContent=replyTo.t;
   $('#rp').classList.remove('hidden');$('#txt').focus();
 }
 function clearReply(){replyTo=null;const r=$('#rp');r&&r.classList.add('hidden')}
-function pickImg(f){
-  const im=new Image();
-  im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');
-    c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
-    URL.revokeObjectURL(im.src);send({img:c.toDataURL('image/jpeg',.72)})};
-  im.onerror=()=>toast('Fotoğraf okunamadı');im.src=URL.createObjectURL(f);
-}
 async function startRec(){
   try{
     const st=await navigator.mediaDevices.getUserMedia({audio:true}),mr=new MediaRecorder(st,{audioBitsPerSecond:24000}),ch=[];
@@ -476,44 +535,45 @@ async function startRec(){
     mr.ondataavailable=e=>ch.push(e.data);
     mr.onstop=async()=>{
       st.getTracks().forEach(t=>t.stop());ac.close();const r=rec;clearInterval(r.tick);rec=null;
-      $('#form').classList.remove('recording');$('#mc').textContent='🎤';
+      $('#form').classList.remove('recording');$('#mc').innerHTML=ic('mic');
       if(r.cancel||Date.now()-r.t0<700)return;
       const url=await toURL(new Blob(ch,{type:mr.mimeType}));
-      if(url.length>900000)return toast('Ses çok uzun');
+      if(url.length>900000)return toast('Ses kaydı çok uzun, daha kısa dene.');
       send({aud:url,dur:Math.round((Date.now()-r.t0)/1000),wf:Array.from({length:32},(_,i)=>Math.min(9,Math.round((lv[Math.floor(i*lv.length/32)]||0)/10))).join('')});
     };
-    mr.start();$('#form').classList.add('recording');$('#mc').textContent='➤';
+    mr.start();$('#form').classList.add('recording');$('#mc').innerHTML=ic('send');
   }catch(e){toast('Mikrofon izni verilmedi')}
 }
 const stopRec=c=>{if(rec){rec.cancel=c;rec.mr.stop()}};
 function playAud(id,btn){
   const same=curBtn&&curBtn.dataset.a===id;
-  if(cur){cur.pause();curBtn.textContent='▶';cur=curBtn=null;if(same)return}
+  if(cur){cur.pause();curBtn.innerHTML=ic('play',16);cur=curBtn=null;if(same)return}
   const m=msgs.find(x=>x.id===id);if(!m)return;
-  cur=new Audio(m.aud);curBtn=btn;btn.textContent='⏸';
+  cur=new Audio(m.aud);curBtn=btn;btn.innerHTML=ic('pause',16);
   const bars=()=>btn.parentNode.querySelectorAll('.wf i');
   cur.ontimeupdate=()=>{const b=bars(),n=Math.round(cur.currentTime/(m.dur||cur.duration||1)*b.length);b.forEach((x,i)=>x.classList.toggle('on',i<n))};
-  cur.onended=()=>{btn.textContent='▶';bars().forEach(x=>x.classList.remove('on'));cur=curBtn=null};
-  cur.play().catch(()=>{toast('Oynatılamadı');btn.textContent='▶';cur=curBtn=null});
+  cur.onended=()=>{btn.innerHTML=ic('play',16);bars().forEach(x=>x.classList.remove('on'));cur=curBtn=null};
+  cur.play().catch(()=>{toast('Oynatılamadı');btn.innerHTML=ic('play',16);cur=curBtn=null});
 }
-function zoom(src){const z=document.createElement('div');z.className='shade zm';z.innerHTML=`<img src="${src}" alt="">`;z.onclick=()=>z.remove();app.appendChild(z)}
+function zoom(src){const z=document.createElement('div');z.className='shade zm';z.innerHTML=`<img src="${src}" alt="">`;const cz=layer(()=>z.remove());z.onclick=cz;app.appendChild(z)}
 function openMenu(id){
   const m=msgs.find(x=>x.id===id);if(!m||m.del)return;
   const mine=canon(m.from)===canon(uid),mr=(m.rx||{})[uid],el=document.createElement('div');
-  el.innerHTML=`<div class="shade" id="mh"></div><div class="ctx"><div class="rxr">${['❤️','😂','😮','😢','👍','🔥'].map((e,i)=>`<button data-r="${e}" style="--i:${i}" class="${mr===e?'on':''}">${e}</button>`).join('')}</div><button data-x="re">↩️ Yanıtla</button>${m.text?'<button data-x="cp">📋 Kopyala</button>':''}${m.img?'<button data-x="zm">🔍 Büyüt</button>':''}${mine&&m.text?'<button data-x="ed">✏️ Düzenle</button>':''}<button data-x="pn">${room.pin&&room.pin.id===id?'📌 Sabiti kaldır':'📌 Sabitle'}</button>${mine?'<button data-x="dl" class="danger">🗑️ Sil</button>':''}</div>`;
-  app.appendChild(el);
-  const ref=doc(roomRef,'messages',id),fail=()=>toast('İşlem yapılamadı (Firestore kuralları?)');
+  el.innerHTML=`<div class="shade" id="mh"></div><div class="ctx"><div class="rxr">${['❤️','😂','😮','😢','👍','🔥'].map((e,i)=>`<button data-r="${e}" style="--i:${i}" class="${mr===e?'on':''}">${e}</button>`).join('')}</div><button data-x="re">${ic('reply',20)} Yanıtla</button>${m.text?'<button data-x="cp">'+ic('copy',20)+' Kopyala</button>':''}${m.img?'<button data-x="zm">'+ic('zoom',20)+' Büyüt</button><button data-x="dw">'+ic('dl',20)+' Kaydet</button>':''}${mine&&m.text?'<button data-x="ed">'+ic('edit',20)+' Düzenle</button>':''}<button data-x="pn">${ic('pin',20)} ${room.pin&&room.pin.id===id?'Sabiti kaldır':'Sabitle'}</button>${mine?'<button data-x="dl" class="danger">'+ic('trash',20)+' Sil</button>':''}</div>`;
+  app.appendChild(el);const closeL=layer(()=>el.remove());
+  const ref=doc(roomRef,'messages',id),fail=()=>toast('İşlem yapılamadı. Tekrar dene.');
   el.onclick=e=>{
     const r=e.target.closest('[data-r]'),x=e.target.closest('[data-x]');
     if(!r&&!x&&e.target.id!=='mh')return;
-    el.remove();
+    closeL();
     if(r)updateDoc(ref,{['rx.'+uid]:mr===r.dataset.r?deleteField():r.dataset.r}).catch(fail);
     else if(x){const k=x.dataset.x;
       if(k==='re')setReply(m);
       else if(k==='cp'){navigator.clipboard&&navigator.clipboard.writeText(m.text).then(()=>toast('Kopyalandı')).catch(()=>{})}
       else if(k==='zm')zoom(m.img);
+      else if(k==='dw'){const a=document.createElement('a');a.href=m.img;a.download='aurora-'+id+'.jpg';document.body.appendChild(a);a.click();a.remove()}
       else if(k==='ed'){const t=prompt('Mesajı düzenle',m.text);if(t&&t.trim()&&t!==m.text)updateDoc(ref,{text:t.trim(),edited:true}).catch(fail)}
-      else if(k==='pn')updateDoc(roomRef,{pin:room.pin&&room.pin.id===id?deleteField():{id,t:(m.text||(m.img?'📷 Fotoğraf':'🎤 Ses mesajı')).slice(0,60)}}).catch(fail);
+      else if(k==='pn')updateDoc(roomRef,{pin:room.pin&&room.pin.id===id?deleteField():{id,t:(m.text||(m.img?'Fotoğraf':'Ses mesajı')).slice(0,60)}}).catch(fail);
       else if(k==='dl'&&confirm('Mesaj herkesten silinsin mi?'))updateDoc(ref,{del:true,text:deleteField(),img:deleteField(),aud:deleteField(),re:deleteField(),rx:deleteField()}).catch(fail);
     }
   };
@@ -529,7 +589,13 @@ function openSettings(){
    <h3>Balon rengi</h3>
    <div class="bubs">${Object.entries(BUB).map(([k,b])=>`<button class="sw ${P.bubble===k?'on':''}" data-b="${k}" style="background:${b[1]}" aria-label="${b[0]}"></button>`).join('')}</div>
    <h3>Tema</h3>
-   <div class="row"><button class="btn2" id="th">${P.theme==='light'?'☀️ Açık tema':'🌙 Koyu tema'}</button></div>
+   <div class="row"><button class="btn2" id="th">${P.theme==='light'?ic('sun',18)+' Açık tema':ic('moon',18)+' Koyu tema'}</button></div>
+   <h3>Yazı boyutu</h3>
+   <div class="row" id="fs">${[['Küçük','s'],['Normal','m'],['Büyük','l']].map(([n,v])=>`<button class="btn2${P.fs===v?' on2':''}" data-fs="${v}">${n}</button>`).join('')}</div>
+   <h3>Bildirim sesi ve titreşim</h3>
+   <div class="row"><button class="btn2${P.snd?' on2':''}" id="sn">${P.snd?'Açık':'Kapalı'}</button></div>
+   <h3>Profil</h3>
+   <div class="row"><button class="btn2" id="nm2">Profili düzenle</button></div>
    <h3>Kaybolan mesajlar</h3>
    <div class="row" id="tt">${[['Kapalı',0],['1 saat',3600],['1 gün',86400]].map(([n,v])=>`<button class="btn2${((room&&room.ttl)||0)===v?' on2':''}" data-ttl="${v}">${n}</button>`).join('')}</div>
    <h3>Yedek</h3>
@@ -541,7 +607,7 @@ function openSettings(){
    <p class="code">Kod: ${esc(P.code||'')}</p>
    <div class="row"><button class="btn2 danger" id="lv">Odadan çık</button><button class="btn2" id="cl">Kapat</button></div></div>`;
   app.appendChild(el);
-  const close=()=>el.remove();
+  const close=layer(()=>el.remove());
   $('#sh',el).onclick=close;$('#cl',el).onclick=close;
   el.onclick=e=>{
     const w=e.target.closest('[data-w]'),b=e.target.closest('[data-b]');
@@ -551,9 +617,12 @@ function openSettings(){
       el.querySelectorAll('.sw').forEach(x=>x.classList.toggle('on',x===b))}
   };
   $('#bk',el).onclick=backup;
+  $('#fs',el).onclick=e=>{const b=e.target.closest('[data-fs]');if(!b)return;P.fs=b.dataset.fs;save();applyFs();el.querySelectorAll('[data-fs]').forEach(x=>x.classList.toggle('on2',x===b))};
+  $('#sn',el).onclick=e=>{P.snd=P.snd?0:1;save();const b=e.currentTarget;b.textContent=P.snd?'Açık':'Kapalı';b.classList.toggle('on2',!!P.snd);if(P.snd)ping()};
+  $('#nm2',el).onclick=openProfile;
   $('#lo',el).onclick=async()=>{if(!confirm('Hesaptan çıkılsın mı? Mesajların bulutta kalır, e-posta ve şifreyle tekrar girersin.'))return;unsubRoom&&unsubRoom();unsubMsgs&&unsubMsgs();clearInterval(typingTick);clearInterval(hb);delete P.code;delete P.name;save();uid=null;await signOut(auth);authScreen()};
-  $('#th',el).onclick=e=>{P.theme=P.theme==='light'?'dark':'light';save();applyLook();e.target.textContent=P.theme==='light'?'☀️ Açık tema':'🌙 Koyu tema'};
-  $('#tt',el).onclick=e=>{const b=e.target.closest('[data-ttl]');if(!b)return;updateDoc(roomRef,{ttl:+b.dataset.ttl}).catch(()=>toast('İşlem yapılamadı'));el.querySelectorAll('[data-ttl]').forEach(x=>x.classList.toggle('on2',x===b))};
+  $('#th',el).onclick=e=>{P.theme=P.theme==='light'?'dark':'light';save();applyLook();$('#th',el).innerHTML=P.theme==='light'?ic('sun',18)+' Açık tema':ic('moon',18)+' Koyu tema'};
+  $('#tt',el).onclick=e=>{const b=e.target.closest('[data-ttl]');if(!b)return;updateDoc(roomRef,{ttl:+b.dataset.ttl}).catch(()=>toast('İşlem yapılamadı. Tekrar dene.'));el.querySelectorAll('[data-ttl]').forEach(x=>x.classList.toggle('on2',x===b))};
   $('#lv',el).onclick=()=>{
     if(!confirm('Odadan çıkılsın mı? Mesajlar bulutta kalır, aynı kodla tekrar girebilirsin.'))return;
     unsubRoom&&unsubRoom();unsubMsgs&&unsubMsgs();clearInterval(typingTick);clearInterval(hb);delete P.code;save();setDoc(doc(db,'users',uid),{name:P.name||'',code:''}).catch(()=>{});joinScreen();
@@ -570,9 +639,73 @@ function backup(){
   toast('Yedek indirildi');
 }
 
+/* ---------- profil / önizleme / bekleyen mesajlar ---------- */
+const phot=u=>(room&&room.photos&&room.photos[u])||'';
+const avh=(u,n)=>phot(u)?`<img src="${phot(u)}" alt="">`:esc(((n||'?').trim().charAt(0)||'?').toUpperCase());
+const crop=(f,z)=>new Promise((ok,no)=>{const im=new Image();im.onload=()=>{const m=Math.min(im.width,im.height),c=document.createElement('canvas');c.width=c.height=z;c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,z,z);URL.revokeObjectURL(im.src);ok(c.toDataURL('image/jpeg',.8))};im.onerror=no;im.src=URL.createObjectURL(f)});
+const shrink=f=>new Promise((ok,no)=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(im.src);ok(c.toDataURL('image/jpeg',.72))};im.onerror=no;im.src=URL.createObjectURL(f)});
+async function pickImgs(fs){
+  const out=[];for(const f of fs.slice(0,6)){try{out.push(await shrink(f))}catch(e){toast('Fotoğraf okunamadı')}}
+  if(out.length)previewImgs(out);
+}
+function previewImgs(list){
+  const el=document.createElement('div'),closeL=layer(()=>el.remove());
+  const draw=()=>{el.innerHTML=`<div class="shade pvw"><div class="pvb"><div class="pvg n${list.length}">${list.map((u,i)=>`<div class="pvi"><img src="${u}" alt=""><button type="button" data-rm="${i}" aria-label="Kaldır">${ic('x',16)}</button></div>`).join('')}</div><input class="in" id="cap" maxlength="200" placeholder="Açıklama ekle (isteğe bağlı)"><div class="row"><button type="button" class="btn2" id="pc">İptal</button><button type="button" class="cta" id="ps" style="flex:1">Gönder${list.length>1?' ('+list.length+')':''}</button></div></div></div>`};
+  draw();app.appendChild(el);
+  el.onclick=e=>{
+    const r=e.target.closest('[data-rm]');if(r){list.splice(+r.dataset.rm,1);if(!list.length)closeL();else draw();return}
+    if(e.target.closest('#pc'))closeL();
+    else if(e.target.closest('#ps')){const cap=($('#cap',el).value||'').trim();closeL();list.forEach((u,i)=>send(i===0&&cap?{img:u,text:cap}:{img:u}))}
+  };
+}
+function openProfile(){
+  if(!roomRef)return;
+  const el=document.createElement('div'),nm=P.name||'',em=(auth.currentUser&&auth.currentUser.email)||'';
+  el.innerHTML=`<div class="shade" id="sh"></div><div class="sheet" role="dialog" aria-label="Profil"><h2>Profil</h2>
+   <div style="display:flex;flex-direction:column;align-items:center;gap:12px"><button type="button" class="av big" id="pa" aria-label="Fotoğrafı değiştir">${avh(uid,nm)}</button>
+   <div class="row"><button class="btn2" id="pp">${ic('clip',18)} Fotoğraf seç</button>${phot(uid)?'<button class="btn2 danger" id="pr">Kaldır</button>':''}</div></div>
+   <h3>Adın</h3><input class="in" id="pn" maxlength="24" value="${esc(nm)}" autocomplete="off">
+   <h3>E-posta</h3><p class="code">${esc(em)}</p>
+   <div class="row"><button class="btn2" id="pk">Kapat</button><button class="cta" id="pv" style="flex:1">Kaydet</button></div><input type="file" id="pf" accept="image/*" hidden></div>`;
+  app.appendChild(el);const close=layer(()=>el.remove());
+  $('#sh',el).onclick=close;$('#pk',el).onclick=close;
+  const pick=()=>$('#pf',el).click();$('#pa',el).onclick=pick;$('#pp',el).onclick=pick;
+  $('#pf',el).onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+    try{const u=await crop(f,192);await updateDoc(roomRef,{['photos.'+uid]:u});$('#pa',el).innerHTML=avh(uid,nm);toast('Fotoğraf güncellendi')}catch(err){console.error(err);toast('Fotoğraf yüklenemedi. Tekrar dene.')}};
+  const pr=$('#pr',el);if(pr)pr.onclick=()=>updateDoc(roomRef,{['photos.'+uid]:deleteField()}).then(()=>{$('#pa',el).innerHTML=esc((nm.trim().charAt(0)||'?').toUpperCase());pr.remove();toast('Fotoğraf kaldırıldı')}).catch(()=>toast('İşlem yapılamadı. Tekrar dene.'));
+  $('#pv',el).onclick=()=>{const v=$('#pn',el).value.trim().slice(0,24);if(!v){toast('Ad boş olamaz');return}
+    updateDoc(roomRef,{['names.'+uid]:v}).then(()=>{P.name=v;save();setDoc(doc(db,'users',uid),{name:v,code:P.code||''}).catch(()=>{});toast('Profil kaydedildi');close()}).catch(()=>toast('Kaydedilemedi. Tekrar dene.'))};
+}
+function viewList(){
+  outbox=outbox.filter(it=>{const m=msgs.find(x=>x.id===it.id);return !(m&&!m.pw)});
+  const L=live().map(m=>{const it=outbox.find(x=>x.id===m.id);return it?{...m,pend:1,pst:it.st}:m});
+  outbox.forEach(it=>{if(!msgs.some(m=>m.id===it.id))L.push({id:it.id,...it.d,ts:{toDate:()=>new Date(it.t),toMillis:()=>it.t},pend:1,pst:it.st})});
+  return L;
+}
+const outSave=()=>{try{localStorage.setItem('aurora.out',JSON.stringify(outbox.map(({id,d,t,st,code})=>({id,d,t,st,code}))))}catch(e){}};
+function outLoad(){try{outbox=JSON.parse(localStorage.getItem('aurora.out')||'[]').filter(i=>i.code===P.code).map(i=>({...i,st:'s'}))}catch(e){outbox=[]}}
+function flush(it){
+  if(it.busy||!roomRef)return;
+  if(navigator.onLine===false){it.st='f';outSave();render(false);return}
+  it.busy=1;it.st='s';render(false);
+  Promise.race([setDoc(doc(roomRef,'messages',it.id),{...it.d,ts:serverTimestamp()}),new Promise((_,no)=>setTimeout(()=>no(new Error('timeout')),12000))])
+   .then(()=>{outbox=outbox.filter(x=>x!==it);outSave();render(false)})
+   .catch(e=>{console.error(e);it.busy=0;it.st='f';outSave();render(false)});
+}
+addEventListener('online',()=>{toast('Bağlantı geri geldi');outbox.forEach(it=>{if(it.st==='f')flush(it)})});
+addEventListener('offline',()=>toast('İnternet yok. Mesajlar bağlanınca gönderilir.'));
+
 /* ---------- başlat ---------- */
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
-splash();
+history.replaceState({base:1},'');history.pushState({s:1},'');
+addEventListener('popstate',()=>{
+  if(skip>0){skip--;return}
+  if(layers.length){layers.pop().fn();return}
+  if(view==='chat'){showHome();return}
+  const st=history.state;
+  if(st&&st.base){if(Date.now()-exitT<2000){history.back();return}exitT=Date.now();toast('Çıkmak için tekrar geri bas');history.pushState({s:1},'')}
+});
+applyFs();setBar('sunset');splash();
 try{
   const fbApp=initializeApp(firebaseConfig);auth=getAuth(fbApp);db=getFirestore(fbApp);
   const wait=new Promise(r=>setTimeout(r,1300));
