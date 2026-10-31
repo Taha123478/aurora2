@@ -239,6 +239,56 @@ button:active{transform:scale(.96)}
 .keys{display:grid;grid-template-columns:repeat(3,72px);gap:14px}
 .keys button{width:72px;height:72px;border-radius:50%;border:0;background:rgba(255,255,255,.22);color:#fff;font-size:26px;font-weight:600}
 .lkf{border:0;background:none;color:#fff;font-size:14px;font-weight:700;text-decoration:underline;padding:8px}
+/* ===== v12: minimal tasarım, düz renkli temalar ===== */
+:root{--bg:#FAFAF7;--fg:#1B1B1A;--mut:#6F6F6A;--sur:#EFEEE9;--acc:#D14A0E}
+html,body{background:var(--bg)!important;color:var(--fg)}
+#app .scr{background:var(--bg);color:var(--fg);--pill:var(--sur);--inbg:var(--sur);--stamp:var(--mut);--warm:var(--mut);--sun:var(--acc);--amber:var(--acc);--orange:var(--acc);--cream:var(--sur);--ink:var(--fg)}
+#app .scr::before,#app .scr::after{display:none}
+#app .top{padding:12px 10px 10px;border-bottom:1px solid rgba(128,128,128,.16)}
+#app .who{background:transparent;box-shadow:none;color:var(--fg);padding:0 8px 0 0;height:48px}
+#app .who small,#app .hx,#app .hm small{color:var(--mut)}
+#app .rb{background:transparent;box-shadow:none;color:var(--fg);width:44px;height:44px}
+#app .av{background:var(--acc);color:#fff}
+#app .hh{padding:16px 20px 4px}#app .ht{font-size:28px;font-weight:700;letter-spacing:-.5px;color:var(--fg)}
+#app .hc{background:var(--sur);box-shadow:none;border-radius:20px;color:var(--fg)}
+#app .hm b{font-weight:600}
+#app .bd,#app .dn[data-n]:not([data-n=""])::after{background:var(--acc);color:#fff}
+#app .fab{background:var(--acc);color:#fff;box-shadow:none;width:56px;height:56px}
+#app .day{background:var(--sur);color:var(--mut);font-weight:600}
+#app .m.in .bub{background:var(--sur);color:var(--fg);border-radius:18px 18px 18px 6px}
+#app .m.out .bub{background:var(--acc);color:#fff;box-shadow:none;font-weight:400;border-radius:18px 18px 6px 18px}
+#app .bub a{color:inherit}
+#app .t{color:var(--mut)}#app .tick.r{color:var(--acc)}
+#app .t.fail{color:#D03A3A}#app .t.fail button{background:var(--sur);color:var(--fg)}
+#app .typing{background:var(--sur)}#app .typing i{background:var(--mut)}
+#app .composer{padding:8px 12px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(128,128,128,.16)}
+#app .bar{background:transparent;box-shadow:none;height:auto;padding:0;gap:8px}
+#app .field{background:var(--sur);height:46px;border-radius:23px}
+#app .field input,#app .ib{color:var(--fg)}#app .field input::placeholder{color:var(--mut)}
+#app .send,#app .send.mic{background:var(--acc);color:#fff;animation:none}
+#app .recording #mc{background:#D03A3A}
+#app .pinb,#app .rpb,#app .emojis,#app .empty,#app .more,#app .nav{background:var(--sur);color:var(--fg);box-shadow:none}
+#app .rpb{border-left-color:var(--acc)}#app .rpt b{color:var(--acc)}
+#app .dn{background:var(--sur);color:var(--fg);box-shadow:0 2px 8px rgba(0,0,0,.18)}
+#app .shade{background:rgba(0,0,0,.4)}
+#app .sheet,#app .ctx,#app .toast{background:var(--bg);color:var(--fg)}
+#app .toast{border:1px solid rgba(128,128,128,.3)}
+#app .sheet h3,#app .code{color:var(--mut)}
+#app .btn2{background:var(--sur);color:var(--fg)}#app .btn2.on2{background:var(--acc);color:#fff}#app .btn2.danger{color:#D03A3A}
+#app .ctx button{color:var(--fg)}#app .ctx button:active{background:var(--sur)}#app .ctx .danger{color:#D03A3A}
+#app .rxr{border-bottom-color:var(--sur)}#app .rxr button.on{background:var(--sur)}
+#app .in{background:var(--sur);color:var(--fg)}#app .in::placeholder{color:var(--mut)}#app .in:focus{outline-color:var(--acc)}
+#app .cta{background:var(--acc);color:#fff}
+#app .card{background:var(--sur);color:var(--fg)}#app .card label{color:var(--mut)}
+#app .logo{background:var(--acc);color:#fff;box-shadow:none}
+#app .big{color:var(--fg)}#app .sub{color:var(--mut);opacity:1}#app .err{color:#D03A3A}
+#app .pl,#app .m.in .pl{background:var(--acc);color:#fff}
+#app .rep,#app .m.in .rep{background:rgba(128,128,128,.16)}
+#app .cdb{background:var(--bg);color:var(--fg)}
+#app .sbar span{color:var(--mut)}
+#app .wall{color:var(--fg)}#app .wall .pv{border:1px solid rgba(128,128,128,.35);height:56px;border-radius:16px}
+#app .sw.on,#app .wall.on .pv{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--acc);transform:none}
+#app .flash .bub{animation:none;outline:2px solid var(--acc)}
 </style>
 </head>
 <body>
@@ -261,18 +311,16 @@ const firebaseConfig = {
 /* ================================================================ */
 
 const WALLS={
- sunset:{n:'Gün batımı',cls:'sun',pv:'linear-gradient(180deg,#FFB65C,#FF8A3D 50%,#F2557A)'},
- dawn:{n:'Şafak',bg:'linear-gradient(180deg,#FFE3A8 0%,#FFB65C 50%,#FF9BB3 100%)'},
- flame:{n:'Alev',bg:'linear-gradient(180deg,#FF8A3D 0%,#FF3D6E 100%)'},
- rose:{n:'Gül',bg:'linear-gradient(180deg,#FFC2D4 0%,#F2557A 55%,#B5306A 100%)'},
- night:{n:'Gece',dark:true,pv:'radial-gradient(90% 60% at 80% 0%,rgba(255,138,61,.6),rgba(255,138,61,0) 70%),linear-gradient(180deg,#2A1B38,#1A1218)'},
- borealis:{n:'Kuzey ışığı',bg:'linear-gradient(180deg,#9CF2D0 0%,#3BC9A8 50%,#6B5BD6 100%)'},
- ocean:{n:'Okyanus',bg:'linear-gradient(180deg,#8EE3F5 0%,#3B8EEA 55%,#2B3FA0 100%)'},
- forest:{n:'Orman',bg:'linear-gradient(180deg,#C8F0A0 0%,#4CB36B 55%,#1F6B5A 100%)'},
- lavender:{n:'Lavanta',bg:'linear-gradient(180deg,#E8D4FF 0%,#B28AF0 55%,#6B4BC4 100%)'},
- peach:{n:'Şeftali',bg:'linear-gradient(180deg,#FFE0C2 0%,#FF9E80 100%)'}
+ white:{n:'Beyaz',bg:'#FAFAF7',fg:'#1B1B1A',mut:'#6F6F6A',sur:'#EFEEE9'},
+ cream:{n:'Krem',bg:'#F6F0E4',fg:'#2A2318',mut:'#6E6556',sur:'#EBE3D2'},
+ mint:{n:'Nane',bg:'#EEF5F0',fg:'#14251C',mut:'#50655A',sur:'#DCE8E0'},
+ sky:{n:'Gökyüzü',bg:'#EEF3FA',fg:'#131F33',mut:'#55647C',sur:'#DDE6F3'},
+ rose:{n:'Gül',bg:'#FBF0F2',fg:'#2E1519',mut:'#7A5A60',sur:'#F3E0E4'},
+ night:{n:'Gece',bg:'#141414',fg:'#F2F2EE',mut:'#A3A39D',sur:'#242424',dark:true},
+ navy:{n:'Lacivert',bg:'#0F1624',fg:'#EAF0FA',mut:'#9AA8C0',sur:'#1C2740',dark:true},
+ forest:{n:'Orman',bg:'#0F1A14',fg:'#E8F2EC',mut:'#9BB0A4',sur:'#1B2D23',dark:true}
 };
-const BUB={cream:['Krem','#FFF1E2'],sun:['Sarı','#FFD27A'],pink:['Pembe','#FF9BB3']};
+const BUB={ora:['Turuncu','#D14A0E'],blue:['Mavi','#2563EB'],green:['Yeşil','#0F7B5C'],purple:['Mor','#7C3AED']};
 const EMOJIS='😀 😂 🥹 😍 😘 🥰 😎 🤔 😭 😴 🙄 😅 👍 🙏 👏 💪 ❤️ 🔥 ✨ 🎉 🌅 ☕ 🍕 🌹 🤣 😊 😉 😋 🤩 😇 🥳 😤 😡 🤯 😱 🤗 🫡 🤝 👀 💔 💯 🎶 🌙 ⭐ 🍀 🎂 🍿 🚀'.split(' ');
 const EM2='🥳 😻 🤗 🫶 🐱 🐶 🦊 🐼 🐻 🦄 🌈 💌 🍰 🧸 🎁 💖'.split(' ');
 
@@ -285,11 +333,11 @@ const TK='<svg width="17" height="11" viewBox="0 0 24 16" fill="none" stroke="cu
 let actx;function ping(){if(!P.snd)return;try{navigator.vibrate&&navigator.vibrate(40);actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime;o.connect(g);g.connect(actx.destination);o.frequency.value=880;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.25);o.start();o.stop(t+.26)}catch(e){}}
 const BAR={sunset:'#FFB65C',dawn:'#FFE3A8',flame:'#FF8A3D',rose:'#FFC2D4',night:'#120C10',borealis:'#9CF2D0',ocean:'#8EE3F5',forest:'#C8F0A0',lavender:'#E8D4FF',peach:'#FFE0C2'};
 const CPl=window.Capacitor&&window.Capacitor.Plugins;
-const setBar=k=>{const c=BAR[k]||BAR.sunset,m=document.getElementById('tc');if(m)m.content=c;document.documentElement.style.background=c;
-  try{if(CPl&&CPl.StatusBar){CPl.StatusBar.setOverlaysWebView({overlay:false});CPl.StatusBar.setBackgroundColor({color:c});CPl.StatusBar.setStyle({style:k==='night'?'DARK':'LIGHT'})}}catch(e){}};
+const setBar=k=>{const c=(WALLS[k]||WALLS.white).bg,m=document.getElementById('tc');if(m)m.content=c;document.documentElement.style.background=c;
+  try{if(CPl&&CPl.StatusBar){CPl.StatusBar.setOverlaysWebView({overlay:false});CPl.StatusBar.setBackgroundColor({color:c});CPl.StatusBar.setStyle({style:(WALLS[k]||{}).dark?'DARK':'LIGHT'})}}catch(e){}};
 const applyFs=()=>document.documentElement.style.setProperty('--fs',({s:'13px',m:'15px',l:'18px'})[P.fs]||'15px');
 const load=()=>{try{return JSON.parse(localStorage.getItem('aurora.v3')||'{}')}catch(e){return {}}};
-const P=Object.assign({wall:'sunset',bubble:'cream',fs:'m',snd:1},load());
+const P=Object.assign({wall:'white',bubble:'ora',fs:'m',snd:1},load());
 const save=()=>{try{localStorage.setItem('aurora.v3',JSON.stringify(P))}catch(e){}};
 
 let outbox=[],msgsLoaded=false,outTried=false,hasMore=false,loadingOld=false,msgLimit=80,watchMore=null,stick=true;
@@ -301,14 +349,18 @@ let replyTo=null,rec=null,cur=null,curBtn=null,seen=new Set(),seenReady=false,la
 let msgs=[],room=null,otherTypingUntil=0,lastTypingVal=null,lastTypingSent=0,typingTick=null,emojiOpen=false;
 
 function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;app.appendChild(d);setTimeout(()=>d.remove(),2600)}
-const wallStyle=()=>{const w=WALLS[P.wall]||WALLS.sunset;setBar(P.wall);return {cls:'scr '+(w.cls||'')+(w.dark?' night':'')+(P.theme==='light'&&!w.dark?' lt':''),style:(w.bg?`--wall:${w.bg};`:'')+(w.dark?'--outbg:linear-gradient(135deg,#FFB65C,#FF7A3D 60%,#F2557A);':`--outbg:${(BUB[P.bubble]||BUB.cream)[1]};`)}};
+const wallStyle=()=>{
+  const k=WALLS[P.wall]?P.wall:'white',w=WALLS[k],a=(BUB[P.bubble]||BUB.ora)[1];P.wall=k;P.theme=w.dark?'dark':'light';
+  const R=document.documentElement.style;[['bg',w.bg],['fg',w.fg],['mut',w.mut],['sur',w.sur],['acc',a]].forEach(([n,v])=>R.setProperty('--'+n,v));R.colorScheme=w.dark?'dark':'light';
+  setBar(k);return {cls:'scr '+(w.dark?'night':'lt'),style:''};
+};
 
 /* ---------- ekranlar ---------- */
 function splash(){
   app.innerHTML=`<section class="scr sun fade"><div class="center stag"><div class="logo" style="--i:0">A</div><h1 class="big" style="--i:1">Aurora</h1><p class="sub" style="--i:2">Sadece ikimiz için</p><span class="spin dk" style="--i:3"></span></div></section>`;
 }
 function joinScreen(msg){
-  layers.length=0;view='auth';setBar('sunset');
+  layers.length=0;view='auth';setBar(P.wall);
   app.innerHTML=`<section class="scr sun fade"><div class="center stag">
    <div class="logo" style="--i:0;width:72px;height:72px;font-size:34px;border-radius:24px">A</div>
    <h1 class="big" style="--i:1;font-size:30px">Odaya katıl</h1>
@@ -327,7 +379,7 @@ function joinScreen(msg){
   };
 }
 function authScreen(msg,mode,em0){
-  layers.length=0;view='auth';setBar('sunset');
+  layers.length=0;view='auth';setBar(P.wall);
   mode=mode||'in';const reg=mode==='reg',cu=auth&&auth.currentUser;
   app.innerHTML=`<section class="scr sun fade"><div class="center stag">
    <div class="logo" style="--i:0;width:72px;height:72px;font-size:34px;border-radius:24px">A</div>
@@ -557,7 +609,7 @@ function homeMenu(){
   el.innerHTML=`<div class="shade" id="mh"></div><div class="ctx"><button data-x="th">${P.theme==='light'?ic('moon',20)+' Koyu temaya geç':ic('sun',20)+' Açık temaya geç'}</button><button data-x="st">${ic('gear',20)} Ayarlar</button></div>`;
   app.appendChild(el);const closeL=layer(()=>el.remove());
   el.onclick=e=>{const x=e.target.closest('[data-x]');if(!x&&e.target.id!=='mh')return;closeL();if(!x)return;
-    if(x.dataset.x==='th'){P.theme=P.theme==='light'?'dark':'light';save();applyLook()}else openSettings()};
+    if(x.dataset.x==='th'){P.wall=(WALLS[P.wall]||{}).dark?'white':'night';save();applyLook()}else openSettings()};
 }
 
 /* ---------- gönder / medya / menü ---------- */
@@ -635,9 +687,9 @@ function openSettings(){
   const el=document.createElement('div');
   el.innerHTML=`<div class="shade" id="sh"></div><div class="sheet" role="dialog" aria-label="Ayarlar">
    <h2>Ayarlar</h2>
-   <h3>Duvar kâğıdı</h3>
+   <h3>Tema</h3>
    <div class="walls">${Object.entries(WALLS).map(([k,w])=>`<button class="wall ${P.wall===k?'on':''}" data-w="${k}"><span class="pv" style="background:${w.pv||w.bg}"></span>${w.n}</button>`).join('')}</div>
-   <h3>Balon rengi</h3>
+   <h3>Vurgu rengi</h3>
    <div class="bubs">${Object.entries(BUB).map(([k,b])=>`<button class="sw ${P.bubble===k?'on':''}" data-b="${k}" style="background:${b[1]}" aria-label="${b[0]}"></button>`).join('')}</div>
    <h3>Tema</h3>
    <div class="row"><button class="btn2" id="th">${P.theme==='light'?ic('sun',18)+' Açık tema':ic('moon',18)+' Koyu tema'}</button></div>
@@ -677,7 +729,7 @@ function openSettings(){
     if(pinOn())pinPad('check',ok=>{if(ok){try{localStorage.removeItem('aurora.pin')}catch(x){}b.textContent='PIN koy';b.classList.remove('on2');toast('PIN kapatıldı')}});
     else pinPad('set',ok=>{if(ok){b.textContent='PIN açık · Kapat';b.classList.add('on2');toast('PIN kuruldu')}})};
   $('#lo',el).onclick=async()=>{if(!confirm('Hesaptan çıkılsın mı? Mesajların bulutta kalır, e-posta ve şifreyle tekrar girersin.'))return;unsubRoom&&unsubRoom();unsubMsgs&&unsubMsgs();clearInterval(typingTick);clearInterval(hb);delete P.code;delete P.name;save();uid=null;await signOut(auth);authScreen()};
-  $('#th',el).onclick=e=>{P.theme=P.theme==='light'?'dark':'light';save();applyLook();$('#th',el).innerHTML=P.theme==='light'?ic('sun',18)+' Açık tema':ic('moon',18)+' Koyu tema'};
+  $('#th',el).onclick=e=>{P.wall=(WALLS[P.wall]||{}).dark?'white':'night';save();applyLook();$('#th',el).innerHTML=P.theme==='light'?ic('sun',18)+' Açık tema':ic('moon',18)+' Koyu tema'};
   $('#tt',el).onclick=e=>{const b=e.target.closest('[data-ttl]');if(!b)return;updateDoc(roomRef,{ttl:+b.dataset.ttl}).catch(()=>toast('İşlem yapılamadı. Tekrar dene.'));el.querySelectorAll('[data-ttl]').forEach(x=>x.classList.toggle('on2',x===b))};
   $('#lv',el).onclick=()=>{
     if(!confirm('Odadan çıkılsın mı? Mesajlar bulutta kalır, aynı kodla tekrar girebilirsin.'))return;
@@ -819,7 +871,7 @@ function atBase(){
   exitT=Date.now();toast('Çıkmak için tekrar geri bas');history.pushState({s:1},'');
 }
 try{if(CPl&&CPl.App&&CPl.App.addListener)CPl.App.addListener('backButton',()=>{if(document.querySelector('.lock'))return;const st=history.state;if(st&&st.base)atBase();else history.back()})}catch(e){}
-applyFs();setBar('sunset');if(pinOn())pinPad('check',()=>{});splash();
+applyFs();wallStyle();if(pinOn())pinPad('check',()=>{});splash();
 try{
   const fbApp=initializeApp(firebaseConfig);auth=getAuth(fbApp);try{db=initializeFirestore(fbApp,{localCache:persistentLocalCache({})})}catch(e){console.warn(e);db=getFirestore(fbApp)}
   const wait=new Promise(r=>setTimeout(r,450));
