@@ -361,6 +361,8 @@ body.pg #chat,body.pg #home{visibility:hidden}
 .vp{position:absolute;inset:0;z-index:30;overflow:hidden;color:#fff;background:radial-gradient(120% 70% at 50% 34%,#34443e 0%,#27342e 40%,#161e1b 75%,#0c1110 100%);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;animation:vpin .26s var(--ease) both}
 @keyframes vpin{from{opacity:0;transform:translateY(16px) scale(.97)}}
 .leaving.vp{animation:fadeOut .16s ease-out forwards!important}
+/* gelen mesaj sarmalı .m.in, giriş kutusu .in stilini devralmasın */
+.m.in,#app .m.in{height:auto;width:auto;padding:0;border-radius:0;background:none;font-size:inherit;color:inherit}
 .vp video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:transparent}
 .vp .vtop,.vp .vctl,.vp .vsheet{transition:opacity .22s ease,transform .22s var(--ease)}
 .vp.hide .vtop{opacity:0;transform:translateY(-8px);pointer-events:none}
@@ -464,6 +466,32 @@ body.pg #chat,body.pg #home{visibility:hidden}
 .pcard .pm b{font-size:17px;font-weight:700}
 .pcard .pm span{font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #app .pcard .btn2{flex:none;height:40px;padding:0 16px;font-size:13px;background:var(--bg)}
+
+/* v21: 3 nokta menüsü + kamera */
+.emojis{max-height:236px;overflow-y:auto;overscroll-behavior:contain}
+.apsh{position:absolute;inset:0;z-index:5}
+.apop{position:absolute;z-index:6;min-width:190px;background:var(--bg,#1A1218);color:var(--fg,#fff);border-radius:20px;padding:6px;display:flex;flex-direction:column;box-shadow:0 12px 36px rgba(0,0,0,.35);border:1px solid rgba(128,128,128,.18);transform-origin:left bottom;animation:rise .18s var(--ease) both}
+.apop button{border:0;background:transparent;color:inherit;display:flex;align-items:center;gap:14px;height:50px;padding:0 16px;border-radius:14px;font-size:16px;font-weight:600;text-align:left}
+.apop button:active{background:var(--sur,#2A2027)}
+.leaving .apop,.leaving .apsh{animation:fadeOut .12s ease-in forwards!important}
+.cam{position:absolute;inset:0;z-index:30;background:#000;color:#fff;overflow:hidden;animation:fadeIn .15s ease-out both;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}.cam video.mir{transform:scaleX(-1)}
+.cmt{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:4px;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 24px;background:linear-gradient(rgba(0,0,0,.5),transparent)}.cmt .sp{flex:1}
+.cmt button{width:44px;height:44px;border:0;background:transparent;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0}
+.cmt button.on{background:rgba(255,255,255,.25);color:#FFD60A}.cmt button.on svg{fill:#FFD60A}
+.cmrec{position:absolute;top:calc(env(safe-area-inset-top,0px) + 16px);left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.5);padding:5px 14px;border-radius:16px;font-weight:700;font-size:15px}
+.cmrec i{width:10px;height:10px;border-radius:50%;background:#FF3B30;animation:cmblink 1s infinite}@keyframes cmblink{50%{opacity:.25}}
+.cmb{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 22px calc(24px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(0,0,0,.6))}
+.cmb p{margin:0;font-size:13px;opacity:.9;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.cmc{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:360px}
+.cms{width:50px;height:50px;border:0;border-radius:50%;background:rgba(0,0,0,.4);color:#fff;display:flex;align-items:center;justify-content:center;padding:0}
+.shut{position:relative;width:84px;height:84px;border:0;background:transparent;padding:0;touch-action:none;-webkit-tap-highlight-color:transparent}
+.shut svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.shut b{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:#fff;transition:transform .15s var(--ease),border-radius .15s,background .15s}
+.shut:active b{transform:scale(.88)}.shut.rec b{transform:scale(.55);border-radius:14px;background:#FF3B30}
+.cmb2{flex-direction:row;align-items:center}.cmb2 .sp{flex:1}
+.cmb2 .send{width:56px;height:56px}
+.cam .inv{visibility:hidden}
 </style>
 </head>
 <body>
@@ -502,7 +530,7 @@ const EM2='🥳 😻 🤗 🫶 🐱 🐶 🦊 🐼 🐻 🦄 🌈 💌 🍰 🧸
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const app=$('#app');
-const IC={back:'<path d="M15 18l-6-6 6-6"/>',x:'<path d="M18 6 6 18M6 6l12 12"/>',down:'<path d="M12 5v14M6 13l6 6 6-6"/>',pin:'<path d="M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z"/>',smile:'<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9.5h.01M15 9.5h.01"/>',clip:'<path d="m21 11-9 9a5 5 0 0 1-7-7l9-9a3.5 3.5 0 0 1 5 5l-9 9a2 2 0 0 1-3-3l8-8"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',play:'<path d="M7 4v16l13-8z" fill="currentColor"/>',pause:'<path d="M8 5v14M16 5v14"/>',reply:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v3"/>',copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',zoom:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',moon:'<path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>',more:'<circle cx="12" cy="5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="19" r="1.3"/>',ban:'<circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/>',send:'<path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',dl:'<path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/>',lock:'<rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',up:'<path d="M12 19V5M6 11l6-6 6 6"/>',eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',eyeoff:'<path d="M3 3l18 18M10.6 6.2A9.8 9.8 0 0 1 12 6c6 0 10 6 10 6a17 17 0 0 1-3.2 3.9M6.1 6.6A17 17 0 0 0 2 12s4 7 10 7a9.7 9.7 0 0 0 4-.9"/>',dots:'<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',rotate:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/>',crop:'<path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14"/>',pen:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
+const IC={back:'<path d="M15 18l-6-6 6-6"/>',x:'<path d="M18 6 6 18M6 6l12 12"/>',down:'<path d="M12 5v14M6 13l6 6 6-6"/>',pin:'<path d="M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z"/>',smile:'<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9.5h.01M15 9.5h.01"/>',clip:'<path d="m21 11-9 9a5 5 0 0 1-7-7l9-9a3.5 3.5 0 0 1 5 5l-9 9a2 2 0 0 1-3-3l8-8"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',play:'<path d="M7 4v16l13-8z" fill="currentColor"/>',pause:'<path d="M8 5v14M16 5v14"/>',reply:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v3"/>',copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',zoom:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',moon:'<path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>',more:'<circle cx="12" cy="5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="19" r="1.3"/>',ban:'<circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/>',send:'<path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',dl:'<path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/>',lock:'<rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',up:'<path d="M12 19V5M6 11l6-6 6 6"/>',eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',eyeoff:'<path d="M3 3l18 18M10.6 6.2A9.8 9.8 0 0 1 12 6c6 0 10 6 10 6a17 17 0 0 1-3.2 3.9M6.1 6.6A17 17 0 0 0 2 12s4 7 10 7a9.7 9.7 0 0 0 4-.9"/>',dots:'<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',rotate:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/>',crop:'<path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14"/>',pen:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',cam:'<path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/>',sticker:'<path d="M20 12V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6l8-8z"/><path d="M20 12h-4a2 2 0 0 0-2 2v6M8.5 9.5h.01M13.5 9.5h.01"/>',bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',gallery:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.8"/><path d="m21 15-5-5L5 21"/>'};
 const ic=(n,z=22,w=2)=>`<svg width="${z}" height="${z}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
 const TK='<svg width="17" height="11" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 9 6 13.5 15 2.5M10 11.5l2 2L22 2.5"/></svg>';
 let actx;function ping(){if(!P.snd)return;try{navigator.vibrate&&navigator.vibrate(40);actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime;o.connect(g);g.connect(actx.destination);o.frequency.value=880;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.25);o.start();o.stop(t+.26)}catch(e){}}
@@ -637,17 +665,16 @@ function showChat(){
    <div class="pinb hidden" id="pin"><span>${ic('pin',16)}</span><b id="pnt"></b></div><div class="msgs" id="msgs"><div class="sp"></div></div>
    <button type="button" class="dn hidden" id="dn" aria-label="Aşağı">${ic('down',20)}</button><div id="emo" class="emojis hidden"></div>
    <form class="composer" id="form" autocomplete="off"><div class="rpb hidden" id="rp"><div class="rpt"><b id="rpn"></b><span id="rpt"></span></div><button type="button" class="ib" id="rpx">${ic('x',18)}</button></div><div class="bar">
-    <div class="field"><button type="button" class="ib" id="eb" aria-label="Emoji">${ic('smile')}</button><textarea id="txt" rows="1" placeholder="Mesaj yaz" enterkeyhint="enter" aria-label="Mesaj"></textarea><button type="button" class="ib" id="ab" aria-label="Fotoğraf">${ic('clip')}</button><input type="file" id="fi" accept="image/*,video/*" multiple hidden></div><div class="recbox"><i class="rd"></i><span id="rt">0:00</span><button type="button" class="ib" id="rc" aria-label="İptal">${ic('trash')}</button></div>
+    <div class="field"><button type="button" class="ib" id="eb" aria-label="Daha fazla">${ic('more')}</button><textarea id="txt" rows="1" placeholder="Mesaj yaz" enterkeyhint="enter" aria-label="Mesaj"></textarea><button type="button" class="ib" id="ab" aria-label="Fotoğraf">${ic('clip')}</button><input type="file" id="fi" accept="image/*,video/*" multiple hidden><input type="file" id="fc" accept="image/*" capture="environment" hidden></div><div class="recbox"><i class="rd"></i><span id="rt">0:00</span><button type="button" class="ib" id="rc" aria-label="İptal">${ic('trash')}</button></div>
     <button class="send mic" id="mc" type="button" aria-label="Ses kaydet">${ic('mic')}</button><button class="send hidden" id="sd" type="submit" aria-label="Gönder"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button>
    </div></form></section>`;
   $('#cog').onclick=$('#who').onclick=openSettings;$('#back').onclick=()=>history.back();$('#cs').onclick=chatSearch;$('#pin').onclick=()=>room&&room.pin&&goto(room.pin.id);
   $('#dn').onclick=()=>{const b=$('#msgs');b.scrollTo({top:b.scrollHeight,behavior:'smooth'})};$('#msgs').onscroll=()=>{const b=$('#msgs');stick=b.scrollHeight-b.scrollTop-b.clientHeight<120;updDn()};$('#msgs').addEventListener('load',e=>{if(stick&&e.target.tagName==='IMG'){const b=$('#msgs');b.scrollTop=b.scrollHeight}},true);sigs.clear();
-  const fillEmo=()=>{$('#emo').innerHTML=`<div class="et"><button type="button" data-m="e" class="${emoMode==='e'?'on':''}">Emoji</button><button type="button" data-m="s" class="${emoMode==='s'?'on':''}">Çıkartma</button></div>`+(emoMode==='e'?EMOJIS:EM2).map(e=>`<button type="button" data-e="${e}">${e}</button>`).join('')};
+  const STK=[...new Set([...EM2,...EMOJIS])],fillEmo=()=>{$('#emo').innerHTML=STK.map(e=>`<button type="button" data-e="${e}">${e}</button>`).join('')};
   fillEmo();
-  $('#emo').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.m){emoMode=b.dataset.m;fillEmo();return}
-    if(emoMode==='s'){send({text:b.dataset.e,st:1});emojiOpen=false;$('#emo').classList.add('hidden')}
-    else{const t=$('#txt');t.value+=b.dataset.e;t.focus();t.dispatchEvent(new Event('input'))}};
-  $('#eb').onclick=()=>{emojiOpen=!emojiOpen;$('#emo').classList.toggle('hidden',!emojiOpen)};
+  $('#emo').onclick=e=>{const b=e.target.closest('button[data-e]');if(!b)return;send({text:b.dataset.e,st:1});emojiOpen=false;$('#emo').classList.add('hidden')};
+  $('#eb').onclick=()=>{if(emojiOpen){emojiOpen=false;$('#emo').classList.add('hidden');return}attachMenu()};
+  $('#fc').onchange=e=>{const fs=[...e.target.files];e.target.value='';if(fs.length)pickImgs(fs)};
   const box=$('#msgs'),sync=()=>{const h=$('#txt').value.trim();$('#sd').classList.toggle('hidden',!h);$('#mc').classList.toggle('hidden',!!h)};
   $('#txt').oninput=()=>{pingTyping();sync();grow();try{const dv=$('#txt').value;dv?localStorage.setItem('aurora.d.'+P.code,dv):localStorage.removeItem('aurora.d.'+P.code)}catch(e){}};
   try{const dv=localStorage.getItem('aurora.d.'+P.code);if(dv){$('#txt').value=dv;sync();grow()}}catch(e){}
@@ -829,7 +856,9 @@ function setReply(m){
 function clearReply(){replyTo=null;const r=$('#rp');r&&r.classList.add('hidden')}
 async function startRec(){
   try{
-    const st=await navigator.mediaDevices.getUserMedia({audio:true}),mr=new MediaRecorder(st,{audioBitsPerSecond:24000}),ch=[];
+    const st=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:false,noiseSuppression:false,autoGainControl:true}}),
+      mt=['audio/webm;codecs=opus','audio/mp4'].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t)),
+      mr=new MediaRecorder(st,mt?{mimeType:mt,audioBitsPerSecond:48000}:{audioBitsPerSecond:48000}),ch=[];
     const ac=new(window.AudioContext||window.webkitAudioContext)(),an=ac.createAnalyser(),buf=new Uint8Array(an.fftSize),lv=[];ac.createMediaStreamSource(st).connect(an);
     rec={mr,ch,t0:Date.now(),cancel:false,tick:setInterval(()=>{const s=Math.floor((Date.now()-rec.t0)/1000);$('#rt').textContent=fmtD(s);an.getByteTimeDomainData(buf);lv.push(Math.max(...buf.map(v=>Math.abs(v-128))));if(s>=60)stopRec(false)},250)};
     mr.ondataavailable=e=>ch.push(e.data);
@@ -849,7 +878,7 @@ function playAud(id,btn){
   const same=curBtn&&curBtn.dataset.a===id;
   if(cur){cur.pause();curBtn.innerHTML=ic('play',16);cur=curBtn=null;if(same)return}
   const m=msgs.find(x=>x.id===id);if(!m)return;
-  cur=new Audio(m.aud);curBtn=btn;btn.innerHTML=ic('pause',16);
+  cur=new Audio(m.aud);cur.volume=1;curBtn=btn;btn.innerHTML=ic('pause',16);
   const bars=()=>btn.parentNode.querySelectorAll('.wf i');
   cur.ontimeupdate=()=>{const b=bars(),n=Math.round(cur.currentTime/(m.dur||cur.duration||1)*b.length);b.forEach((x,i)=>x.classList.toggle('on',i<n))};
   cur.onended=()=>{btn.innerHTML=ic('play',16);bars().forEach(x=>x.classList.remove('on'));cur=curBtn=null};
@@ -1008,6 +1037,79 @@ function reactPicker(sel,cb){
   el.innerHTML=`<div class="shade" id="rps" style="z-index:34"></div><div class="rpk" role="dialog" aria-label="Tepki seç"><h2>Tepki seç</h2><div class="rpg">${ALLEMO.map(e=>`<button type="button" data-e="${e}" class="${sel.includes(e)?'on':''}">${e}</button>`).join('')}</div></div>`;
   app.appendChild(el);const close=layer(()=>rm(el));
   el.onclick=e=>{const b=e.target.closest('[data-e]');if(b){cb(b.dataset.e);close();return}if(e.target.id==='rps')close()};
+}
+
+function attachMenu(){
+  const el=document.createElement('div'),b=$('#eb').getBoundingClientRect(),a=app.getBoundingClientRect();
+  el.innerHTML=`<div class="apsh"></div><div class="apop" role="menu" style="left:${Math.max(8,b.left-a.left)}px;bottom:${a.bottom-b.top+8}px"><button type="button" data-k="cam">${ic('cam',22)}<span>Kamera</span></button><button type="button" data-k="st">${ic('sticker',22)}<span>Çıkartma</span></button></div>`;
+  app.appendChild(el);const close=layer(()=>rm(el));
+  el.onclick=e=>{const k=e.target.closest('[data-k]');close();if(!k)return;
+    if(k.dataset.k==='cam')setTimeout(openCamera,130);else{emojiOpen=true;$('#emo').classList.remove('hidden')}};
+}
+async function openCamera(){
+  if(!roomRef)return;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){toast('Kamera bu cihazda açılamadı');setTimeout(()=>$('#fc').click(),100);return}
+  const el=document.createElement('div');el.className='cam';
+  el.innerHTML=`<video id="cmv" playsinline muted autoplay></video>
+  <div class="cmt" id="cmt"><button type="button" id="cmx" aria-label="Kapat">${ic('x',26)}</button><span class="sp"></span><button type="button" id="cmf" class="hidden" aria-label="Flaş">${ic('bolt',24)}</button></div>
+  <div class="cmrec hidden" id="cmr"><i></i><span id="cmtm">0:00</span></div>
+  <div class="cmb" id="cmb"><p id="cmh">Fotoğraf için dokun, video için basılı tut</p>
+    <div class="cmc"><button type="button" class="cms" id="cmg" aria-label="Galeri">${ic('gallery',26)}</button>
+    <button type="button" class="shut" id="cms" aria-label="Çek"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="38" fill="none" stroke="#fff" stroke-width="4"/><circle id="cmp" cx="42" cy="42" r="38" fill="none" stroke="#FF3B30" stroke-width="5" stroke-linecap="round" stroke-dasharray="238.8" stroke-dashoffset="238.8" transform="rotate(-90 42 42)"/></svg><b></b></button>
+    <button type="button" class="cms" id="cmw" aria-label="Kamerayı çevir">${ic('rotate',26)}</button></div></div>
+  <div class="cmb cmb2 hidden" id="cmb2"><button type="button" class="cms" id="cmre" aria-label="Tekrar çek">${ic('x',26)}</button><span class="sp"></span><button type="button" class="send" id="cmsd" aria-label="Gönder">${ic('send',22)}</button></div>`;
+  app.appendChild(el);barTo('#000000',true);
+  const v=$('#cmv',el),sh=$('#cms',el),MAXV=30;
+  let facing='environment',stream=null,track=null,torch=false,mr=null,chunks=[],isRec=false,t0=0,tick=null,holdT=null,down=false,vfile=null,vurl='',vdur=0,gone=false;
+  const stopS=()=>{try{stream&&stream.getTracks().forEach(t=>t.stop())}catch(e){}stream=null;track=null};
+  const close=layer(()=>{gone=true;clearTimeout(holdT);clearInterval(tick);try{if(mr&&mr.state!=='inactive'){mr.onstop=null;mr.stop()}}catch(e){}stopS();if(vurl)try{URL.revokeObjectURL(vurl)}catch(e){}rm(el);barBack()});
+  const start=async()=>{
+    stopS();v.srcObject=null;
+    const vc={facingMode:{ideal:facing},width:{ideal:1280},height:{ideal:720}};
+    try{try{stream=await navigator.mediaDevices.getUserMedia({video:vc,audio:{echoCancellation:true,noiseSuppression:true}})}catch(e){stream=await navigator.mediaDevices.getUserMedia({video:vc,audio:false})}}
+    catch(e){if(gone)return;close();toast('Kamera izni verilmedi');return}
+    if(gone){stopS();return}
+    v.srcObject=stream;v.muted=true;v.classList.toggle('mir',facing==='user');v.play().catch(()=>{});
+    track=stream.getVideoTracks()[0];torch=false;$('#cmf',el).classList.remove('on');
+    let cp={};try{cp=track.getCapabilities?track.getCapabilities():{}}catch(e){}
+    $('#cmf',el).classList.toggle('hidden',!cp.torch);
+  };
+  const snap=()=>{
+    const w=v.videoWidth,h=v.videoHeight;if(!w||!h)return;
+    const k=Math.min(1,1280/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);
+    const x=c.getContext('2d');if(facing==='user'){x.translate(c.width,0);x.scale(-1,1)}
+    x.drawImage(v,0,0,c.width,c.height);const u=c.toDataURL('image/jpeg',.85);
+    close();setTimeout(()=>previewImgs([u]),160);
+  };
+  const ui=r=>{isRec=r;$('#cmr',el).classList.toggle('hidden',!r);$('#cmh',el).classList.toggle('hidden',r);$('#cmg',el).classList.toggle('inv',r);$('#cmw',el).classList.toggle('inv',r);$('#cmx',el).classList.toggle('hidden',r);sh.classList.toggle('rec',r);if(!r)$('#cmp',el).style.strokeDashoffset=238.8};
+  const startVid=()=>{
+    if(!stream||!window.MediaRecorder)return;
+    const mt=['video/webm;codecs=vp8,opus','video/webm;codecs=vp8','video/webm','video/mp4'].find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t));
+    try{mr=new MediaRecorder(stream,mt?{mimeType:mt,videoBitsPerSecond:900000,audioBitsPerSecond:48000}:{})}catch(e){toast('Video kaydı desteklenmiyor');return}
+    chunks=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+    mr.onstop=()=>{
+      clearInterval(tick);const d=(Date.now()-t0)/1000;ui(false);
+      if(d<.8||!chunks.length)return;
+      const type=(mr.mimeType||'video/webm').split(';')[0];vdur=Math.round(d);
+      vfile=new File(chunks,'kamera.'+(type.includes('mp4')?'mp4':'webm'),{type});
+      vurl=URL.createObjectURL(vfile);stopS();v.srcObject=null;v.classList.remove('mir');v.src=vurl;v.muted=false;v.loop=true;v.play().catch(()=>{});
+      ['cmt','cmb'].forEach(i=>$('#'+i,el).classList.add('hidden'));$('#cmb2',el).classList.remove('hidden');
+    };
+    mr.start(500);t0=Date.now();ui(true);
+    tick=setInterval(()=>{const s=(Date.now()-t0)/1000;$('#cmtm',el).textContent=fmtD(Math.floor(s));$('#cmp',el).style.strokeDashoffset=238.8*(1-Math.min(1,s/MAXV));if(s>=MAXV)stopVid()},100);
+  };
+  const stopVid=()=>{try{mr&&mr.state==='recording'&&mr.stop()}catch(e){}};
+  sh.oncontextmenu=e=>e.preventDefault();
+  sh.onpointerdown=e=>{e.preventDefault();down=true;try{sh.setPointerCapture(e.pointerId)}catch(_){}holdT=setTimeout(()=>{if(down)startVid()},380)};
+  sh.onpointerup=()=>{if(!down)return;down=false;clearTimeout(holdT);if(isRec)stopVid();else snap()};
+  sh.onpointercancel=()=>{down=false;clearTimeout(holdT);if(isRec)stopVid()};
+  $('#cmx',el).onclick=close;
+  $('#cmg',el).onclick=()=>{close();setTimeout(()=>$('#fi').click(),160)};
+  $('#cmw',el).onclick=()=>{facing=facing==='user'?'environment':'user';start()};
+  $('#cmf',el).onclick=async e=>{torch=!torch;try{await track.applyConstraints({advanced:[{torch}]});e.currentTarget.classList.toggle('on',torch)}catch(_){torch=false;toast('Flaş açılamadı')}};
+  $('#cmre',el).onclick=()=>{try{URL.revokeObjectURL(vurl)}catch(e){}vurl='';vfile=null;v.removeAttribute('src');v.loop=false;$('#cmb2',el).classList.add('hidden');['cmt','cmb'].forEach(i=>$('#'+i,el).classList.remove('hidden'));start()};
+  $('#cmsd',el).onclick=()=>{const f=vfile,d=vdur;if(!f)return;close();setTimeout(()=>sendVideo(f,d),160)};
+  start();
 }
 async function previewImgs(list){
   const load=u=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src=u});
@@ -1239,7 +1341,7 @@ function recompress(v,dur){return new Promise((ok,no)=>{
   v.onended=()=>{if(mr.state!=='inactive')mr.stop()};setTimeout(()=>{if(mr.state!=='inactive')mr.stop()},dur*1000+6000);
   v.currentTime=0;v.muted=false;mr.start(500);v.play().catch(no);
 })}
-async function sendVideo(f){
+async function sendVideo(f,kd){
   if(!roomRef)return;
   if(navigator.onLine===false)return toast('Video göndermek için internet gerekli.');
   const code=P.code;let blob=f;
@@ -1247,7 +1349,8 @@ async function sendVideo(f){
     prog('Video hazırlanıyor…');
     const v=document.createElement('video');v.muted=true;v.playsInline=true;v.preload='auto';v.src=URL.createObjectURL(f);
     await new Promise((ok,no)=>{v.onloadedmetadata=ok;v.onerror=no});
-    const dur=Math.round(v.duration||0);
+    if(!isFinite(v.duration)){await new Promise(r=>{const t=setTimeout(r,1500);v.ontimeupdate=()=>{v.ontimeupdate=null;clearTimeout(t);r()};v.currentTime=1e7});v.currentTime=0;await new Promise(r=>{const t=setTimeout(r,800);v.onseeked=()=>{clearTimeout(t);r()}})}
+    let dur=Math.round(isFinite(v.duration)?v.duration:0);if(!dur&&kd)dur=Math.round(kd);
     if(!v.videoWidth){prog('');return toast('Bu video biçimi desteklenmiyor.')}
     if(dur>30){prog('');return toast('Video en fazla 30 saniye olabilir.')}
     v.currentTime=Math.min(.3,v.duration/2);await new Promise(r=>v.onseeked=r);
