@@ -29,8 +29,11 @@ jobs:
           cp icon-only.png icon-foreground.png icon-background.png assets/
           npx --yes @capacitor/assets@3 generate --android
       - run: npx cap sync android
-      - name: Mikrofon izni
-        run: sed -i 's|</manifest>|<uses-permission android:name="android.permission.RECORD_AUDIO"/><uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/></manifest>|' android/app/src/main/AndroidManifest.xml
+      - name: Kamera ve mikrofon izni
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          sed -i 's|</manifest>|<uses-permission android:name="android.permission.CAMERA"/><uses-permission android:name="android.permission.RECORD_AUDIO"/><uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/><uses-feature android:name="android.hardware.camera" android:required="false"/></manifest>|' $M
+          grep -E "CAMERA|RECORD_AUDIO" $M
       - name: APK derle
         run: cd android && chmod +x gradlew && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
