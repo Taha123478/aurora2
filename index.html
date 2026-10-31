@@ -390,6 +390,15 @@ body.pg #chat,body.pg #home{visibility:hidden}
 .edb .eo{width:46px;height:46px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;padding:0;flex:none}
 .ed .in{background:rgba(255,255,255,.16)!important;color:#fff!important;flex:1;height:46px;border-radius:23px;padding:0 16px}
 .ed .in::placeholder{color:rgba(255,255,255,.6)}
+.edb .eo{position:relative;transition:background .15s,color .15s}
+.edb .eo.on{background:var(--sun);color:var(--ink);box-shadow:0 0 0 2px #fff}
+.edb .eo.on::after{content:"1";position:absolute;right:-3px;top:-3px;width:20px;height:20px;border-radius:50%;background:#34C759;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #000}
+/* dialog: always readable, buttons full width (also outside #app) */
+.dlg .in{background:rgba(0,0,0,.07)!important;color:var(--fg,#2B1208)!important;height:48px;border-radius:24px;padding:0 16px;font-size:16px;width:100%}
+.dlg .in::placeholder{color:var(--mut,#8A6A5A)}
+.dlg .row{display:flex;gap:10px;width:100%}
+.dlg .row button{flex:1!important;height:48px!important;min-width:0;padding:0 14px!important;border-radius:24px;border:0;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.dlg .btn2{background:rgba(0,0,0,.08);color:var(--fg,#2B1208)}
 .ed .btn2{background:rgba(255,255,255,.16);color:#fff;flex:none;height:42px;padding:0 14px}
 #edc{overflow-x:auto}
 /* v21: yeni tasarım (sadece düz renk, blur ve ek animasyon yok) */
@@ -959,7 +968,7 @@ async function previewImgs(list){
   <div class="edp hidden" id="epal"></div><div class="edth hidden" id="eth"></div>
   <div class="edb" id="edb"><button type="button" class="eo" id="eo" aria-label="Tek seferlik">${ic('eye',22)}</button><input class="in" id="ecap" maxlength="200" placeholder="Açıklama ekle…" autocomplete="off"><button type="button" class="send" id="esd" aria-label="Gönder">${ic('send',22)}</button></div>
   <div class="edb hidden" id="edc"><button type="button" class="btn2" data-a="0">Serbest</button><button type="button" class="btn2" data-a="1">1:1</button><button type="button" class="btn2" data-a="0.8">4:5</button><button type="button" class="btn2" id="ecx">İptal</button><button type="button" class="cta" id="eok" style="flex:none;width:auto;padding:0 22px">Uygula</button></div>`;
-  app.appendChild(el);const close=layer(()=>rm(el));
+  app.appendChild(el);barTo('#000000',true);const close=layer(()=>{rm(el);barBack()});
   const cv=$('#ecv',el),cx=cv.getContext('2d'),vw=$('.edv',el),crp=$('#crp',el),it=()=>items[cur];
   const paint=(ctx,W,H,x=it())=>{const s=W/x.base.width;ctx.clearRect(0,0,W,H);ctx.drawImage(x.base,0,0,W,H);ctx.lineCap='round';ctx.lineJoin='round';
     for(const o of x.ops){if(o.k==='s'){ctx.strokeStyle=o.c;ctx.lineWidth=o.w*s;ctx.beginPath();o.p.forEach(([a,b],i)=>i?ctx.lineTo(a*s,b*s):ctx.moveTo(a*s,b*s));if(o.p.length===1)ctx.lineTo(o.p[0][0]*s+.1,o.p[0][1]*s);ctx.stroke()}
@@ -970,7 +979,7 @@ async function previewImgs(list){
   const setBase=c=>{const i=it();i.hist.push({base:i.base,ops:i.ops});i.base=c;i.ops=[];sel=null;fit();thumbs()};
   const thumbs=()=>{const t=$('#eth',el);t.classList.toggle('hidden',items.length<2||mode==='crop');if(items.length<2)return;
     t.innerHTML=items.map((x,i)=>{const c=document.createElement('canvas');c.width=c.height=96;const b=x.base,m=Math.min(b.width,b.height);c.getContext('2d').drawImage(b,(b.width-m)/2,(b.height-m)/2,m,m,0,0,96,96);return `<div class="${i===cur?'on':''}" data-i="${i}"><img src="${c.toDataURL('image/jpeg',.5)}" alt=""><button type="button" class="x" data-x="${i}" aria-label="Kaldır">${ic('x',12)}</button></div>`}).join('')};
-  const ui=()=>{$('#ed2',el).classList.toggle('on',mode==='draw');$('#et',el).classList.toggle('on',mode==='text');$('#eo',el).classList.toggle('on',once);
+  const ui=()=>{$('#ed2',el).classList.toggle('on',mode==='draw');$('#et',el).classList.toggle('on',mode==='text');$('#eo',el).classList.toggle('on',once);$('#eo',el).setAttribute('aria-pressed',once);$('#ecap',el).placeholder=once?'Tek seferlik · açıklama ekle…':'Açıklama ekle…';
     const pal=$('#epal',el);pal.classList.toggle('hidden',mode!=='draw'&&mode!=='text');
     pal.innerHTML=COL.map(c=>`<b data-c="${c}" class="${c===col?'on':''}" style="background:${c}"></b>`).join('')+(mode==='draw'?[0,1,2].map(i=>`<u data-s="${i}" class="${i===bw?'on':''}"><i style="width:${6+i*5}px;height:${6+i*5}px"></i></u>`).join(''):'<button type="button" data-z="-1">A−</button><button type="button" data-z="1">A+</button>');
     $('#edb',el).classList.toggle('hidden',mode==='crop');$('#edc',el).classList.toggle('hidden',mode!=='crop');crp.classList.toggle('hidden',mode!=='crop');thumbs()};
@@ -1018,6 +1027,8 @@ function grow(){const t=$('#txt');if(!t)return;t.style.height='auto';t.style.hei
 function switchRoom(code){P.code=code;save();setDoc(doc(db,'users',uid),{name:P.name||'',code}).catch(()=>{});openChat(code)}
 function viewer(id){const L=viewList().filter(m=>m.img&&!m.once&&!m.del),ix=L.findIndex(m=>m.id===id);if(ix>=0)viewerOpen(L.map(m=>bsrc(m.id,m.img)),ix)}
 function viewOnce(id){const m=msgs.find(x=>x.id===id);if(!m||!m.img)return;viewerOpen([bsrc(m.id,m.img)],0,()=>updateDoc(doc(roomRef,'messages',id),{img:deleteField(),opened:true}).catch(()=>{}))}
+function barTo(c,dark){try{const m=document.getElementById('tc');if(m)m.content=c;if(CPl&&CPl.StatusBar){CPl.StatusBar.setBackgroundColor({color:c});CPl.StatusBar.setStyle({style:dark?'DARK':'LIGHT'})}}catch(e){}}
+function barBack(){try{setBar(P.wall)}catch(e){}}
 function immersive(on){
   try{if(CPl&&CPl.StatusBar){on?CPl.StatusBar.hide():CPl.StatusBar.show();return}}catch(e){}
   try{const d=document.documentElement;if(on){const r=d.requestFullscreen||d.webkitRequestFullscreen;if(r){const p=r.call(d);p&&p.catch&&p.catch(()=>{})}}
@@ -1039,8 +1050,8 @@ function viewerOpen(srcs,i0,onClose){
     if(p.length>1){g.d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)||1;[g.mx,g.my]=rel((p[0].x+p[1].x)/2,(p[0].y+p[1].y)/2)}
     else if(p.length){g.x=p[0].x;g.y=p[0].y}};
   let closing=0;const fsx=()=>{if(!closing&&!document.fullscreenElement&&!document.webkitFullscreenElement)close()};
-  show();const close=layer(()=>{closing=1;document.removeEventListener('fullscreenchange',fsx);immersive(false);rm(el);onClose&&onClose()});$('.vx',el).onclick=close;
-  immersive(true);setTimeout(()=>{if(!closing)document.addEventListener('fullscreenchange',fsx)},400);
+  show();const close=layer(()=>{closing=1;document.removeEventListener('fullscreenchange',fsx);immersive(false);barBack();rm(el);onClose&&onClose()});$('.vx',el).onclick=close;
+  barTo('#000000',true);immersive(true);setTimeout(()=>{if(!closing)document.addEventListener('fullscreenchange',fsx)},400);
   el.addEventListener('pointerdown',e=>{if(e.target.closest('.vx'))return;ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});
     try{el.setPointerCapture(e.pointerId)}catch(_){}img.style.transition='none';tap=ptr.size===1;begin();if(ptr.size>1)g.mode='p'});
   el.addEventListener('pointermove',e=>{if(!g||!ptr.has(e.pointerId))return;ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});const p=[...ptr.values()];
