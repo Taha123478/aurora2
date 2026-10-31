@@ -392,6 +392,31 @@ body.pg #chat,body.pg #home{visibility:hidden}
 .ed .in::placeholder{color:rgba(255,255,255,.6)}
 .ed .btn2{background:rgba(255,255,255,.16);color:#fff;flex:none;height:42px;padding:0 14px}
 #edc{overflow-x:auto}
+/* v21: yeni tasarım (sadece düz renk, blur ve ek animasyon yok) */
+#app .hbody{padding:8px 0;gap:0}
+#app .hc{background:transparent;border-radius:0;padding:10px 20px;gap:14px}
+#app .hc:active{background:var(--sur);transform:none}
+#app #addr{margin:12px 20px;width:auto;align-self:stretch}
+#app .hbody>.sub{padding:16px 20px}
+#app .m.in .bub{border-radius:20px 20px 20px 6px}
+#app .m.out .bub{border-radius:20px 20px 6px 20px}
+#app .send.mic{background:var(--fg);color:var(--bg)}
+#app .recording #mc{background:#D03A3A;color:#fff}
+#app .card{background:transparent;padding:0;gap:8px}
+#app .card label:not(:first-child){margin-top:8px}
+#app .card .in{background:var(--sur);height:52px;border-radius:26px;padding:0 20px}
+#app .pw .in{padding-right:52px}
+#app .cta{height:54px;border-radius:27px}
+#app .walls{grid-template-columns:repeat(4,1fr);gap:14px 10px}
+#app .wall .pv{width:56px;height:56px;border-radius:18px}
+#app .sw{width:44px;height:44px}
+#app .bubs{gap:16px}
+.pcard{display:flex;align-items:center;gap:16px;padding:16px;border-radius:24px;background:var(--sur)}
+.pcard .av{width:64px;height:64px;font-size:24px;flex:none}
+.pcard .pm{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.pcard .pm b{font-size:17px;font-weight:700}
+.pcard .pm span{font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#app .pcard .btn2{flex:none;height:40px;padding:0 16px;font-size:13px;background:var(--bg)}
 </style>
 </head>
 <body>
@@ -466,7 +491,7 @@ function joinScreen(msg,can){
   layers.length=0;view='auth';setBar(P.wall);
   app.innerHTML=`<section class="scr sun fade"><div class="center stag">
    <div class="logo" style="--i:0;width:72px;height:72px;font-size:34px;border-radius:24px">A</div>
-   <h1 class="big" style="--i:1;font-size:30px">Odaya katıl</h1>
+   <h1 class="big" style="--i:1;font-size:30px">Odaya katıl</h1><p class="sub">İkiniz de aynı kodu yazın, oda sadece size açılır.</p>
    <form class="card" id="jf" style="--i:2" autocomplete="off">
     <label for="nm">Adın</label><input class="in" id="nm" maxlength="24" placeholder="Örn. Ada" value="${esc(P.name||'')}" required>
     <label for="cd">Ortak kod (8+ karakter, ikiniz de aynısını yazın)</label><input class="in" id="cd" minlength="8" maxlength="40" placeholder="Örn. mavi-kedi-2026" value="${can?'':esc(P.code||'')}" required autocapitalize="off" spellcheck="false">
@@ -487,7 +512,7 @@ function authScreen(msg,mode,em0){
   mode=mode||'in';const reg=mode==='reg',cu=auth&&auth.currentUser;
   app.innerHTML=`<section class="scr sun fade"><div class="center stag">
    <div class="logo" style="--i:0;width:72px;height:72px;font-size:34px;border-radius:24px">A</div>
-   <h1 class="big" style="--i:1;font-size:30px">${reg?'Hesap oluştur':'Giriş yap'}</h1>
+   <h1 class="big" style="--i:1;font-size:30px">${reg?'Hesap oluştur':'Giriş yap'}</h1><p class="sub">Sadece ikimiz için</p>
    <form class="card" id="af" style="--i:2">
     <label for="em">E-posta</label><input class="in" id="em" type="email" autocomplete="email" value="${esc(em0||'')}" required autocapitalize="off">
     <label for="pw">Şifre${reg?' (en az 6 karakter)':''}</label><input class="in" id="pw" type="password" minlength="6" autocomplete="${reg?'new-password':'current-password'}" required>
@@ -801,11 +826,12 @@ function openSettings(){
   const el=document.createElement('div');
   el.innerHTML=`<div class="shade" id="sh"></div><div class="sheet" role="dialog" aria-label="Ayarlar">
    <h2>Ayarlar</h2>
+   <div class="pcard"><span class="av">${avh(uid,P.name)}</span><span class="pm"><b>${esc(P.name||'')}</b><span>${esc((auth.currentUser&&auth.currentUser.email)||'')}</span></span><button class="btn2" id="nm2">Düzenle</button></div>
    <h3>Tema</h3>
    <div class="walls">${Object.entries(WALLS).map(([k,w])=>`<button class="wall ${P.wall===k?'on':''}" data-w="${k}"><span class="pv" style="background:${w.pv||w.bg}"></span>${w.n}</button>`).join('')}</div>
    <h3>Vurgu rengi</h3>
    <div class="bubs">${Object.entries(BUB).map(([k,b])=>`<button class="sw ${P.bubble===k?'on':''}" data-b="${k}" style="background:${b[1]}" aria-label="${b[0]}"></button>`).join('')}</div>
-   <h3>Tema</h3>
+   <h3>Görünüm</h3>
    <div class="row"><button class="btn2" id="th">${P.theme==='light'?ic('sun',18)+' Açık tema':ic('moon',18)+' Koyu tema'}</button></div>
    <h3>Yazı boyutu</h3>
    <div class="row" id="fs">${[['Küçük','s'],['Normal','m'],['Büyük','l']].map(([n,v])=>`<button class="btn2${P.fs===v?' on2':''}" data-fs="${v}">${n}</button>`).join('')}</div>
@@ -813,14 +839,11 @@ function openSettings(){
    <div class="row"><button class="btn2${P.snd?' on2':''}" id="sn">${P.snd?'Açık':'Kapalı'}</button></div>
    <h3>Uygulama kilidi</h3>
    <div class="row"><button class="btn2${pinOn()?' on2':''}" id="pl">${pinOn()?'PIN açık · Kapat':'PIN koy'}</button></div>
-   <h3>Profil</h3>
-   <div class="row"><button class="btn2" id="nm2">Profili düzenle</button></div>
    <h3>Kaybolan mesajlar</h3>
    <div class="row" id="tt">${[['Kapalı',0],['1 saat',3600],['1 gün',86400]].map(([n,v])=>`<button class="btn2${((room&&room.ttl)||0)===v?' on2':''}" data-ttl="${v}">${n}</button>`).join('')}</div>
    <h3>Yedek</h3>
    <div class="row"><button class="btn2" id="bk">Yedeği indir (.txt)</button></div>
    <h3>Hesap</h3>
-   <p class="code">${esc((auth.currentUser&&auth.currentUser.email)||'')}</p>
    <div class="row"><button class="btn2 danger" id="lo">Hesaptan çık</button></div>
    <h3>Oda</h3>
    <p class="code">Kod: ${esc(P.code||'')}</p>
