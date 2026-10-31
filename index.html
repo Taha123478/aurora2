@@ -473,7 +473,7 @@ const ic=(n,z=22,w=2)=>`<svg width="${z}" height="${z}" viewBox="0 0 24 24" fill
 const TK='<svg width="17" height="11" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 9 6 13.5 15 2.5M10 11.5l2 2L22 2.5"/></svg>';
 let actx;function ping(){if(!P.snd)return;try{navigator.vibrate&&navigator.vibrate(40);actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime;o.connect(g);g.connect(actx.destination);o.frequency.value=880;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.25);o.start();o.stop(t+.26)}catch(e){}}
 const BAR={sunset:'#FFB65C',dawn:'#FFE3A8',flame:'#FF8A3D',rose:'#FFC2D4',night:'#120C10',borealis:'#9CF2D0',ocean:'#8EE3F5',forest:'#C8F0A0',lavender:'#E8D4FF',peach:'#FFE0C2'};
-const CPl=(()=>{const C=window.Capacitor;if(!C)return null;const o={};['StatusBar','App'].forEach(n=>{let q=C.Plugins&&C.Plugins[n];if(!q&&C.registerPlugin){try{q=C.registerPlugin(n)}catch(e){}}if(q&&(!C.isPluginAvailable||C.isPluginAvailable(n)))o[n]=q});return o})();
+const CPl=(()=>{const C=window.Capacitor;if(!C)return null;const o={};['StatusBar','App','Filesystem','Share'].forEach(n=>{let q=C.Plugins&&C.Plugins[n];if(!q&&C.registerPlugin){try{q=C.registerPlugin(n)}catch(e){}}if(q&&(!C.isPluginAvailable||C.isPluginAvailable(n)))o[n]=q});return o})();
 const setBar=k=>{const c=(WALLS[k]||WALLS.white).bg,m=document.getElementById('tc');if(m)m.content=c;document.documentElement.style.background=c;
   try{if(CPl&&CPl.StatusBar){CPl.StatusBar.setOverlaysWebView({overlay:false});CPl.StatusBar.setBackgroundColor({color:c});CPl.StatusBar.setStyle({style:(WALLS[k]||{}).dark?'DARK':'LIGHT'})}}catch(e){}};
 const applyFs=()=>document.documentElement.style.setProperty('--fs',({s:'13px',m:'15px',l:'18px'})[P.fs]||'15px');
@@ -594,6 +594,7 @@ function openChat(code,toChat){
 }
 function showChat(){
   if(view!=='chat')history.pushState({v:'chat'},'');
+  view='chat';
   const w=wallStyle();
   app.innerHTML=`<section class="${w.cls} slide" id="chat" style="${w.style}">
    <header class="top"><button class="rb" id="back" aria-label="Geri">${ic('back')}</button><button class="who" id="who" aria-label="Ayarlar"><span class="av" id="av">?</span><span style="min-width:0"><b id="wn">Bekleniyor…</b><small id="ws">Arkadaşın koduyla katılmasını bekle</small></span></button>
@@ -824,7 +825,7 @@ function zoom(src){const z=document.createElement('div');z.className='shade zm';
 function openMenu(id){
   const m=msgs.find(x=>x.id===id);if(!m||m.del)return;
   const mine=canon(m.from)===canon(uid),el=document.createElement('div');let mrs=[].concat((m.rx||{})[uid]||[]);
-  el.innerHTML=`<div class="shade" id="mh"></div><div class="ctx"><div class="rxr">${['❤️','😂','😮','😢','👍','🔥'].map((e,i)=>`<button data-r="${e}" style="--i:${i}" class="${mrs.includes(e)?'on':''}">${e}</button>`).join('')}<button data-more="1" aria-label="Tüm emojiler">${ic('dots',22)}</button></div><button data-x="re">${ic('reply',20)} Yanıtla</button>${m.text?'<button data-x="cp">'+ic('copy',20)+' Kopyala</button>':''}${m.img?'<button data-x="zm">'+ic('zoom',20)+' Büyüt</button><button data-x="dw">'+ic('dl',20)+' Kaydet</button>':''}${mine&&m.text?'<button data-x="ed">'+ic('edit',20)+' Düzenle</button>':''}<button data-x="pn">${ic('pin',20)} ${room.pin&&room.pin.id===id?'Sabiti kaldır':'Sabitle'}</button>${mine?'<button data-x="dl" class="danger">'+ic('trash',20)+' Sil</button>':''}</div>`;
+  el.innerHTML=`<div class="shade" id="mh"></div><div class="ctx"><div class="rxr">${['❤️','😂','😮','😢','👍','🔥'].map((e,i)=>`<button data-r="${e}" style="--i:${i}" class="${mrs.includes(e)?'on':''}">${e}</button>`).join('')}<button data-more="1" aria-label="Tüm emojiler">${ic('dots',22)}</button></div><button data-x="re">${ic('reply',20)} Yanıtla</button>${m.text?'<button data-x="cp">'+ic('copy',20)+' Kopyala</button>':''}${m.img?'<button data-x="zm">'+ic('zoom',20)+' Büyüt</button><button data-x="dw">'+ic('dl',20)+' Kaydet</button>':''}${m.vid?'<button data-x="dv">'+ic('dl',20)+' Kaydet</button>':''}${mine&&m.text?'<button data-x="ed">'+ic('edit',20)+' Düzenle</button>':''}<button data-x="pn">${ic('pin',20)} ${room.pin&&room.pin.id===id?'Sabiti kaldır':'Sabitle'}</button>${mine?'<button data-x="dl" class="danger">'+ic('trash',20)+' Sil</button>':''}</div>`;
   app.appendChild(el);const closeL=layer(()=>rm(el));
   const ref=doc(roomRef,'messages',id),fail=()=>toast('İşlem yapılamadı. Tekrar dene.');
   const toggleRx=v=>{const st=new Set(mrs);st.has(v)?st.delete(v):st.add(v);mrs=[...st];updateDoc(ref,{['rx.'+uid]:mrs.length?mrs:deleteField()}).catch(fail)};
@@ -838,7 +839,8 @@ function openMenu(id){
       if(k==='re')setReply(m);
       else if(k==='cp'){navigator.clipboard&&navigator.clipboard.writeText(m.text).then(()=>toast('Kopyalandı')).catch(()=>{})}
       else if(k==='zm')viewer(id);
-      else if(k==='dw'){const a=document.createElement('a');a.href=m.img;a.download='aurora-'+id+'.jpg';document.body.appendChild(a);a.click();a.remove()}
+      else if(k==='dw')saveMedia(m.img,'aurora-'+id+'.jpg');
+      else if(k==='dv'){vidURL(id).then(u=>{if(u)saveMedia(u,'aurora-'+id+(/mp4/.test(m.vm||'')?'.mp4':'.webm'))})}
       else if(k==='ed'){ask('Mesajı düzenle',{input:m.text,ok:'Kaydet'}).then(t=>{if(t&&t.trim()&&t!==m.text)updateDoc(ref,{text:t.trim(),edited:true}).catch(fail)})}
       else if(k==='pn')updateDoc(roomRef,{pin:room.pin&&room.pin.id===id?deleteField():{id,t:(m.text||(m.vid?'Video':m.img?'Fotoğraf':'Ses mesajı')).slice(0,60)}}).catch(fail);
       else if(k==='dl')ask('Mesaj herkesten silinsin mi?',{ok:'Sil',danger:1}).then(y=>{if(y)updateDoc(ref,{del:true,text:deleteField(),img:deleteField(),aud:deleteField(),vid:deleteField(),vp:deleteField(),re:deleteField(),rx:deleteField()}).catch(fail)});
@@ -1204,6 +1206,33 @@ async function sendVideo(f){
     await setDoc(doc(db,'rooms',code,'messages',id),d);prog('');
   }catch(e){console.error(e);prog('');toast('Video gönderilemedi. Tekrar dene.')}
 }
+async function vidURL(id){
+  let url=VBL.get(id);if(url)return url;
+  const m=msgs.find(x=>x.id===id);if(!m||!m.vid)return '';
+  if(navigator.onLine===false){toast('Videoyu kaydetmek için internet gerekli.');return ''}
+  try{
+    const parts=[];
+    for(let i=0;i<m.vn;i++){prog('Video indiriliyor %'+Math.round(i/m.vn*100));const sn=await getDoc(doc(roomRef,'messages',id,'c',String(i)));if(!sn.exists())throw new Error('chunk');parts.push(sn.data().d)}
+    const bin=atob(parts.join('')),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
+    url=URL.createObjectURL(new Blob([u8],{type:m.vm}));VBL.set(id,url);
+  }catch(e){console.error(e);toast('Video indirilemedi.');url=''}
+  prog('');return url;
+}
+async function saveMedia(src,name){
+  if(!src)return;
+  const FS=CPl&&CPl.Filesystem,SH=CPl&&CPl.Share;
+  if(FS&&SH){
+    try{
+      let b64;
+      if(src.slice(0,5)==='data:')b64=src.slice(src.indexOf(',')+1);
+      else{const u=await toURL(await (await fetch(src)).blob());b64=u.slice(u.indexOf(',')+1)}
+      const r=await FS.writeFile({path:name,data:b64,directory:'CACHE'});
+      await SH.share({title:'Aurora',dialogTitle:'Kaydet',files:[r.uri]});
+    }catch(e){if(!/cancel/i.test(String(e&&e.message||e))){console.error(e);toast('Kaydedilemedi.')}}
+    return;
+  }
+  const a=document.createElement('a');a.href=src;a.download=name;document.body.appendChild(a);a.click();a.remove();
+}
 async function playVid(id,btn){
   const m=msgs.find(x=>x.id===id);if(!m||!m.vid)return;
   let url=VBL.get(id);
@@ -1244,8 +1273,8 @@ function exitTry(){
 function atBase(){if(!exitTry())history.pushState({s:1},'')}
 function hwBack(){
   if(document.querySelector('.lock'))return;
-  if(layers.length){layers.pop().fn();return}
-  if(view==='chat'||(view==='auth'&&joinCan&&room)){showHome();return}
+  if(layers.length){exitT=0;layers.pop().fn();return}
+  if(view==='chat'||(view==='auth'&&joinCan&&room)){exitT=0;showHome();return}
   exitTry();
 }
 try{if(CPl&&CPl.App&&CPl.App.addListener)CPl.App.addListener('backButton',hwBack)}catch(e){}
