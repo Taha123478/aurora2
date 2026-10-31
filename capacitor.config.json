@@ -1,5 +1,17 @@
 {
   "appId": "com.aurora.chat",
   "appName": "Aurora",
-  "webDir": "www"
+  "webDir": "www",
+  "loggingBehavior": "none",
+  "android": {
+    "backgroundColor": "#FAFAF7",
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "StatusBar": {
+      "overlaysWebView": false,
+      "style": "LIGHT",
+      "backgroundColor": "#FAFAF7"
+    }
+  }
 }
