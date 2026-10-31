@@ -328,6 +328,10 @@ body.pg #chat,body.pg #home{visibility:hidden}
 .vx{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);left:10px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(0,0,0,.45);color:#fff;display:flex;align-items:center;justify-content:center;z-index:2;padding:0}
 .vc{position:absolute;top:calc(env(safe-area-inset-top,0px) + 22px);right:16px;color:#fff;font-size:14px;font-weight:600;z-index:2}
 #addr{align-self:center;margin-top:8px}
+.vbtn{position:relative;display:block;border:0;padding:0;background:#000;border-radius:18px;overflow:hidden;width:230px;max-width:62vw;min-height:120px}
+.vpost{display:block;width:100%;max-height:320px;object-fit:cover;opacity:.85}
+.vplay{position:absolute;inset:0;margin:auto;width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px}
+.vdur{position:absolute;left:10px;bottom:8px;color:#fff;font-size:12px;font-weight:700;text-shadow:0 1px 3px #000}.vbtn.ld .vplay{animation:pulse 1s infinite}
 /* v18: akıcı, hafif animasyonlar (sadece transform/opacity) */
 :root{--ease:cubic-bezier(.22,.8,.24,1)}
 @keyframes fadeOut{to{opacity:0}}
@@ -479,7 +483,7 @@ const save=()=>{try{localStorage.setItem('aurora.v3',JSON.stringify(P))}catch(e)
 
 let lpHit=false,lastSeenId='',outbox=[],msgsLoaded=false,outTried=false,hasMore=false,loadingOld=false,msgLimit=40,watchMore=null,stick=true;
 const sigs=new Map();
-const layers=[];let skip=0,exitT=0;
+const layers=[];let skip=0,exitT=0,joinCan=false;
 function layer(fn){const L={fn};layers.push(L);history.pushState({l:1},'');return()=>{const i=layers.indexOf(L);if(i<0)return;layers.splice(i,1);fn();skip++;history.back()}}
 let db,auth,uid=null,roomRef=null,unsubMsgs=null,unsubRoom=null;
 let replyTo=null,rec=null,cur=null,curBtn=null,seen=new Set(),seenReady=false,lastTyp=false,view='home',tab='chats',newCnt=0,hb=null,emoMode='e';
@@ -497,7 +501,7 @@ function splash(){
   app.innerHTML=`<section class="scr sun fade"><div class="center stag"><div class="logo" style="--i:0">A</div><h1 class="big" style="--i:1">Aurora</h1><p class="sub" style="--i:2">Sadece ikimiz için</p><span class="spin dk" style="--i:3"></span></div></section>`;
 }
 function joinScreen(msg,can){
-  layers.length=0;view='auth';setBar(P.wall);
+  layers.length=0;view='auth';joinCan=!!can;setBar(P.wall);
   app.innerHTML=`<section class="scr sun fade"><div class="center stag">
    <div class="logo" style="--i:0;width:72px;height:72px;font-size:34px;border-radius:24px">A</div>
    <h1 class="big" style="--i:1;font-size:30px">Odaya katıl</h1><p class="sub">İkiniz de aynı kodu yazın, oda sadece size açılır.</p>
@@ -513,11 +517,11 @@ function joinScreen(msg,can){
     const name=$('#nm').value.trim(),code=$('#cd').value.trim().toLowerCase().replace(/\s+/g,'-');
     if(code.length<8){$('#er').textContent='Kod en az 8 karakter olmalı.';return}
     $('#go').disabled=true;$('#go').innerHTML='<span class="spin sm"></span>';$('#er').textContent='';
-    try{await enterRoom(name,code)}catch(err){console.error(err);joinScreen(errText(err));}
+    try{await enterRoom(name,code,true)}catch(err){console.error(err);joinScreen(errText(err),can)}
   };
 }
 function authScreen(msg,mode,em0){
-  layers.length=0;view='auth';setBar(P.wall);
+  layers.length=0;view='auth';joinCan=false;setBar(P.wall);
   mode=mode||'in';const reg=mode==='reg',cu=auth&&auth.currentUser;
   app.innerHTML=`<section class="scr sun fade"><div class="center stag">
    <div class="logo" style="--i:0;width:72px;height:72px;font-size:34px;border-radius:24px">A</div>
@@ -561,7 +565,7 @@ function errText(e){
   return 'Bir sorun oluştu. Tekrar dene.';
 }
 
-async function enterRoom(name,code){
+async function enterRoom(name,code,toChat){
   if(!uid&&auth.currentUser)uid=auth.currentUser.uid;
   const ref=doc(db,'rooms',code);
   const snap=await getDoc(ref);
@@ -578,15 +582,15 @@ async function enterRoom(name,code){
     }else if((d.names||{})[uid]!==name){await updateDoc(ref,{['names.'+uid]:name})}
   }
   P.name=name;P.code=code;save();setDoc(doc(db,'users',uid),{name,code}).catch(()=>{});
-  openChat(code);
+  openChat(code,toChat);
 }
 
-function openChat(code){
+function openChat(code,toChat){
   unsubRoom&&unsubRoom();unsubMsgs&&unsubMsgs();clearInterval(typingTick);clearInterval(hb);P.rooms=[...new Set([...(P.rooms||[]),code])];P.code=code;save();lastSeenId='';
   roomRef=doc(db,'rooms',code);msgsLoaded=false;outTried=false;msgLimit=40;outLoad();msgs=[];room=null;seen=new Set();seenReady=false;replyTo=null;
   try{cur&&cur.pause()}catch(e){}cur=curBtn=null;lastTypingVal=null;otherTypingUntil=0;lastTyp=false;newCnt=0;stick=true;hasMore=false;loadingOld=false;lastReadSent=0;emojiOpen=false;
   sigs.clear();BLOBS.forEach(u=>{try{URL.revokeObjectURL(u)}catch(e){}});BLOBS.clear();
-  subscribe();showHome();
+  subscribe();toChat?showChat():showHome();
 }
 function showChat(){
   if(view!=='chat')history.pushState({v:'chat'},'');
@@ -598,7 +602,7 @@ function showChat(){
    <div class="pinb hidden" id="pin"><span>${ic('pin',16)}</span><b id="pnt"></b></div><div class="msgs" id="msgs"><div class="sp"></div></div>
    <button type="button" class="dn hidden" id="dn" aria-label="Aşağı">${ic('down',20)}</button><div id="emo" class="emojis hidden"></div>
    <form class="composer" id="form" autocomplete="off"><div class="rpb hidden" id="rp"><div class="rpt"><b id="rpn"></b><span id="rpt"></span></div><button type="button" class="ib" id="rpx">${ic('x',18)}</button></div><div class="bar">
-    <div class="field"><button type="button" class="ib" id="eb" aria-label="Emoji">${ic('smile')}</button><textarea id="txt" rows="1" placeholder="Mesaj yaz" enterkeyhint="enter" aria-label="Mesaj"></textarea><button type="button" class="ib" id="ab" aria-label="Fotoğraf">${ic('clip')}</button><input type="file" id="fi" accept="image/*" multiple hidden></div><div class="recbox"><i class="rd"></i><span id="rt">0:00</span><button type="button" class="ib" id="rc" aria-label="İptal">${ic('trash')}</button></div>
+    <div class="field"><button type="button" class="ib" id="eb" aria-label="Emoji">${ic('smile')}</button><textarea id="txt" rows="1" placeholder="Mesaj yaz" enterkeyhint="enter" aria-label="Mesaj"></textarea><button type="button" class="ib" id="ab" aria-label="Fotoğraf">${ic('clip')}</button><input type="file" id="fi" accept="image/*,video/*" multiple hidden></div><div class="recbox"><i class="rd"></i><span id="rt">0:00</span><button type="button" class="ib" id="rc" aria-label="İptal">${ic('trash')}</button></div>
     <button class="send mic" id="mc" type="button" aria-label="Ses kaydet">${ic('mic')}</button><button class="send hidden" id="sd" type="submit" aria-label="Gönder"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button>
    </div></form></section>`;
   $('#cog').onclick=$('#who').onclick=openSettings;$('#back').onclick=()=>history.back();$('#cs').onclick=chatSearch;$('#pin').onclick=()=>room&&room.pin&&goto(room.pin.id);
@@ -615,7 +619,7 @@ function showChat(){
   $('#form').onsubmit=e=>{e.preventDefault();const t=$('#txt'),text=t.value.trim();if(!text)return;t.value='';grow();t.focus();sync();send({text})};
   $('#ab').onclick=()=>$('#fi').click();
   try{new ResizeObserver(()=>updDn()).observe($('#msgs'))}catch(e){}
-  $('#fi').onchange=e=>{const fs=[...e.target.files];e.target.value='';pickImgs(fs)};
+  $('#fi').onchange=e=>{const fs=[...e.target.files];e.target.value='';const vd=fs.find(f=>f.type.startsWith('video'));if(vd)sendVideo(vd);else pickImgs(fs)};
   $('#mc').onclick=()=>rec?stopRec(false):startRec();
   $('#rc').onclick=()=>stopRec(true);
   $('#rpx').onclick=clearReply;
@@ -628,6 +632,7 @@ function showChat(){
     const rd=e.target.closest('[data-rx]');if(rd){outbox=outbox.filter(x=>x.id!==rd.dataset.rx);outSave();render(false);return}
     const rp=e.target.closest('.rep');if(rp&&rp.dataset.id){goto(rp.dataset.id);return}
     const p=e.target.closest('.pl');if(p){playAud(p.dataset.a,p);return}
+    const vb=e.target.closest('[data-vid]');if(vb){playVid(vb.dataset.vid,vb);return}
     const on=e.target.closest('[data-once]');if(on){viewOnce(on.dataset.once);return}
     const pc=e.target.closest('.pic');if(pc){const mm=pc.closest('.m');mm&&viewer(mm.dataset.id);return}
     const m=e.target.closest('.m');if(m)openMenu(m.dataset.id);
@@ -706,9 +711,9 @@ function render(scroll,first){
     const tick=out?(m.pend?`<span class="tick" aria-label="Gönderiliyor">${ic('clock',13)}</span>`:`<span class="tick ${oRead&&m.ts&&m.ts.toMillis()<=oRead?'r':''}" aria-label="${oRead&&m.ts&&m.ts.toMillis()<=oRead?'Okundu':'Gönderildi'}">${TK}</span>`):'';
     const nw=seenReady&&!seen.has(m.id);seen.add(m.id);if(nw&&!out&&!near)newCnt++;if(nw&&!out)ping();
     const rx=Object.values(m.rx||{}).flat(),nm=room&&room.names||{};
-    const c=m.del?ic('ban',14)+' Bu mesaj silindi':(m.re?`<div class="rep" data-id="${m.re.id||''}"><b>${esc(nm[m.re.f]||'?')}</b>${esc(m.re.t)}</div>`:'')+(m.img&&!m.once?`<img class="pic" src="${bsrc(m.id,m.img)}" alt="Fotoğraf" decoding="async">`:'')+(m.once?(m.img&&canon(m.from)!==canon(uid)?`<button type="button" class="once" data-once="${m.id}">${ic('eye',18)} Tek seferlik fotoğraf · Aç</button>`:`<span class="onced">${ic('eye',16)} ${m.img?'Tek seferlik fotoğraf':'Açıldı'}</span>`):'')+(m.aud?`<button type="button" class="pl" data-a="${m.id}">${ic('play',16)}</button><span class="wf">${wave(m)}</span><span class="dur">${fmtD(m.dur)}</span>`:'')+lnk(m.text||'');
+    const c=m.del?ic('ban',14)+' Bu mesaj silindi':(m.re?`<div class="rep" data-id="${m.re.id||''}"><b>${esc(nm[m.re.f]||'?')}</b>${esc(m.re.t)}</div>`:'')+(m.vid?`<button type="button" class="vbtn" data-vid="${m.id}"><img class="vpost" src="${m.vp||''}" alt=""><span class="vplay">▶</span><span class="vdur">${fmtD(m.vdur)}</span></button>`:'')+(m.img&&!m.once?`<img class="pic" src="${bsrc(m.id,m.img)}" alt="Fotoğraf" decoding="async">`:'')+(m.once?(m.img&&canon(m.from)!==canon(uid)?`<button type="button" class="once" data-once="${m.id}">${ic('eye',18)} Tek seferlik fotoğraf · Aç</button>`:`<span class="onced">${ic('eye',16)} ${m.img?'Tek seferlik fotoğraf':'Açıldı'}</span>`):'')+(m.aud?`<button type="button" class="pl" data-a="${m.id}">${ic('play',16)}</button><span class="wf">${wave(m)}</span><span class="dur">${fmtD(m.dur)}</span>`:'')+lnk(m.text||'');
     const fr=canon(m.from),grp=pf===fr&&!nd;pf=fr;
-    items.push([m.id,`<div class="m ${out?'out':'in'}${grp?' g':''}${nw?' pop':''}${m.pend?' pend':''}" data-id="${m.id}"><div class="bub${m.del?' del':''}${m.st?' st':''}${m.img&&!m.once&&!m.text&&!m.re&&!m.del?' media':''}${rx.length?' hr':''}">${c}${rx.length?`<span class="rx">${[...new Set(rx)].join('')}${rx.length>1?' '+rx.length:''}</span>`:''}</div>${m.pend&&m.pst==='f'?`<div class="t fail"><span>Gönderilemedi</span><button type="button" data-rt="${m.id}">Tekrar dene</button><button type="button" data-rx="${m.id}">Sil</button></div>`:`<div class="t">${m.edited?'düzenlendi · ':''}${fmtT(d)}${tick}</div>`}</div>`]);
+    items.push([m.id,`<div class="m ${out?'out':'in'}${grp?' g':''}${nw?' pop':''}${m.pend?' pend':''}" data-id="${m.id}"><div class="bub${m.del?' del':''}${m.st?' st':''}${(m.img||m.vid)&&!m.once&&!m.text&&!m.re&&!m.del?' media':''}${rx.length?' hr':''}">${c}${rx.length?`<span class="rx">${[...new Set(rx)].join('')}${rx.length>1?' '+rx.length:''}</span>`:''}</div>${m.pend&&m.pst==='f'?`<div class="t fail"><span>Gönderilemedi</span><button type="button" data-rt="${m.id}">Tekrar dene</button><button type="button" data-rx="${m.id}">Sil</button></div>`:`<div class="t">${m.edited?'düzenlendi · ':''}${fmtT(d)}${tick}</div>`}</div>`]);
   });
   const typing=o&&Date.now()<otherTypingUntil;
   if(typing)items.push(['typ','<div class="typing"><i></i><i></i><i></i></div>']);
@@ -736,22 +741,30 @@ function showHome(){
   app.innerHTML=`<section class="${w.cls} ${bk?'slideb':'fade'}" id="home" style="${w.style}"><header class="hh"><h1 class="ht">Aurora</h1><div class="row"><button class="rb" id="hp" aria-label="Profil"><span class="av" id="hpa" style="width:40px;height:40px;font-size:16px">${avh(uid,P.name)}</span></button><button class="rb" id="hs" aria-label="Ara"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button><button class="rb" id="hm" aria-label="Menü">${ic('more')}</button></div></header><input class="in hidden" id="sq" placeholder="Mesajlarda ara" style="margin:12px 16px 0;width:auto"><div class="hbody go" id="hb"></div><button class="fab" id="fb" aria-label="Sohbete gir">${ic('chat',28)}</button></section>`;
   $('#hs').onclick=()=>{const q=$('#sq');q.classList.toggle('hidden');if(q.classList.contains('hidden'))q.value='';else q.focus();homeBody()};
   $('#hm').onclick=homeMenu;$('#hp').onclick=openProfile;
-  $('#hb').addEventListener('click',e=>{const r=e.target.closest('[data-room]');if(r){switchRoom(r.dataset.room);return}if(e.target.closest('#addr'))joinScreen('',true)});$('#fb').onclick=showChat;$('#sq').oninput=homeBody;
+  $('#hb').addEventListener('click',e=>{const r=e.target.closest('[data-room]');if(r){const c=r.dataset.room;c===P.code?showChat():switchRoom(c,true);return}if(e.target.closest('#addr'))joinScreen('',true)});$('#fb').onclick=showChat;$('#sq').oninput=homeBody;
   $('#hb').onclick=e=>{const c=e.target.closest('.hc');if(!c)return;
     if(c.id==='c1')showChat();else if(c.dataset.id){showChat();setTimeout(()=>goto(c.dataset.id),300)}};
   setTimeout(()=>{const h=$('#hb');h&&h.classList.remove('go')},800);homeBody();
 }
 function homeBody(){
-  const hb=$('#hb');if(!hb||!room)return;const hpa=$('#hpa');if(hpa)hpa.innerHTML=avh(uid,P.name);
-  const o=otherUid(),nm=o?((room.names||{})[o]||'Arkadaş'):'Bekleniyor…',L=live();
-  const rd=room.reads&&room.reads[uid]&&room.reads[uid].toMillis?room.reads[uid].toMillis():0;
-  const un=L.filter(m=>!mineM(m)&&!m.del&&m.ts&&m.ts.toMillis&&m.ts.toMillis()>rd).length;
+  const hb=$('#hb');if(!hb)return;const hpa=$('#hpa');if(hpa)hpa.innerHTML=avh(uid,P.name);
+  const o=room?otherUid():null,L=room?live():[],nm=o?((room.names||{})[o]||'Arkadaş'):'';
   const q=($('#sq').value||'').trim().toLowerCase();
-  if(q){const r=L.filter(m=>!m.del&&(m.text||'').toLowerCase().includes(q)).slice(-30).reverse();
-    hb.innerHTML=r.length?r.map(m=>{const n=mineM(m)?'Sen':nm;return `<button class="hc" data-id="${m.id}"><span class="av">${avh(mineM(m)?uid:o,n)}</span><span class="hm"><b>${esc(n)}</b><small>${esc(m.text)}</small></span><span class="hx">${fmtT(mdate(m))}</span></button>`}).join(''):'<p class="sub" style="text-align:center">Sonuç yok</p>';return}
-  const last=L[L.length-1];
-  const pv=last?(mineM(last)?'Sen: ':'')+(last.del?'Silindi':last.text||(last.img?'Fotoğraf':last.aud?'Sesli mesaj ('+fmtD(last.dur)+')':'')):'Henüz mesaj yok';
-  hb.innerHTML=`<button class="hc" id="c1"><span class="av">${avh(o,nm)}</span><span class="hm"><b>${esc(nm)}</b><small>${esc(pv)}</small></span><span class="hx"><time>${last?fmtT(mdate(last)):''}</time>${un?`<i class="bd">${un}</i>`:''}</span></button>`+(P.rooms||[]).filter(c=>c!==P.code).map(c=>{const n=(P.rn&&P.rn[c])||'Oda';return `<button class="hc" data-room="${esc(c)}"><span class="av">${esc(n.charAt(0).toUpperCase())}</span><span class="hm"><b>${esc(n)}</b><small>Diğer oda</small></span></button>`}).join('')+'<button type="button" class="btn2" id="addr">+ Yeni oda</button>';
+  if(q){if(!room)return;const r=L.filter(m=>!m.del&&(m.text||'').toLowerCase().includes(q)).slice(-30).reverse();
+    const h=r.length?r.map(m=>{const n=mineM(m)?'Sen':(nm||'Arkadaş');return `<button class="hc" data-id="${m.id}"><span class="av">${avh(mineM(m)?uid:o,n)}</span><span class="hm"><b>${esc(n)}</b><small>${esc(m.text)}</small></span><span class="hx">${fmtT(mdate(m))}</span></button>`}).join(''):'<p class="sub" style="text-align:center">Sonuç yok</p>';
+    if(hb._h!==h){hb._h=h;hb.innerHTML=h}return}
+  const rc=P.rc=P.rc||{};
+  if(room&&msgsLoaded&&P.code){
+    const rd=room.reads&&room.reads[uid]&&room.reads[uid].toMillis?room.reads[uid].toMillis():0;
+    const un=L.filter(m=>!mineM(m)&&!m.del&&m.ts&&m.ts.toMillis&&m.ts.toMillis()>rd).length,last=L[L.length-1];
+    const pv=last?(mineM(last)?'Sen: ':'')+(last.del?'Silindi':last.text||(last.vid?'Video':last.img?'Fotoğraf':last.aud?'Sesli mesaj ('+fmtD(last.dur)+')':'')):(o?'Henüz mesaj yok':'Arkadaşın bekleniyor');
+    const nv={n:nm||'Yeni oda',p:pv,t:last?fmtT(mdate(last)):'',u:un,o:o||''};
+    if(JSON.stringify(rc[P.code])!==JSON.stringify(nv)){rc[P.code]=nv;save()}
+  }
+  const codes=[...new Set([...(P.rooms||[]),P.code].filter(Boolean))];
+  const h=codes.map(c=>{const r=rc[c]||{},n=r.n||'Oda',cur1=c===P.code;
+    return `<button class="hc" data-room="${esc(c)}"><span class="av">${avh(r.o||'',n)}</span><span class="hm"><b>${esc(n)}</b><small>${esc(r.p||(cur1?'Yükleniyor…':'Sohbeti aç'))}</small></span><span class="hx"><time>${esc(r.t||'')}</time>${cur1&&r.u?`<i class="bd">${r.u}</i>`:''}</span></button>`}).join('')+'<button type="button" class="btn2" id="addr">+ Yeni oda</button>';
+  if(hb._h!==h){hb._h=h;hb.innerHTML=h}
 }
 function homeMenu(){
   const el=document.createElement('div');
@@ -774,7 +787,7 @@ async function send(x){
   updateDoc(roomRef,{['typing.'+uid]:0}).catch(()=>{});
 }
 function setReply(m){
-  replyTo={id:m.id,f:m.from,t:(m.text||(m.img?'Fotoğraf':'Ses mesajı')).slice(0,60)};
+  replyTo={id:m.id,f:m.from,t:(m.text||(m.vid?'Video':m.img?'Fotoğraf':'Ses mesajı')).slice(0,60)};
   $('#rpn').textContent=((room.names||{})[m.from])||'?';$('#rpt').textContent=replyTo.t;
   $('#rp').classList.remove('hidden');$('#txt').focus();
 }
@@ -827,8 +840,8 @@ function openMenu(id){
       else if(k==='zm')viewer(id);
       else if(k==='dw'){const a=document.createElement('a');a.href=m.img;a.download='aurora-'+id+'.jpg';document.body.appendChild(a);a.click();a.remove()}
       else if(k==='ed'){ask('Mesajı düzenle',{input:m.text,ok:'Kaydet'}).then(t=>{if(t&&t.trim()&&t!==m.text)updateDoc(ref,{text:t.trim(),edited:true}).catch(fail)})}
-      else if(k==='pn')updateDoc(roomRef,{pin:room.pin&&room.pin.id===id?deleteField():{id,t:(m.text||(m.img?'Fotoğraf':'Ses mesajı')).slice(0,60)}}).catch(fail);
-      else if(k==='dl')ask('Mesaj herkesten silinsin mi?',{ok:'Sil',danger:1}).then(y=>{if(y)updateDoc(ref,{del:true,text:deleteField(),img:deleteField(),aud:deleteField(),re:deleteField(),rx:deleteField()}).catch(fail)});
+      else if(k==='pn')updateDoc(roomRef,{pin:room.pin&&room.pin.id===id?deleteField():{id,t:(m.text||(m.vid?'Video':m.img?'Fotoğraf':'Ses mesajı')).slice(0,60)}}).catch(fail);
+      else if(k==='dl')ask('Mesaj herkesten silinsin mi?',{ok:'Sil',danger:1}).then(y=>{if(y)updateDoc(ref,{del:true,text:deleteField(),img:deleteField(),aud:deleteField(),vid:deleteField(),vp:deleteField(),re:deleteField(),rx:deleteField()}).catch(fail)});
     }
   };
 }
@@ -877,18 +890,22 @@ function openSettings(){
   $('#pl',el).onclick=e=>{const b=e.currentTarget;
     if(pinOn())pinPad('check',ok=>{if(ok){try{localStorage.removeItem('aurora.pin')}catch(x){}b.textContent='PIN koy';b.classList.remove('on2');toast('PIN kapatıldı')}});
     else pinPad('set',ok=>{if(ok){b.textContent='PIN açık · Kapat';b.classList.add('on2');toast('PIN kuruldu')}})};
-  $('#lo',el).onclick=async()=>{if(!(await ask('Hesaptan çıkılsın mı?',{text:'Mesajların bulutta kalır, e-posta ve şifreyle tekrar girersin.',ok:'Çıkış yap',danger:1})))return;unsubRoom&&unsubRoom();unsubMsgs&&unsubMsgs();clearInterval(typingTick);clearInterval(hb);delete P.code;delete P.name;save();uid=null;await signOut(auth);authScreen()};
+  $('#lo',el).onclick=async()=>{if(!(await ask('Hesaptan çıkılsın mı?',{text:'Mesajların bulutta kalır, e-posta ve şifreyle tekrar girersin.',ok:'Çıkış yap',danger:1})))return;close();unsubRoom&&unsubRoom();unsubMsgs&&unsubMsgs();clearInterval(typingTick);clearInterval(hb);delete P.code;delete P.name;delete P.rooms;delete P.rc;delete P.rn;save();roomRef=null;room=null;msgs=[];uid=null;await signOut(auth);authScreen()};
   $('#th',el).onclick=e=>{P.wall=(WALLS[P.wall]||{}).dark?'white':'night';save();applyLook();$('#th',el).innerHTML=P.theme==='light'?ic('sun',18)+' Açık tema':ic('moon',18)+' Koyu tema'};
   $('#tt',el).onclick=e=>{const b=e.target.closest('[data-ttl]');if(!b)return;updateDoc(roomRef,{ttl:+b.dataset.ttl}).catch(()=>toast('İşlem yapılamadı. Tekrar dene.'));el.querySelectorAll('[data-ttl]').forEach(x=>x.classList.toggle('on2',x===b))};
   $('#lv',el).onclick=async()=>{
     if(!(await ask('Odadan çıkılsın mı?',{text:'Mesajlar bulutta kalır, aynı kodla tekrar girebilirsin.',ok:'Çık',danger:1})))return;
-    unsubRoom&&unsubRoom();unsubMsgs&&unsubMsgs();clearInterval(typingTick);clearInterval(hb);const cur=P.code;P.rooms=(P.rooms||[]).filter(c=>c!==cur);const nx=P.rooms[0];delete P.code;save();setDoc(doc(db,'users',uid),{name:P.name||'',code:nx||''}).catch(()=>{});nx?switchRoom(nx):joinScreen();
+    close();unsubRoom&&unsubRoom();unsubMsgs&&unsubMsgs();clearInterval(typingTick);clearInterval(hb);
+    const cd=P.code;P.rooms=(P.rooms||[]).filter(c=>c!==cd);if(P.rc)delete P.rc[cd];if(P.rn)delete P.rn[cd];
+    const nx=P.rooms[0];delete P.code;save();roomRef=null;room=null;msgs=[];
+    setDoc(doc(db,'users',uid),{name:P.name||'',code:nx||''}).catch(()=>{});
+    nx?switchRoom(nx):joinScreen();
   };
 }
 function backup(){
   const names=(room&&room.names)||{};
   const lines=msgs.map(m=>{const d=m.ts&&m.ts.toDate?m.ts.toDate():new Date();
-    return `[${d.toLocaleDateString('tr-TR')} ${fmtT(d)}] ${names[m.from]||'?'}: ${m.del?'(silindi)':m.text||(m.img?'[Fotoğraf]':'[Ses]')}`});
+    return `[${d.toLocaleDateString('tr-TR')} ${fmtT(d)}] ${names[m.from]||'?'}: ${m.del?'(silindi)':m.text||(m.vid?'[Video]':m.img?'[Fotoğraf]':'[Ses]')}`});
   const blob=new Blob([lines.join('\n')||'(mesaj yok)'],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download='aurora-yedek-'+new Date().toISOString().slice(0,10)+'.txt';
@@ -1024,10 +1041,11 @@ async function previewImgs(list){
   try{let t0;new ResizeObserver(()=>{clearTimeout(t0);t0=setTimeout(()=>{if(mode!=='crop'&&el.isConnected)fit()},60)}).observe(vw)}catch(e){}
 }
 function grow(){const t=$('#txt');if(!t)return;t.style.height='auto';t.style.height=Math.min(t.scrollHeight,120)+'px'}
-function switchRoom(code){P.code=code;save();setDoc(doc(db,'users',uid),{name:P.name||'',code}).catch(()=>{});openChat(code)}
+function switchRoom(code,toChat){P.code=code;save();setDoc(doc(db,'users',uid),{name:P.name||'',code}).catch(()=>{});openChat(code,toChat)}
 function viewer(id){const L=viewList().filter(m=>m.img&&!m.once&&!m.del),ix=L.findIndex(m=>m.id===id);if(ix>=0)viewerOpen(L.map(m=>bsrc(m.id,m.img)),ix)}
 function viewOnce(id){const m=msgs.find(x=>x.id===id);if(!m||!m.img)return;viewerOpen([bsrc(m.id,m.img)],0,()=>updateDoc(doc(roomRef,'messages',id),{img:deleteField(),opened:true}).catch(()=>{}))}
 function barTo(c,dark){try{const m=document.getElementById('tc');if(m)m.content=c;if(CPl&&CPl.StatusBar){CPl.StatusBar.setBackgroundColor({color:c});CPl.StatusBar.setStyle({style:dark?'DARK':'LIGHT'})}}catch(e){}}
+function viewBar(){try{document.documentElement.style.background='#000';if(CPl&&CPl.StatusBar)CPl.StatusBar.setOverlaysWebView({overlay:true})}catch(e){}barTo('#000000',true)}
 function barBack(){try{setBar(P.wall)}catch(e){}}
 function immersive(on){
   try{if(CPl&&CPl.StatusBar){on?CPl.StatusBar.hide():CPl.StatusBar.show();return}}catch(e){}
@@ -1051,7 +1069,7 @@ function viewerOpen(srcs,i0,onClose){
     else if(p.length){g.x=p[0].x;g.y=p[0].y}};
   let closing=0;const fsx=()=>{if(!closing&&!document.fullscreenElement&&!document.webkitFullscreenElement)close()};
   show();const close=layer(()=>{closing=1;document.removeEventListener('fullscreenchange',fsx);immersive(false);barBack();rm(el);onClose&&onClose()});$('.vx',el).onclick=close;
-  barTo('#000000',true);immersive(true);setTimeout(()=>{if(!closing)document.addEventListener('fullscreenchange',fsx)},400);
+  viewBar();immersive(true);setTimeout(()=>{if(!closing)document.addEventListener('fullscreenchange',fsx)},400);
   el.addEventListener('pointerdown',e=>{if(e.target.closest('.vx'))return;ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});
     try{el.setPointerCapture(e.pointerId)}catch(_){}img.style.transition='none';tap=ptr.size===1;begin();if(ptr.size>1)g.mode='p'});
   el.addEventListener('pointermove',e=>{if(!g||!ptr.has(e.pointerId))return;ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});const p=[...ptr.values()];
@@ -1149,6 +1167,64 @@ function flush(it){
 addEventListener('online',()=>{toast('Bağlantı geri geldi');outbox.forEach(it=>{if(it.st==='f')flush(it)})});
 addEventListener('offline',()=>toast('İnternet yok. Mesajlar bağlanınca gönderilir.'));
 
+/* ---------- video ---------- */
+const VCH=600000,VBL=new Map();
+const prog=t=>{let e=$('#vpg');if(!t){e&&e.remove();return}if(!e){e=document.createElement('div');e.id='vpg';e.className='toast';e.style.animation='none';app.appendChild(e)}e.textContent=t};
+function recompress(v,dur){return new Promise((ok,no)=>{
+  const st=(v.captureStream||v.mozCaptureStream).call(v);
+  const mt=['video/webm;codecs=vp8,opus','video/webm','video/mp4'].find(t=>MediaRecorder.isTypeSupported(t));
+  const mr=new MediaRecorder(st,{mimeType:mt,videoBitsPerSecond:450000,audioBitsPerSecond:40000}),ch=[];
+  mr.ondataavailable=e=>e.data.size&&ch.push(e.data);
+  mr.onstop=()=>ok(new Blob(ch,{type:mt.split(';')[0]}));
+  v.onended=()=>{if(mr.state!=='inactive')mr.stop()};setTimeout(()=>{if(mr.state!=='inactive')mr.stop()},dur*1000+6000);
+  v.currentTime=0;v.muted=false;mr.start(500);v.play().catch(no);
+})}
+async function sendVideo(f){
+  if(!roomRef)return;
+  if(navigator.onLine===false)return toast('Video göndermek için internet gerekli.');
+  const code=P.code;let blob=f;
+  try{
+    prog('Video hazırlanıyor…');
+    const v=document.createElement('video');v.muted=true;v.playsInline=true;v.preload='auto';v.src=URL.createObjectURL(f);
+    await new Promise((ok,no)=>{v.onloadedmetadata=ok;v.onerror=no});
+    const dur=Math.round(v.duration||0);
+    if(!v.videoWidth){prog('');return toast('Bu video biçimi desteklenmiyor.')}
+    if(dur>30){prog('');return toast('Video en fazla 30 saniye olabilir.')}
+    v.currentTime=Math.min(.3,v.duration/2);await new Promise(r=>v.onseeked=r);
+    const cv=document.createElement('canvas'),k=Math.min(1,240/Math.max(v.videoWidth,v.videoHeight));cv.width=v.videoWidth*k;cv.height=v.videoHeight*k;cv.getContext('2d').drawImage(v,0,0,cv.width,cv.height);
+    const poster=cv.toDataURL('image/jpeg',.6);
+    if(f.size>2500000){prog('Video küçültülüyor… (sesi duyulabilir)');blob=await recompress(v,dur)}
+    URL.revokeObjectURL(v.src);
+    if(blob.size>4500000){prog('');return toast('Video çok büyük, daha kısa bir video seç.')}
+    const b64=await toURL(blob),data=b64.slice(b64.indexOf(',')+1),n=Math.ceil(data.length/VCH),id=doc(collection(roomRef,'messages')).id;
+    for(let i=0;i<n;i++){prog('Video gönderiliyor %'+Math.round(i/n*100));await setDoc(doc(db,'rooms',code,'messages',id,'c',String(i)),{d:data.slice(i*VCH,(i+1)*VCH)})}
+    const d={from:uid,vid:1,vn:n,vm:blob.type||'video/mp4',vdur:dur,vp:poster,ts:serverTimestamp()};
+    if(room&&room.ttl)d.exp=Date.now()+room.ttl*1000;
+    if(replyTo){d.re={f:replyTo.f,t:replyTo.t,id:replyTo.id};clearReply()}
+    await setDoc(doc(db,'rooms',code,'messages',id),d);prog('');
+  }catch(e){console.error(e);prog('');toast('Video gönderilemedi. Tekrar dene.')}
+}
+async function playVid(id,btn){
+  const m=msgs.find(x=>x.id===id);if(!m||!m.vid)return;
+  let url=VBL.get(id);
+  if(!url){
+    if(navigator.onLine===false)return toast('Videoyu açmak için internet gerekli.');
+    btn.classList.add('ld');
+    try{
+      const parts=[];
+      for(let i=0;i<m.vn;i++){prog('Video indiriliyor %'+Math.round(i/m.vn*100));const sn=await getDoc(doc(roomRef,'messages',id,'c',String(i)));if(!sn.exists())throw new Error('chunk');parts.push(sn.data().d)}
+      const bin=atob(parts.join('')),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
+      url=URL.createObjectURL(new Blob([u8],{type:m.vm}));VBL.set(id,url);
+    }catch(e){console.error(e);toast('Video açılamadı.')}
+    prog('');btn.classList.remove('ld');if(!url)return;
+  }
+  const el=document.createElement('div');el.className='vw';
+  el.innerHTML=`<div class="vbg"></div><video class="vimg" style="width:100%;height:100%" src="${url}" controls autoplay playsinline></video><button type="button" class="vx" aria-label="Kapat">${ic('x',24)}</button>`;
+  app.appendChild(el);
+  const close=layer(()=>{try{el.querySelector('video').pause()}catch(e){}immersive(false);barBack();rm(el)});
+  $('.vx',el).onclick=close;viewBar();immersive(true);
+}
+
 /* ---------- başlat ---------- */
 if('serviceWorker'in navigator&&location.protocol.startsWith('http')&&!window.Capacitor)navigator.serviceWorker.register('sw.js').catch(()=>{});
 history.replaceState({base:1},'');
@@ -1158,7 +1234,7 @@ addEventListener('popstate',()=>{
   if(skip>0){skip--;return}
   if(document.querySelector('.lock')){history.pushState({s:1},'');return}
   if(layers.length){layers.pop().fn();return}
-  if(view==='chat'){showHome();return}
+  if(view==='chat'||(view==='auth'&&joinCan&&room)){showHome();return}
   const st=history.state;if(st&&st.base)atBase();
 });
 function exitTry(){
@@ -1169,7 +1245,7 @@ function atBase(){if(!exitTry())history.pushState({s:1},'')}
 function hwBack(){
   if(document.querySelector('.lock'))return;
   if(layers.length){layers.pop().fn();return}
-  if(view==='chat'){showHome();return}
+  if(view==='chat'||(view==='auth'&&joinCan&&room)){showHome();return}
   exitTry();
 }
 try{if(CPl&&CPl.App&&CPl.App.addListener)CPl.App.addListener('backButton',hwBack)}catch(e){}
