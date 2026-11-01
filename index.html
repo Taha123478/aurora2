@@ -492,6 +492,151 @@ body.pg #chat,body.pg #home{visibility:hidden}
 .cmb2{flex-direction:row;align-items:center}.cmb2 .sp{flex:1}
 .cmb2 .send{width:56px;height:56px}
 .cam .inv{visibility:hidden}
+/* ===== v22: sade tasarım (düz renk, blur ve gölge yok) ===== */
+:root{--hair:rgba(128,128,128,.22)}
+#app .av{background:var(--sur);color:var(--fg);font-weight:600}
+#app .shade{background:rgba(14,14,14,.5)}
+
+/* açılış, giriş, oda */
+#app .logo{display:none}
+#app .center{align-items:stretch;justify-content:center;text-align:left;padding:0 32px;gap:10px}
+#app .center.sp{align-items:center;text-align:center}
+#app .big{font-size:38px;font-weight:600;letter-spacing:-1.4px;line-height:1.05}
+#app .big.wm{font-size:52px;letter-spacing:-2.2px;text-transform:lowercase}
+#app .sub{font-size:16px;line-height:1.4;font-weight:400}
+#app .card{margin-top:30px;gap:0}
+#app .card label{font-size:12px;font-weight:500;color:var(--mut);margin-top:22px}
+#app .card label:first-of-type{margin-top:0}
+#app .card .in{background:transparent;border-radius:0;border-bottom:1px solid rgba(128,128,128,.45);height:48px;padding:0;font-size:17px}
+#app .card .in:focus{box-shadow:none;border-bottom-color:var(--acc)}
+#app .card .err{margin-top:8px}
+#app .cta{background:var(--fg);color:var(--bg);height:54px;border-radius:27px;font-size:16px;font-weight:600}
+#app .card .cta{margin-top:14px}
+#app .cta.dg{background:#B3261E;color:#fff}
+#app .card .btn2{background:transparent;height:44px;font-size:14px;font-weight:600;color:var(--mut)}
+#app .card #sw,#app .card #jc{color:var(--acc)}
+
+/* ana liste */
+#app .hh{padding:20px 24px 4px}
+#app .ht{font-size:32px;font-weight:600;letter-spacing:-1.2px;text-transform:lowercase}
+.sqw{position:relative;margin:12px 24px 8px;flex:none}
+.sqw svg{position:absolute;left:16px;top:50%;margin-top:-9px;color:var(--mut);pointer-events:none}
+#app .sqw .in{height:44px;border-radius:22px;padding:0 16px 0 44px;font-size:15px;background:var(--sur)}
+#app .hbody{padding:4px 0 calc(96px + env(safe-area-inset-bottom,0px))}
+#app .hc{padding:12px 24px;gap:16px;position:relative;border-radius:0}
+#app .hc .av{width:50px;height:50px;font-size:18px}
+#app .hc::after{content:"";position:absolute;left:90px;right:0;bottom:0;height:1px;background:var(--hair)}
+#app .hc:nth-last-child(2)::after{display:none}
+#app .hm b{font-size:16px;font-weight:600}
+#app .hm small{font-size:15px;color:var(--mut)}
+#app .hx{font-size:12px;font-weight:500}
+#app .hx:has(.bd) time{color:var(--acc);font-weight:600}
+#app .bd{min-width:20px;height:20px;font-size:11px}
+#app .ap{width:50px;height:50px;border-radius:50%;border:1px dashed rgba(128,128,128,.6);display:flex;align-items:center;justify-content:center;flex:none}
+#app #addr{display:flex;align-items:center;justify-content:flex-start;gap:16px;width:100%;height:auto;min-height:44px;margin:0;padding:12px 24px;border:0;border-radius:0;background:transparent;color:var(--acc);font-size:15px;font-weight:500;flex:none}
+#app .fab{background:var(--fg);color:var(--bg);right:24px;bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+
+/* alt menü */
+#app .tabs{display:flex;flex:none;border-top:1px solid var(--hair);padding:4px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg)}
+#app .tabs button{flex:1;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;background:transparent;color:var(--mut);font-size:11px;font-weight:500;padding:0}
+#app .tabs button.on{color:var(--acc);font-weight:600}
+
+/* sohbet */
+#app .top{padding:8px 8px 8px 4px;gap:4px}
+#app .who{gap:12px;padding:0;height:48px}
+#app .who .av{width:38px;height:38px;font-size:15px}
+#app .who b{font-weight:600;font-size:16px}
+#app .who small{font-size:12px}
+#app .pinb{background:transparent;margin:0;padding:0 20px;min-height:44px;border-radius:0;border-top:1px solid var(--hair);font-size:14px;color:var(--fg);animation:none;gap:10px}
+#app .pinb span{color:var(--acc);display:flex}
+#app .pinb b{font-weight:400}
+#app .msgs{padding:12px 20px;gap:6px}
+#app .day{background:transparent;color:var(--mut);font-size:12px;font-weight:500;padding:4px 0;margin:6px 0}
+#app .m{max-width:80%}
+#app .m.out .bub{background:var(--fg);color:var(--bg)}
+#app .m.out .rep{background:rgba(128,128,128,.35)}
+#app .rx{background:var(--bg);color:var(--fg);border:1px solid var(--hair);box-shadow:none}
+#app .composer{padding:8px 14px calc(12px + env(safe-area-inset-bottom,0px));border-top:0}
+#app .field{background:transparent;border:1px solid rgba(128,128,128,.45);border-radius:23px;min-height:46px;align-items:flex-end}
+#app .field:focus-within{box-shadow:none;border-color:var(--acc)}
+.field textarea{padding:13px 4px 13px 18px}
+#app .recording #eb{display:none}
+#app .recbox{background:var(--sur);border-radius:23px;height:46px;padding:0 4px 0 18px;color:var(--fg)}
+#app .send{width:46px;height:46px}
+
+/* menüler ve pencereler */
+#app .ctx{background:var(--bg);border:1px solid var(--hair);box-shadow:none;border-radius:20px;padding:6px}
+#app .ctx button{height:48px;font-weight:500;border-radius:12px}
+#app .rxr{border-bottom:1px solid var(--hair)}
+#app .rpk{border-radius:28px 28px 0 0;padding:16px 12px calc(16px + env(safe-area-inset-bottom,0px))}
+#app .rpk h2{font-size:20px;font-weight:600;letter-spacing:-.4px;padding:0 8px}
+#app .rpg{grid-template-columns:repeat(6,1fr)}
+#app .rpg button{height:52px;font-size:28px}
+#app .apop{box-shadow:none}
+#app .apop button{font-weight:500}
+.dlg{border-radius:28px;padding:28px 24px 20px;gap:22px;box-shadow:none;border:1px solid var(--hair)}
+.dlg h2{font-size:20px;font-weight:600;letter-spacing:-.4px}
+.dlg p{font-size:15px}
+.dlg .row button{height:50px!important;border-radius:25px;font-weight:600}
+.dlg .btn2{background:var(--sur,rgba(0,0,0,.08));color:var(--fg,#2B1208)}
+.dlg .cta{background:var(--fg,#2B1208);color:var(--bg,#fff)}
+.dlg .cta.dg{background:#B3261E;color:#fff}
+
+/* sayfalar: profil ve ayarlar */
+#app .sheet:not(.tb){gap:0}
+#app .sheet h3{font-size:12px;font-weight:500;text-transform:none;letter-spacing:0;margin:18px 0 0;color:var(--mut)}
+#app .sheet .sc{display:contents}
+#app .sheet.tb{padding:0;gap:0;overflow:hidden}
+#app .sheet.tb>h2:first-of-type{position:static;padding:calc(env(safe-area-inset-top,0px) + 24px) 24px 8px;margin:0}
+#app .sheet.tb .sback{display:none}
+#app .sheet.tb .sc{display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto;padding:8px 24px 24px;overscroll-behavior:contain;scrollbar-width:none}
+#app .sheet.tb #cl,#app .sheet.tb #pk{display:none}
+#app .sheet h2{font-size:22px;font-weight:600;letter-spacing:-.5px}
+#app .sheet .srow{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px;border-top:1px solid var(--hair);padding:8px 0}
+#app .sheet .srow.col{flex-direction:column;align-items:stretch;justify-content:center;gap:12px;padding:14px 0}
+#app .sheet .srow h3{font-size:16px;font-weight:400;margin:0;color:var(--fg)}
+#app .sheet .srow .row{flex:none}
+#app .sheet .srow.col .row{width:100%}
+#app .sheet .srow .btn2{flex:none;height:40px;font-size:14px;font-weight:500;padding:0 16px}
+#app .sheet .srow.col .row .btn2{flex:1}
+#app .sheet .srow .code{font-size:15px;color:var(--mut)}
+#app .sheet .srow .bubs{gap:14px}
+#app .sheet .srow .sw{width:36px;height:36px}
+#app .sheet .srow.dz{min-height:48px;padding:0}
+#app .sheet .srow.dz .btn2{background:transparent;color:var(--fg);justify-content:flex-start;padding:0;height:48px;font-size:16px;font-weight:400;width:100%}
+#app .sheet .srow.dz .btn2.danger{color:#B3261E}
+#app .sheet #sn,#app .sheet #pl{font-size:0;width:50px;height:30px;padding:0;border-radius:15px;background:rgba(128,128,128,.4);position:relative;flex:none}
+#app .sheet #sn::after,#app .sheet #pl::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .14s var(--ease)}
+#app .sheet #sn.on2,#app .sheet #pl.on2{background:var(--acc)}
+#app .sheet #sn.on2::after,#app .sheet #pl.on2::after{transform:translateX(20px)}
+#app .pcard{background:transparent;padding:16px 0 24px}
+#app .pcard .btn2{background:transparent;border:1px solid rgba(128,128,128,.45);height:40px;font-weight:500}
+#app .sheet .in{background:transparent;border-radius:0;border-bottom:1px solid rgba(128,128,128,.45);height:48px;padding:0;font-size:17px}
+#app .sheet .in:focus{box-shadow:none;border-bottom-color:var(--acc)}
+#app .sheet>.code,#app .sheet .sc>.code{font-size:17px;color:var(--mut);min-height:48px;display:flex;align-items:center;border-bottom:1px solid var(--hair)}
+#app .sheet .pbt{margin-top:auto;padding-top:24px}
+#app .sheet .pbt .cta{margin-top:0}
+
+/* PIN kilidi */
+.lock{background:var(--bg);color:var(--fg)}
+.lkl{background:transparent;width:auto;height:auto;border-radius:0}
+.lk h2{font-size:22px;font-weight:600;letter-spacing:-.5px}
+.dots{gap:18px}
+.dots i{border:1.5px solid rgba(128,128,128,.7)}
+.dots i.on{background:var(--acc);border-color:var(--acc)}
+.keys{grid-template-columns:repeat(3,76px);gap:14px 28px;margin-top:18px}
+.keys button{width:76px;height:76px;background:var(--sur);color:var(--fg);font-size:28px;font-weight:500}
+.lkf{color:var(--mut);text-decoration:none;font-weight:500;font-size:15px;min-height:44px}
+
+/* video, kamera, düzenleyici */
+.vp{background:#000}
+.vpp{background:rgba(0,0,0,.55);width:72px;height:72px}
+.vpg{background:#fff}
+.vtr .vth{background:#fff}
+.vsheet{background:#000;border-top:0;border-radius:0}
+.vab{background:rgba(255,255,255,.14)}
+.vab.g{background:#fff;color:#000}
+#app .ed .send,#app .cam .send{background:#fff;color:#000}
 </style>
 </head>
 <body>
@@ -530,7 +675,7 @@ const EM2='🥳 😻 🤗 🫶 🐱 🐶 🦊 🐼 🐻 🦄 🌈 💌 🍰 🧸
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const app=$('#app');
-const IC={back:'<path d="M15 18l-6-6 6-6"/>',x:'<path d="M18 6 6 18M6 6l12 12"/>',down:'<path d="M12 5v14M6 13l6 6 6-6"/>',pin:'<path d="M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z"/>',smile:'<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9.5h.01M15 9.5h.01"/>',clip:'<path d="m21 11-9 9a5 5 0 0 1-7-7l9-9a3.5 3.5 0 0 1 5 5l-9 9a2 2 0 0 1-3-3l8-8"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',play:'<path d="M7 4v16l13-8z" fill="currentColor"/>',pause:'<path d="M8 5v14M16 5v14"/>',reply:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v3"/>',copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',zoom:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',moon:'<path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>',more:'<circle cx="12" cy="5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="19" r="1.3"/>',ban:'<circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/>',send:'<path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',dl:'<path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/>',lock:'<rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',up:'<path d="M12 19V5M6 11l6-6 6 6"/>',eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',eyeoff:'<path d="M3 3l18 18M10.6 6.2A9.8 9.8 0 0 1 12 6c6 0 10 6 10 6a17 17 0 0 1-3.2 3.9M6.1 6.6A17 17 0 0 0 2 12s4 7 10 7a9.7 9.7 0 0 0 4-.9"/>',dots:'<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',rotate:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/>',crop:'<path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14"/>',pen:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',cam:'<path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/>',sticker:'<path d="M20 12V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6l8-8z"/><path d="M20 12h-4a2 2 0 0 0-2 2v6M8.5 9.5h.01M13.5 9.5h.01"/>',bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',gallery:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.8"/><path d="m21 15-5-5L5 21"/>'};
+const IC={plus:'<path d="M12 5v14M5 12h14"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',sliders:'<path d="M4 8h10M18 8h2M4 16h2M10 16h10"/><circle cx="16" cy="8" r="2"/><circle cx="8" cy="16" r="2"/>',back:'<path d="M15 18l-6-6 6-6"/>',x:'<path d="M18 6 6 18M6 6l12 12"/>',down:'<path d="M12 5v14M6 13l6 6 6-6"/>',pin:'<path d="M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z"/>',smile:'<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9.5h.01M15 9.5h.01"/>',clip:'<path d="m21 11-9 9a5 5 0 0 1-7-7l9-9a3.5 3.5 0 0 1 5 5l-9 9a2 2 0 0 1-3-3l8-8"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',play:'<path d="M7 4v16l13-8z" fill="currentColor"/>',pause:'<path d="M8 5v14M16 5v14"/>',reply:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v3"/>',copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',zoom:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',moon:'<path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>',more:'<circle cx="12" cy="5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="19" r="1.3"/>',ban:'<circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/>',send:'<path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',dl:'<path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/>',lock:'<rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',up:'<path d="M12 19V5M6 11l6-6 6 6"/>',eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',eyeoff:'<path d="M3 3l18 18M10.6 6.2A9.8 9.8 0 0 1 12 6c6 0 10 6 10 6a17 17 0 0 1-3.2 3.9M6.1 6.6A17 17 0 0 0 2 12s4 7 10 7a9.7 9.7 0 0 0 4-.9"/>',dots:'<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',rotate:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/>',crop:'<path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14"/>',pen:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',cam:'<path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/>',sticker:'<path d="M20 12V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6l8-8z"/><path d="M20 12h-4a2 2 0 0 0-2 2v6M8.5 9.5h.01M13.5 9.5h.01"/>',bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',gallery:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.8"/><path d="m21 15-5-5L5 21"/>'};
 const ic=(n,z=22,w=2)=>`<svg width="${z}" height="${z}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
 const TK='<svg width="17" height="11" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 9 6 13.5 15 2.5M10 11.5l2 2L22 2.5"/></svg>';
 let actx;function ping(){if(!P.snd)return;try{navigator.vibrate&&navigator.vibrate(40);actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime;o.connect(g);g.connect(actx.destination);o.frequency.value=880;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.25);o.start();o.stop(t+.26)}catch(e){}}
@@ -560,7 +705,7 @@ const wallStyle=()=>{
 
 /* ---------- ekranlar ---------- */
 function splash(){
-  app.innerHTML=`<section class="scr sun fade"><div class="center stag"><div class="logo" style="--i:0">A</div><h1 class="big" style="--i:1">Aurora</h1><p class="sub" style="--i:2">Sadece ikimiz için</p><span class="spin dk" style="--i:3"></span></div></section>`;
+  app.innerHTML=`<section class="scr sun fade"><div class="center stag sp"><div class="logo" style="--i:0">A</div><h1 class="big wm" style="--i:1">Aurora</h1><p class="sub" style="--i:2">Sadece ikimiz için</p><span class="spin dk" style="--i:3"></span></div></section>`;
 }
 function joinScreen(msg,can){
   layers.length=0;view='auth';joinCan=!!can;setBar(P.wall);
@@ -661,12 +806,12 @@ function showChat(){
   app.innerHTML=`<section class="${w.cls} slide" id="chat" style="${w.style}">
    <header class="top"><button class="rb" id="back" aria-label="Geri">${ic('back')}</button><button class="who" id="who" aria-label="Ayarlar"><span class="av" id="av">?</span><span style="min-width:0"><b id="wn">Bekleniyor…</b><small id="ws">Arkadaşın koduyla katılmasını bekle</small></span></button>
    <button class="rb" id="cs" aria-label="Sohbette ara">${ic('search')}</button>
-   <button class="rb" id="cog" aria-label="Ayarlar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></header>
+   <button class="rb" id="cog" aria-label="Ayarlar">${ic('sliders',22,1.8)}</button></header>
    <div class="pinb hidden" id="pin"><span>${ic('pin',16)}</span><b id="pnt"></b></div><div class="msgs" id="msgs"><div class="sp"></div></div>
    <button type="button" class="dn hidden" id="dn" aria-label="Aşağı">${ic('down',20)}</button><div id="emo" class="emojis hidden"></div>
    <form class="composer" id="form" autocomplete="off"><div class="rpb hidden" id="rp"><div class="rpt"><b id="rpn"></b><span id="rpt"></span></div><button type="button" class="ib" id="rpx">${ic('x',18)}</button></div><div class="bar">
-    <div class="field"><button type="button" class="ib" id="eb" aria-label="Daha fazla">${ic('more')}</button><textarea id="txt" rows="1" placeholder="Mesaj yaz" enterkeyhint="enter" aria-label="Mesaj"></textarea><button type="button" class="ib" id="ab" aria-label="Fotoğraf">${ic('clip')}</button><input type="file" id="fi" accept="image/*,video/*" multiple hidden><input type="file" id="fc" accept="image/*" capture="environment" hidden></div><div class="recbox"><i class="rd"></i><span id="rt">0:00</span><button type="button" class="ib" id="rc" aria-label="İptal">${ic('trash')}</button></div>
-    <button class="send mic" id="mc" type="button" aria-label="Ses kaydet">${ic('mic')}</button><button class="send hidden" id="sd" type="submit" aria-label="Gönder"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button>
+    <button type="button" class="ib" id="eb" aria-label="Ekle">${ic('plus',24,1.8)}</button><div class="field"><textarea id="txt" rows="1" placeholder="Mesaj" enterkeyhint="enter" aria-label="Mesaj"></textarea><button type="button" class="ib" id="ab" aria-label="Fotoğraf">${ic('gallery',22,1.8)}</button><input type="file" id="fi" accept="image/*,video/*" multiple hidden><input type="file" id="fc" accept="image/*" capture="environment" hidden></div><div class="recbox"><i class="rd"></i><span id="rt">0:00</span><button type="button" class="ib" id="rc" aria-label="İptal">${ic('trash')}</button></div>
+    <button class="send mic" id="mc" type="button" aria-label="Ses kaydet">${ic('mic')}</button><button class="send hidden" id="sd" type="submit" aria-label="Gönder">${ic('up',20,2.2)}</button>
    </div></form></section>`;
   $('#cog').onclick=$('#who').onclick=openSettings;$('#back').onclick=()=>history.back();$('#cs').onclick=chatSearch;$('#pin').onclick=()=>room&&room.pin&&goto(room.pin.id);
   $('#dn').onclick=()=>{const b=$('#msgs');b.scrollTo({top:b.scrollHeight,behavior:'smooth'})};$('#msgs').onscroll=()=>{const b=$('#msgs');stick=b.scrollHeight-b.scrollTop-b.clientHeight<120;updDn()};$('#msgs').addEventListener('load',e=>{if(stick&&e.target.tagName==='IMG'){const b=$('#msgs');b.scrollTop=b.scrollHeight}},true);sigs.clear();
@@ -800,9 +945,8 @@ function updDn(){const b=$('#msgs'),d=$('#dn');if(!b||!d)return;{const c=$('#cha
 function goto(id){const el=document.querySelector(`.m[data-id="${id}"]`);if(el){el.scrollIntoView({block:'center',behavior:'smooth'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1500)}}
 function showHome(){
   const bk=view==='chat';view='home';const w=wallStyle();
-  app.innerHTML=`<section class="${w.cls} ${bk?'slideb':'fade'}" id="home" style="${w.style}"><header class="hh"><h1 class="ht">Aurora</h1><div class="row"><button class="rb" id="hp" aria-label="Profil"><span class="av" id="hpa" style="width:40px;height:40px;font-size:16px">${avh(uid,P.name)}</span></button><button class="rb" id="hs" aria-label="Ara"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button><button class="rb" id="hm" aria-label="Menü">${ic('more')}</button></div></header><input class="in hidden" id="sq" placeholder="Mesajlarda ara" style="margin:12px 16px 0;width:auto"><div class="hbody go" id="hb"></div><button class="fab" id="fb" aria-label="Sohbete gir">${ic('chat',28)}</button></section>`;
-  $('#hs').onclick=()=>{const q=$('#sq');q.classList.toggle('hidden');if(q.classList.contains('hidden'))q.value='';else q.focus();homeBody()};
-  $('#hm').onclick=homeMenu;$('#hp').onclick=openProfile;
+  app.innerHTML=`<section class="${w.cls} ${bk?'slideb':'fade'}" id="home" style="${w.style}"><header class="hh"><h1 class="ht">aurora</h1></header><div class="sqw">${ic('search',18,1.8)}<input class="in" id="sq" placeholder="Ara" aria-label="Mesajlarda ara" autocomplete="off"></div><div class="hbody go" id="hb"></div><button class="fab" id="fb" aria-label="Sohbete gir">${ic('chat',24,1.8)}</button>${TABS('c')}</section>`;
+  bindTabs($('#home'),'c');
   $('#hb').addEventListener('click',e=>{const r=e.target.closest('[data-room]');if(r){const c=r.dataset.room;c===P.code?showChat():switchRoom(c,true);return}if(e.target.closest('#addr'))joinScreen('',true)});$('#fb').onclick=showChat;$('#sq').oninput=homeBody;
   $('#hb').onclick=e=>{const c=e.target.closest('.hc');if(!c)return;
     if(c.id==='c1')showChat();else if(c.dataset.id){showChat();setTimeout(()=>goto(c.dataset.id),300)}};
@@ -825,9 +969,14 @@ function homeBody(){
   }
   const codes=[...new Set([...(P.rooms||[]),P.code].filter(Boolean))];
   const h=codes.map(c=>{const r=rc[c]||{},n=r.n||'Oda',cur1=c===P.code;
-    return `<button class="hc" data-room="${esc(c)}"><span class="av">${avh(r.o||'',n)}</span><span class="hm"><b>${esc(n)}</b><small>${esc(r.p||(cur1?'Yükleniyor…':'Sohbeti aç'))}</small></span><span class="hx"><time>${esc(r.t||'')}</time>${cur1&&r.u?`<i class="bd">${r.u}</i>`:''}</span></button>`}).join('')+'<button type="button" class="btn2" id="addr">+ Yeni oda</button>';
+    return `<button class="hc" data-room="${esc(c)}"><span class="av">${avh(r.o||'',n)}</span><span class="hm"><b>${esc(n)}</b><small>${esc(r.p||(cur1?'Yükleniyor…':'Sohbeti aç'))}</small></span><span class="hx"><time>${esc(r.t||'')}</time>${cur1&&r.u?`<i class="bd">${r.u}</i>`:''}</span></button>`}).join('')+'<button type="button" class="btn2" id="addr"><span class="ap">'+ic('plus',20,1.8)+'</span>Oda ekle</button>';
   if(hb._h!==h){hb._h=h;hb.innerHTML=h}
 }
+const TABS=a=>`<nav class="tabs" aria-label="Ana menü">${[['c','chat','Sohbetler'],['p','user','Profil'],['s','sliders','Ayarlar']].map(([k,n,t])=>`<button type="button" data-t="${k}" class="${a===k?'on':''}"${a===k?' aria-current="page"':''}>${ic(n,24,1.8)}<span>${t}</span></button>`).join('')}</nav>`;
+function bindTabs(root,a,close){const n=root&&root.querySelector('.tabs');if(!n)return;
+  n.onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;const k=b.dataset.t;if(k===a)return;
+    if(a==='c'){k==='p'?openProfile():openSettings();return}
+    close();if(k==='c')return;setTimeout(()=>k==='p'?openProfile():openSettings(),200)}}
 function homeMenu(){
   const el=document.createElement('div');
   el.innerHTML=`<div class="shade" id="mh"></div><div class="ctx"><button data-x="th">${P.theme==='light'?ic('moon',20)+' Koyu temaya geç':ic('sun',20)+' Açık temaya geç'}</button><button data-x="st">${ic('gear',20)} Ayarlar</button></div>`;
@@ -913,34 +1062,26 @@ function openMenu(id){
 
 /* ---------- ayarlar ---------- */
 function openSettings(){
-  const el=document.createElement('div');
-  el.innerHTML=`<div class="shade" id="sh"></div><div class="sheet" role="dialog" aria-label="Ayarlar">
-   <h2>Ayarlar</h2>
+  const el=document.createElement('div'),tb=view==='home';
+  el.innerHTML=`<div class="shade" id="sh"></div><div class="sheet${tb?' tb':''}" role="dialog" aria-label="Ayarlar">
+   <h2>Ayarlar</h2><div class="sc">
    <div class="pcard"><span class="av">${avh(uid,P.name)}</span><span class="pm"><b>${esc(P.name||'')}</b><span>${esc((auth.currentUser&&auth.currentUser.email)||'')}</span></span><button class="btn2" id="nm2">Düzenle</button></div>
-   <h3>Tema</h3>
-   <div class="walls">${Object.entries(WALLS).map(([k,w])=>`<button class="wall ${P.wall===k?'on':''}" data-w="${k}"><span class="pv" style="background:${w.pv||w.bg}"></span>${w.n}</button>`).join('')}</div>
-   <h3>Vurgu rengi</h3>
-   <div class="bubs">${Object.entries(BUB).map(([k,b])=>`<button class="sw ${P.bubble===k?'on':''}" data-b="${k}" style="background:${b[1]}" aria-label="${b[0]}"></button>`).join('')}</div>
-   <h3>Görünüm</h3>
-   <div class="row"><button class="btn2" id="th">${P.theme==='light'?ic('sun',18)+' Açık tema':ic('moon',18)+' Koyu tema'}</button></div>
-   <h3>Yazı boyutu</h3>
-   <div class="row" id="fs">${[['Küçük','s'],['Normal','m'],['Büyük','l']].map(([n,v])=>`<button class="btn2${P.fs===v?' on2':''}" data-fs="${v}">${n}</button>`).join('')}</div>
-   <h3>Bildirim sesi ve titreşim</h3>
-   <div class="row"><button class="btn2${P.snd?' on2':''}" id="sn">${P.snd?'Açık':'Kapalı'}</button></div>
-   <h3>Uygulama kilidi</h3>
-   <div class="row"><button class="btn2${pinOn()?' on2':''}" id="pl">${pinOn()?'PIN açık · Kapat':'PIN koy'}</button></div>
-   <h3>Kaybolan mesajlar</h3>
-   <div class="row" id="tt">${[['Kapalı',0],['1 saat',3600],['1 gün',86400]].map(([n,v])=>`<button class="btn2${((room&&room.ttl)||0)===v?' on2':''}" data-ttl="${v}">${n}</button>`).join('')}</div>
-   <h3>Yedek</h3>
-   <div class="row"><button class="btn2" id="bk">Yedeği indir (.txt)</button></div>
-   <h3>Hesap</h3>
-   <div class="row"><button class="btn2 danger" id="lo">Hesaptan çık</button></div>
-   <h3>Oda</h3>
-   <p class="code">Kod: ${esc(P.code||'')}</p>
-   <div class="row"><button class="btn2 danger" id="lv">Odadan çık</button><button class="btn2" id="cl">Kapat</button></div></div>`;
+   <div class="srow col"><h3>Tema</h3><div class="walls">${Object.entries(WALLS).map(([k,w])=>`<button class="wall ${P.wall===k?'on':''}" data-w="${k}"><span class="pv" style="background:${w.pv||w.bg}"></span>${w.n}</button>`).join('')}</div></div>
+   <div class="srow"><h3>Vurgu rengi</h3><div class="bubs">${Object.entries(BUB).map(([k,b])=>`<button class="sw ${P.bubble===k?'on':''}" data-b="${k}" style="background:${b[1]}" aria-label="${b[0]}"></button>`).join('')}</div></div>
+   <div class="srow"><h3>Görünüm</h3><div class="row"><button class="btn2" id="th">${P.theme==='light'?ic('sun',18)+' Açık tema':ic('moon',18)+' Koyu tema'}</button></div></div>
+   <div class="srow col"><h3>Yazı boyutu</h3><div class="row" id="fs">${[['Küçük','s'],['Normal','m'],['Büyük','l']].map(([n,v])=>`<button class="btn2${P.fs===v?' on2':''}" data-fs="${v}">${n}</button>`).join('')}</div></div>
+   <div class="srow"><h3>Bildirim sesi ve titreşim</h3><div class="row"><button class="btn2${P.snd?' on2':''}" id="sn">${P.snd?'Açık':'Kapalı'}</button></div></div>
+   <div class="srow"><h3>Uygulama kilidi</h3><div class="row"><button class="btn2${pinOn()?' on2':''}" id="pl">${pinOn()?'PIN açık · Kapat':'PIN koy'}</button></div></div>
+   <div class="srow col"><h3>Kaybolan mesajlar</h3><div class="row" id="tt">${[['Kapalı',0],['1 saat',3600],['1 gün',86400]].map(([n,v])=>`<button class="btn2${((room&&room.ttl)||0)===v?' on2':''}" data-ttl="${v}">${n}</button>`).join('')}</div></div>
+   <div class="srow"><h3>Oda kodu</h3><span class="code">${esc(P.code||'')}</span></div>
+   <div class="srow"><h3>Yedek</h3><div class="row"><button class="btn2" id="bk">Yedeği indir (.txt)</button></div></div>
+   <div class="srow dz"><button class="btn2 danger" id="lv">Odadan çık</button></div>
+   <div class="srow dz"><button class="btn2 danger" id="lo">Hesaptan çık</button></div>
+   <div class="srow dz"><button class="btn2" id="cl">Kapat</button></div>
+  </div>${tb?TABS('s'):''}</div>`;
   app.appendChild(el);
   const close=layer(()=>rm(el));
-  $('#sh',el).onclick=close;$('#cl',el).onclick=close;
+  $('#sh',el).onclick=close;$('#cl',el).onclick=close;bindTabs(el,'s',close);
   el.onclick=e=>{
     const w=e.target.closest('[data-w]'),b=e.target.closest('[data-b]');
     if(w){P.wall=w.dataset.w;save();applyLook();
@@ -951,7 +1092,7 @@ function openSettings(){
   $('#bk',el).onclick=backup;
   $('#fs',el).onclick=e=>{const b=e.target.closest('[data-fs]');if(!b)return;P.fs=b.dataset.fs;save();applyFs();el.querySelectorAll('[data-fs]').forEach(x=>x.classList.toggle('on2',x===b))};
   $('#sn',el).onclick=e=>{P.snd=P.snd?0:1;save();const b=e.currentTarget;b.textContent=P.snd?'Açık':'Kapalı';b.classList.toggle('on2',!!P.snd);if(P.snd)ping()};
-  $('#nm2',el).onclick=openProfile;
+  $('#nm2',el).onclick=()=>{if(tb){close();setTimeout(openProfile,200)}else openProfile()};
   $('#pl',el).onclick=e=>{const b=e.currentTarget;
     if(pinOn())pinPad('check',ok=>{if(ok){try{localStorage.removeItem('aurora.pin')}catch(x){}b.textContent='PIN koy';b.classList.remove('on2');toast('PIN kapatıldı')}});
     else pinPad('set',ok=>{if(ok){b.textContent='PIN açık · Kapat';b.classList.add('on2');toast('PIN kuruldu')}})};
@@ -1294,15 +1435,15 @@ function previewImgsOld(list){
 }
 function openProfile(){
   if(!roomRef)return;
-  const el=document.createElement('div'),nm=P.name||'',em=(auth.currentUser&&auth.currentUser.email)||'';
-  el.innerHTML=`<div class="shade" id="sh"></div><div class="sheet" role="dialog" aria-label="Profil"><h2>Profil</h2>
+  const el=document.createElement('div'),tb=view==='home',nm=P.name||'',em=(auth.currentUser&&auth.currentUser.email)||'';
+  el.innerHTML=`<div class="shade" id="sh"></div><div class="sheet${tb?' tb':''}" role="dialog" aria-label="Profil"><h2>Profil</h2><div class="sc">
    <div style="display:flex;flex-direction:column;align-items:center;gap:12px"><button type="button" class="av big" id="pa" aria-label="Fotoğrafı değiştir">${avh(uid,nm)}</button>
    <div class="row"><button class="btn2" id="pp">${ic('clip',18)} Fotoğraf seç</button>${phot(uid)?'<button class="btn2 danger" id="pr">Kaldır</button>':''}</div></div>
    <h3>Adın</h3><input class="in" id="pn" maxlength="24" value="${esc(nm)}" autocomplete="off">
    <h3>E-posta</h3><p class="code">${esc(em)}</p>
-   <div class="row"><button class="btn2" id="pk">Kapat</button><button class="cta" id="pv" style="flex:1">Kaydet</button></div><input type="file" id="pf" accept="image/*" hidden></div>`;
+   <div class="row pbt"><button class="btn2" id="pk">Kapat</button><button class="cta" id="pv" style="flex:1">Kaydet</button></div><input type="file" id="pf" accept="image/*" hidden></div>${tb?TABS('p'):''}</div>`;
   app.appendChild(el);const close=layer(()=>rm(el));
-  $('#sh',el).onclick=close;$('#pk',el).onclick=close;
+  $('#sh',el).onclick=close;$('#pk',el).onclick=close;bindTabs(el,'p',close);
   const pick=()=>$('#pf',el).click();$('#pa',el).onclick=pick;$('#pp',el).onclick=pick;
   $('#pf',el).onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
     try{const u=await crop(f,192);await updateDoc(roomRef,{['photos.'+uid]:u});$('#pa',el).innerHTML=avh(uid,nm);toast('Fotoğraf güncellendi')}catch(err){console.error(err);toast('Fotoğraf yüklenemedi. Tekrar dene.')}};
