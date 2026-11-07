@@ -1,46 +1,66 @@
+
 name: APK olustur
+
 on:
   workflow_dispatch:
   push:
     branches: [main]
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
+
       - name: Web dosyalarini hazirla
         run: mkdir -p www/vendor && cp index.html manifest.json icon-192.png icon-512.png icon-maskable-512.png www/
+
       - name: Firebase dosyalarini uygulamaya gom
-        run: for f in firebase-app firebase-auth firebase-firestore; do curl -fsSL "https://www.gstatic.com/firebasejs/10.14.1/$f.js" -o "www/vendor/$f.js"; sed -i 's|https://www.gstatic.com/firebasejs/10.14.1/|./|g' "www/vendor/$f.js"; done
+        run: |
+          for f in firebase-app firebase-auth firebase-firestore; do
+            curl -fsSL "https://www.gstatic.com/firebasejs/10.14.1/$f.js" -o "www/vendor/$f.js"
+            sed -i 's|https://www.gstatic.com/firebasejs/10.14.1/|./|g' "www/vendor/$f.js"
+          done
+
       - name: Firebase yollarini yerel yap
         run: sed -i 's|https://www.gstatic.com/firebasejs/10.14.1/|./vendor/|g' www/index.html
+
       - run: npm install
+
       - run: npx cap add android
+
       - name: Uygulama simgesi
         run: |
           mkdir -p assets
           cp icon-only.png icon-foreground.png icon-background.png assets/
           npx --yes @capacitor/assets@3 generate --android
+
       - run: npx cap sync android
+
       - name: Kamera ve mikrofon izni
         run: |
           M=android/app/src/main/AndroidManifest.xml
           sed -i 's|</manifest>|<uses-permission android:name="android.permission.CAMERA"/><uses-permission android:name="android.permission.RECORD_AUDIO"/><uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/><uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/><uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/><uses-feature android:name="android.hardware.camera" android:required="false"/></manifest>|' $M
           grep -E "CAMERA|RECORD_AUDIO" $M
-      - name: Sabit imza anahtari
-        run: mkdir -p ~/.android && cp debug.keystore ~/.android/debug.keystore
+
       - name: Surum numarasi
         run: sed -i "s/versionCode 1/versionCode ${{ github.run_number }}/" android/app/build.gradle
+
       - name: APK derle
         run: cd android && chmod +x gradlew && ./gradlew assembleDebug
+
       - uses: actions/upload-artifact@v4
         with:
           name: aurora-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          
