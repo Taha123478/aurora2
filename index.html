@@ -716,8 +716,8 @@ body,#app,#app button,#app input,#app textarea,.dlg,.dlg button,.dlg input{font-
 .oe .or{display:flex;align-items:center;gap:12px;color:var(--mu);font-size:13px;font-weight:800}.oe .or i{flex:1;height:1px;background:var(--hair)}
 .oe .jn{padding:20px;border-radius:32px;background:var(--su);box-shadow:var(--sh)}
 .oe .jn h3{margin:0;font-size:22px;font-weight:800}.oe .jn p{margin:4px 0 0;font-size:13px;font-weight:700;color:var(--mu)}
-.oe .bx{display:flex;gap:6px;margin-top:16px;position:relative}
-.oe .bx span{flex:1;height:54px;border-radius:16px;background:var(--su);border:2px solid var(--hair);display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:800}
+.oe .bx{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;position:relative}
+.oe .bx span{flex:1 1 32px;min-width:32px;height:54px;border-radius:16px;background:var(--su);border:2px solid var(--hair);display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:800}
 .oe .bx span.f{border-color:var(--cr)}
 .oe .bx input{position:absolute;inset:0;opacity:0;width:100%;height:100%;font-size:16px}
 .oe .err{min-height:18px;color:#FF8A78;font-size:13px;font-weight:700;text-align:center}
@@ -1668,21 +1668,22 @@ function joinScreen(msg,can){
   const gen=()=>{const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let o='';const r=crypto.getRandomValues(new Uint8Array(8));for(const x of r)o+=A[x%A.length];return o};
   let mine=gen();
   app.innerHTML=`<section class="g7 fade">${can?`<button class="p-bk" id="jc" aria-label="Geri" style="position:absolute;left:20px;top:calc(16px + env(safe-area-inset-top,0px))">${ic('back',20)}</button>`:''}<div class="g7h"><div class="g7l">${ic('heart',30,2)}</div><div class="g7t">Oda ekle</div><div class="g7s">Kodu gir ya da yeni bir oda oluştur.</div></div>
-   <div class="g7f"><div class="p-lb">ODA KODU</div><div class="bx" id="bx">${'<span></span>'.repeat(8)}<input id="cd" maxlength="8" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Oda kodu"></div><div class="err" id="er">${esc(msg||'')}</div>
+   <div class="g7f"><div class="p-lb">ODA KODU</div><div class="bx" id="bx">${'<span></span>'.repeat(8)}<input id="cd" maxlength="32" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Oda kodu"></div><div class="err" id="er">${esc(msg||'')}</div>
    <button id="go" type="button" class="p-btn o" style="margin-top:8px">Odaya gir</button><button id="nw" type="button" class="p-btn p-g">Yeni oda oluştur</button>
    <div class="p-cd g7n hidden" id="nwc"><div class="p-lb" style="margin:0">YENİ ODA KODU</div><b style="font-size:26px;letter-spacing:4px;display:block;margin:6px 0 10px">${mine}</b><div style="display:flex;gap:10px"><button type="button" id="cpy" class="p-btn p-g" style="height:44px;flex:1">Kopyala</button><button type="button" class="p-btn" id="mk" style="height:44px;flex:1">Bu odayı aç</button></div><div class="p-note" style="margin-top:8px">Kodu karşındaki kişiye gönder.</div></div></div></section>`;
   $('#nw').onclick=()=>$('#nwc').classList.toggle('hidden');
   if($('#jc'))$('#jc').onclick=()=>showHome();
   const nm=()=>(P.name||'').trim()||'Ben';
   const bx=[...document.querySelectorAll('#bx span')],cd=$('#cd');
-  cd.oninput=()=>{cd.value=cd.value.toUpperCase().replace(/[^A-Z0-9]/g,'');bx.forEach((e,i)=>{e.textContent=cd.value[i]||'';e.classList.toggle('f',i===cd.value.length||!!cd.value[i])})};
+  const bxEl=$('#bx');
+  cd.oninput=()=>{cd.value=cd.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'');const n=Math.max(8,cd.value.length+(cd.value.length<32?1:0));let sp=[...bxEl.querySelectorAll('span')];while(sp.length<n){const e=document.createElement('span');bxEl.insertBefore(e,cd);sp.push(e)}while(sp.length>n){sp.pop().remove()}sp.forEach((e,i)=>{e.textContent=cd.value[i]||'';e.classList.toggle('f',i===cd.value.length||!!cd.value[i])})};
   $('#cpy').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(mine).then(()=>toast('Kod kopyalandı')).catch(()=>{})};
   const go=async code=>{
     $('#er').textContent='';$('#go').disabled=$('#mk').disabled=true;
     try{await enterRoom(nm(),code.toLowerCase(),true)}catch(err){console.error(err);joinScreen(errText(err),can)}
   };
   $('#mk').onclick=()=>go(mine);
-  $('#go').onclick=()=>{if(cd.value.length<8){$('#er').textContent='Kod 8 karakter olmalı.';return}go(cd.value)};
+  $('#go').onclick=()=>{if(cd.value.length<8){$('#er').textContent='Kod en az 8 karakter olmalı.';return}go(cd.value)};
 }
 function authScreen(msg,mode,em0){
   layers.length=0;view='auth';joinCan=false;setBar(P.wall);
