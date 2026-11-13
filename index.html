@@ -1778,7 +1778,7 @@ function showChat(){
   const STK=[...new Set([...EM2,...EMOJIS])];let emoTab='e',stkLp=0,stkT=0;
   const stkTiles=()=>{const cu=Object.values(GM).filter(x=>x.k==='st').sort((a,b)=>b.ts-a.ts);return `<button type="button" class="stn" data-sn aria-label="Fotoğraftan çıkartma yap"><b>+</b><span>Fotoğraftan</span></button>`+cu.map(x=>`<button type="button" class="stt" data-sk="${x.id}"><img src="${x.d}" alt=""></button>`).join('')+Object.keys(STB).map(k=>`<button type="button" class="stt" data-sb="${k}"><img src="${stkSrc('b:'+k)}" alt=""></button>`).join('')};
   const fillEmo=()=>{$('#emo').innerHTML=`<div class="emt"><button type="button" data-et="e" class="${emoTab==='e'?'on':''}">Emoji</button><button type="button" data-et="s" class="${emoTab==='s'?'on':''}">Çıkartma</button></div>`+(emoTab==='e'?`<div class="emg">${STK.map(e=>`<button type="button" data-e="${e}">${e}</button>`).join('')}</div>`:`<div class="stg">${stkTiles()}</div>`)};
-  window.__fe=()=>{if(emoTab==='s'&&!$('#emo').classList.contains('hidden'))fillEmo()};
+  window.__so=()=>{emoTab='s';fillEmo();emojiOpen=true;$('#emo').classList.remove('hidden')};window.__fe=()=>{if(emoTab==='s'&&!$('#emo').classList.contains('hidden'))fillEmo()};
   fillEmo();
   $('#emo').onclick=e=>{
     const tb=e.target.closest('[data-et]');if(tb){emoTab=tb.dataset.et;fillEmo();return}
@@ -2365,12 +2365,12 @@ function sheetB(html,bind){
   el.onclick=e=>{if(e.target.id==='bs'||e.target.closest('[data-cl]')){close();return}bind&&bind(e,close)};return close;
 }
 function attachMenu(){
-  const T=[['img','Fotoğraf','ph'],['cam','Kamera','cm'],['pin','Konum','lc'],['book','Günlük','jr'],['game','Oyunlar','gm'],['poll','Anket','pl']];
-  const P7={img:'img',cam:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',pin:'pin',book:'book',game:'<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/>',poll:'poll'};
+  const T=[['img','Fotoğraf','ph'],['cam','Kamera','cm'],['pin','Konum','lc'],['book','Günlük','jr'],['game','Oyunlar','gm'],['poll','Anket','pl'],['smile','Çıkartma','sk']];
+  const P7={img:'img',cam:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',pin:'pin',book:'book',game:'<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/>',poll:'poll',smile:'<circle cx="12" cy="12" r="9"/><path d="M8 14a4 4 0 0 0 8 0M9 9.5h.01M15 9.5h.01"/>'};
   const ic7=k=>P7[k].startsWith('<')?S7(P7[k],22):i7(P7[k],22);
   sheetB(`<div class="hd"><b>Ekle</b><button class="xb" data-cl aria-label="Kapat">${ic('x',18)}</button></div><div class="atg">${T.map(([i,l,k])=>`<button type="button" class="p-cd tl7" data-k="${k}"><span class="ic7">${ic7(i)}</span><b>${l}</b></button>`).join('')}</div><button type="button" class="ban7" data-k="qz"><span><b>Beni ne kadar tanıyorsun?</b><small>Hızlı oyun · 10 soru</small></span><i>${ic('back',18)}</i></button>`,(e,close)=>{
     const k=e.target.closest('[data-k]');if(!k)return;close();const v=k.dataset.k;
-    setTimeout(()=>{if(v==='ph')$('#fi').click();else if(v==='cm')openCamera();else if(v==='lc')sendLoc();else if(v==='jr')openJournal();else if(v==='gm')openGames();else if(v==='pl')openPollNew();else if(v==='qz')openQuiz()},130)});
+    setTimeout(()=>{if(v==='ph')$('#fi').click();else if(v==='cm')openCamera();else if(v==='lc')sendLoc();else if(v==='jr')openJournal();else if(v==='gm')openGames();else if(v==='pl')openPollNew();else if(v==='sk'&&window.__so)window.__so();else if(v==='qz')openQuiz()},130)});
 }
 function sendLoc(){
   if(!navigator.geolocation){toast('Konum alınamadı');return}
