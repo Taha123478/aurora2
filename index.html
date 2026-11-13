@@ -716,8 +716,8 @@ body,#app,#app button,#app input,#app textarea,.dlg,.dlg button,.dlg input{font-
 .oe .or{display:flex;align-items:center;gap:12px;color:var(--mu);font-size:13px;font-weight:800}.oe .or i{flex:1;height:1px;background:var(--hair)}
 .oe .jn{padding:20px;border-radius:32px;background:var(--su);box-shadow:var(--sh)}
 .oe .jn h3{margin:0;font-size:22px;font-weight:800}.oe .jn p{margin:4px 0 0;font-size:13px;font-weight:700;color:var(--mu)}
-.oe .bx{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;position:relative}
-.oe .bx span{flex:1 1 32px;min-width:32px;height:54px;border-radius:16px;background:var(--su);border:2px solid var(--hair);display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:800}
+.oe .bx{display:flex;gap:6px;margin-top:16px;position:relative}
+.oe .bx span{flex:1;height:54px;border-radius:16px;background:var(--su);border:2px solid var(--hair);display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:800}
 .oe .bx span.f{border-color:var(--cr)}
 .oe .bx input{position:absolute;inset:0;opacity:0;width:100%;height:100%;font-size:16px}
 .oe .err{min-height:18px;color:#FF8A78;font-size:13px;font-weight:700;text-align:center}
@@ -1668,22 +1668,21 @@ function joinScreen(msg,can){
   const gen=()=>{const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let o='';const r=crypto.getRandomValues(new Uint8Array(8));for(const x of r)o+=A[x%A.length];return o};
   let mine=gen();
   app.innerHTML=`<section class="g7 fade">${can?`<button class="p-bk" id="jc" aria-label="Geri" style="position:absolute;left:20px;top:calc(16px + env(safe-area-inset-top,0px))">${ic('back',20)}</button>`:''}<div class="g7h"><div class="g7l">${ic('heart',30,2)}</div><div class="g7t">Oda ekle</div><div class="g7s">Kodu gir ya da yeni bir oda oluştur.</div></div>
-   <div class="g7f"><div class="p-lb">ODA KODU</div><div class="bx" id="bx">${'<span></span>'.repeat(8)}<input id="cd" maxlength="32" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Oda kodu"></div><div class="err" id="er">${esc(msg||'')}</div>
+   <div class="g7f"><div class="p-lb">ODA KODU</div><div class="bx" id="bx">${'<span></span>'.repeat(8)}<input id="cd" maxlength="8" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Oda kodu"></div><div class="err" id="er">${esc(msg||'')}</div>
    <button id="go" type="button" class="p-btn o" style="margin-top:8px">Odaya gir</button><button id="nw" type="button" class="p-btn p-g">Yeni oda oluştur</button>
    <div class="p-cd g7n hidden" id="nwc"><div class="p-lb" style="margin:0">YENİ ODA KODU</div><b style="font-size:26px;letter-spacing:4px;display:block;margin:6px 0 10px">${mine}</b><div style="display:flex;gap:10px"><button type="button" id="cpy" class="p-btn p-g" style="height:44px;flex:1">Kopyala</button><button type="button" class="p-btn" id="mk" style="height:44px;flex:1">Bu odayı aç</button></div><div class="p-note" style="margin-top:8px">Kodu karşındaki kişiye gönder.</div></div></div></section>`;
   $('#nw').onclick=()=>$('#nwc').classList.toggle('hidden');
   if($('#jc'))$('#jc').onclick=()=>showHome();
   const nm=()=>(P.name||'').trim()||'Ben';
   const bx=[...document.querySelectorAll('#bx span')],cd=$('#cd');
-  const bxEl=$('#bx');
-  cd.oninput=()=>{cd.value=cd.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'');const n=Math.max(8,cd.value.length+(cd.value.length<32?1:0));let sp=[...bxEl.querySelectorAll('span')];while(sp.length<n){const e=document.createElement('span');bxEl.insertBefore(e,cd);sp.push(e)}while(sp.length>n){sp.pop().remove()}sp.forEach((e,i)=>{e.textContent=cd.value[i]||'';e.classList.toggle('f',i===cd.value.length||!!cd.value[i])})};
+  cd.oninput=()=>{cd.value=cd.value.toUpperCase().replace(/[^A-Z0-9]/g,'');bx.forEach((e,i)=>{e.textContent=cd.value[i]||'';e.classList.toggle('f',i===cd.value.length||!!cd.value[i])})};
   $('#cpy').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(mine).then(()=>toast('Kod kopyalandı')).catch(()=>{})};
   const go=async code=>{
     $('#er').textContent='';$('#go').disabled=$('#mk').disabled=true;
     try{await enterRoom(nm(),code.toLowerCase(),true)}catch(err){console.error(err);joinScreen(errText(err),can)}
   };
   $('#mk').onclick=()=>go(mine);
-  $('#go').onclick=()=>{if(cd.value.length<8){$('#er').textContent='Kod en az 8 karakter olmalı.';return}go(cd.value)};
+  $('#go').onclick=()=>{if(cd.value.length<8){$('#er').textContent='Kod 8 karakter olmalı.';return}go(cd.value)};
 }
 function authScreen(msg,mode,em0){
   layers.length=0;view='auth';joinCan=false;setBar(P.wall);
@@ -3087,7 +3086,8 @@ function openPollNew(){
 /* ---------- oyunlar ---------- */
 let GM={},gUn=null,gCode='';
 let dtSeen=+(localStorage.getItem('aurora.dt')||0);function dtChk(){const d=GM.dt_1;if(!d||d.from===uid||!d.ts)return;if(!dtSeen){dtSeen=d.ts;try{localStorage.setItem('aurora.dt',d.ts)}catch(e){}return}if(d.ts>dtSeen){dtSeen=d.ts;try{localStorage.setItem('aurora.dt',d.ts)}catch(e){}if(navigator.vibrate)navigator.vibrate([60,60,60,60,200]);toast('💗 '+(((room||{}).names||{})[d.from]||'O')+' seni düşünüyor')}}
-function gwatch(){if(gUn&&gCode===P.code)return;gUn&&gUn();gCode=P.code;GM={};gUn=onSnapshot(collection(roomRef,'games'),sn=>{GM={};sn.docs.forEach(d=>{GM[d.id]=Object.assign({id:d.id},d.data())});if(window.__gr)window.__gr();if(window.__xr)window.__xr();if(window.__br)window.__br();if(window.__fe)window.__fe();dtChk();ivChk();updNBadge()},e=>{console.error(e);toast('Oyunlar açılamadı. Yetki gerekebilir.')})}
+function turnChk(pv){if(!pv||!Object.keys(pv).length)return;const me=uid,nmo=(room&&room.names&&room.names[otherUid()])||'Arkadaş';[['xo_1','XOX','mv'],['mm_1','Hafıza','mv']].forEach(([id,t,f])=>{const n=GM[id],p=pv[id];if(n&&p&&n.v===2&&n.ph==='play'&&n.t===me&&n[f]!==p[f]&&p.t!==me){toast(t+': sıra sende ('+nmo+' oynadı)');if(navigator.vibrate)navigator.vibrate([30,40,30])}});const c=GM.cz_1,pc=pv.cz_1;if(c&&pc&&c.v===2&&c.ph==='pick'&&pc.ph!=='pick'||c&&pc&&c.ph==='pick'&&c.rn!==pc.rn){const rn=c.rn||1;if((rn%2?c.f:(c.f===me?otherUid():me))===me)toast('Çiz-bul: çizme sırası sende')}}
+function gwatch(){if(gUn&&gCode===P.code)return;gUn&&gUn();gCode=P.code;GM={};gUn=onSnapshot(collection(roomRef,'games'),sn=>{const PV=GM;GM={};sn.docs.forEach(d=>{GM[d.id]=Object.assign({id:d.id},d.data())});if(!window.__xr)try{turnChk(PV)}catch(e){}if(window.__gr)window.__gr();if(window.__xr)window.__xr();if(window.__br)window.__br();if(window.__fe)window.__fe();dtChk();ivChk();updNBadge()},e=>{console.error(e);toast('Oyunlar açılamadı. Yetki gerekebilir.')})}
 const QB=[
 ['en sevdiğin yemek hangisi?','{n}’in en sevdiği yemek hangisi?',['Mantı','Lahmacun','Sushi','Pizza']],
 ['en sevdiğin renk hangisi?','{n}’in en sevdiği renk hangisi?',['Mavi','Mor','Yeşil','Kırmızı']],
@@ -3120,6 +3120,7 @@ function gsc(d,u,o){const g=(d.g||{})[u],a=(d.a||{})[o];if(!g||!a||g.length<10||
 const XW=['KAPI','BALKON','ÇİÇEK','BİSİKLET','DENİZ','KİTAP','ÇİKOLATA','GÜNEŞ','TELEFON','KEDİ','PİZZA','YAĞMUR','GİTAR','UÇAK','KAHVE','YILDIZ','MERDİVEN','ŞEMSİYE','BALON','ARABA'];
 const XQ=['Dünyadaki herkesten seçme şansın olsa akşam yemeğine kimi davet ederdin?','Ünlü olmak ister miydin? Ne ile?','Telefon etmeden önce ne söyleyeceğini prova eder misin? Neden?','Senin için “mükemmel” bir gün nasıl olurdu?','En son ne zaman kendi kendine şarkı söyledin? Birine söyledin mi?','90 yaşına kadar yaşasan ve son 60 yılında 30 yaşındaki bir zihne ya da bedene sahip olsan hangisini seçerdin?','Nasıl öleceğine dair gizli bir önsezin var mı?','Birbirinizle ortak olan üç şey söyleyin.','Hayatında en çok neye minnettarsın?','Büyüme şeklini değiştirebilseydin neyi farklı yapardın?','4 dakika içinde hayat hikâyeni olabildiğince ayrıntılı anlat.','Yarın uyandığında bir yetenek kazanabilseydin bu ne olurdu?','Bir kristal küre sana gerçeği söyleyebilseydi neyi sorardın?','Uzun zamandır yapmayı hayal ettiğin bir şey var mı? Neden yapmadın?','Hayatındaki en büyük başarın ne?','Bir arkadaşlıkta en çok neye değer verirsin?','En değerli anın hangisi?','En kötü anın hangisi?','Bir yıl sonra öleceğini bilsen yaşam tarzında neyi değiştirirdin?','Sence arkadaşlık ne anlama geliyor?','Hayatında sevgi ve şefkatin yeri nedir?','Sırayla birbirinizde beğendiğiniz 5 özelliği söyleyin.','Aileniz ne kadar yakın ve sıcak? Çocukluğunun diğerlerinden mutlu olduğunu düşünüyor musun?','Annenle ilişkin hakkında ne hissediyorsun?','“Biz …” diye başlayan 3 doğru cümle kurun.','“Keşke paylaşabileceğim biri olsaydı …” cümlesini tamamla.','Yakın bir arkadaş olsaydık bilmem gereken şey ne olurdu?','Bana henüz söylemediğin, bende beğendiğin bir şeyi söyle.','Hayatındaki utanç verici bir anı paylaş.','En son ne zaman başkasının yanında ağladın? Yalnız mı ağladın?','Hemen şimdi hakkında şaka yapmanın çok ciddi olduğunu düşündüğün şey ne?','Bir daha kimseyle konuşamayacak olsan konuşmadığın neyden pişman olurdun?','Evin yansa ve sevdiklerin kurtulsa, bir eşya kurtarabilsen ne olurdu?','Ailenden biri ölse en çok kimin ölümü seni üzerdi?','Kişisel bir sorunu paylaş ve bana nasıl yaklaşacağımı sor.','Şu an için bana bir şey söylemek istesen, bu ne olurdu?','Hiç söylemediğin bir şeyi şimdi söyle.'];
 const XS=['Sabah uyanmakta zorlanır?','Daha dağınık?','Daha inatçı?','Daha geç kalır?','Daha çok güler?','Daha iyi yemek yapar?','Daha çabuk kızar?','Daha romantik?','Barışmayı önce teklif eder?','Daha komik?'];
+const CZW=['ELMA','ARABA','KEDİ','KÖPEK','GÜNEŞ','YILDIZ','BULUT','YAĞMUR','ŞEMSİYE','AĞAÇ','ÇİÇEK','KALP','KİTAP','TELEFON','SAAT','GÖZLÜK','BİSİKLET','UÇAK','GEMİ','TREN','OTOBÜS','BALIK','KUŞ','KELEBEK','ASLAN','FİL','ZÜRAFA','PENGUEN','TAVŞAN','ÖRÜMCEK','PİZZA','HAMBURGER','DONDURMA','ÇİKOLATA','KAHVE','MUZ','KARPUZ','ÇİLEK','HAVUÇ','PASTA','MUM','HEDİYE','BALON','KILIÇ','KAPI','PENCERE','MERDİVEN','LAMBA','YATAK','KOLTUK','AYAKKABI','ŞAPKA','GİTAR','PİYANO','KAMERA','BİLGİSAYAR','ROKET','DAĞ','DENİZ','KÖPRÜ','KALE','HAYALET','ROBOT','BAYRAK','ANAHTAR','KİLİT','ŞİŞE','TOP','PALMİYE','KAKTÜS','MANTAR','YILAN','KAPLUMBAĞA','TAVUK','İNEK','ATEŞ','TAÇ','ÇAYDANLIK','VALİZ','DÜRBÜN'];
 const XWH=['Doğruluk','Cesaret','Şarkı söyle','Selfie at','Sesli mesaj bırak','Güzel söz söyle','Bir sır paylaş','Sarıl'];
 const XZ={lt:'Aşk dilleri',ct:'Kendi testimiz',ck:'Haftalık check-in',bl:'Hayal listemiz',xo:'XOX',mm:'Hafıza',kw:'Kelime avı',cz:'Çiz-bul',wh:'Çark',q36:'36 soru',sm:'Sen mi, ben mi?',tc:'Zaman kapsülü',dt:'Seni düşünüyorum',sk:'Skor ve rozetler',is:'İstatistik'};
 const XI={lt:'<path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.600-7 10-7 10z"/>',ct:'<path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h3"/>',ck:'<path d="M4 18V9M10 18V5M16 18v-7M22 18H2"/>',bl:'<path d="M12 3l2.600 5.600 6 .7-4.400 4.100 1.200 6L12 16.500 6.600 19.400l1.200-6L3.400 9.300l6-.7z"/>',xo:'<path d="M5 5l14 14M19 5L5 19"/>',mm:'<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>',kw:'<path d="M4 18l4-12 4 12M5.5 14h5M15 8h5M15 12h5M15 16h5"/>',cz:'<path d="M4 20l1-4L16 5l3 3L8 19z"/>',wh:'<circle cx="12" cy="12" r="8"/><path d="M12 4v8l5 4"/>',q36:'<path d="M9 9a3 3 0 1 1 4 2.8c-.8.4-1 1-1 2M12 18h.01"/>',sm:'<circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 20a5 5 0 0 1 10 0M11 20a5 5 0 0 1 10 0"/>',tc:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',dt:'<path d="M12 20s-7-4.4-7-9.6A4 4 0 0 1 12 8a4 4 0 0 1 7 2.4C19 15.6 12 20 12 20z"/>',sk:'<path d="M8 4h8v5a4 4 0 0 1-8 0zM6 5H4v2a3 3 0 0 0 3 3M18 5h2v2a3 3 0 0 1-3 3M12 13v4M8 20h8"/>',is:'<path d="M5 20V10M12 20V4M19 20v-7"/>'};
@@ -3168,6 +3169,7 @@ function ivCards(){
 const scGet=()=>((GM.sc_1||{}).n)||{};
 const scAdd=(g,u)=>{const c=((scGet()[g]||{})[u]||0)+1;return gdoc('sc_1',{k:'sc',n:{[g]:{[u]:c}}})};
 const XCSS=`.ivw{display:flex;flex-direction:column;gap:8px;flex:none}.ivc{display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:18px;background:#15201A;color:#fff;animation:ivin .35s cubic-bezier(.2,.8,.2,1)}.ivc.w{background:var(--card);color:var(--tx7);border:1px solid var(--line)}.ivt{flex:1;min-width:0}.ivt b{display:block;font-size:14px;font-weight:700}.ivt span{font-size:12px;opacity:.7}.ivb2{height:36px;padding:0 14px;border-radius:12px;border:0;background:#F26A44;color:#fff;font:700 13px inherit;flex:none}.ivb2.no{background:transparent;color:inherit;opacity:.75}.ivb2:active{transform:scale(.96)}@keyframes ivin{from{opacity:0;transform:translateY(-8px)}}.ivq{height:38px;padding:0 14px;border-radius:12px;border:0;background:#15201A;color:#fff;font:700 13px inherit;flex:none}.ivq[disabled]{opacity:.5}
+.mtb{padding:12px 14px;border-radius:18px;background:var(--su);border:1px solid var(--hair);flex:none}.mtt{display:flex;align-items:center;gap:8px}.mtl{display:flex;align-items:center;gap:8px;flex:1}.mtl.r{justify-content:flex-end}.mtl b{font-size:24px;font-weight:800}.mtc{display:flex;flex-direction:column;align-items:center;font-size:11px;font-weight:700;color:var(--mu)}.mtc b{font-size:18px;color:var(--tx);font-variant-numeric:tabular-nums}.mtc b.lo{color:#E0452B}.mtp{height:5px;border-radius:3px;background:var(--hair);margin-top:10px;overflow:hidden}.mtp i{display:block;height:100%;background:#F26A44;border-radius:3px;transition:width .3s linear}.mts{text-align:center;font-size:14px;font-weight:700;color:var(--mu)}.mts.me{color:#F26A44}.mte{text-align:center}.mtn{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:10px}.mtn span{display:flex;align-items:center;gap:10px}.mtn b{font-size:48px;font-weight:800;letter-spacing:-2px;line-height:1}.mtn i{font-style:normal;opacity:.5;font-size:24px}.kwh{margin-top:10px;font-size:18px;font-weight:700;letter-spacing:5px;color:#F2C14E;min-height:24px}.cgl{display:flex;flex-direction:column;gap:4px;max-height:96px;overflow:auto}.cgf{font-size:14px;font-weight:600;padding:6px 10px;border-radius:10px;background:var(--su);border:1px solid var(--hair)}.cgf b{font-size:12px;color:var(--mu);margin-right:4px}.cgf.ok{background:#D5EEDD;color:#1E7A48;border-color:transparent}.cgt{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}.cb.on{outline:2px solid var(--tx)}.xc.lm{box-shadow:inset 0 0 0 2px #F2C14E}
 .t7o{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:15px 16px;border-radius:16px;border:1.5px solid var(--line);background:var(--card);color:var(--tx7);font:600 15px/1.3 inherit;margin-bottom:10px;transition:border-color .15s,background .15s,transform .15s}.t7o:active{transform:scale(.985)}.t7o.on{border-color:var(--tx7);background:var(--soft)}.t7o .t7d,.t7c{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none;padding:0;background:transparent;transition:all .15s}.t7o.on .t7d,.t7c.on{border-color:#F26A44;background:#F26A44;box-shadow:inset 0 0 0 4px var(--card)}.t7c.on{box-shadow:none}.t7x{width:32px;height:32px;border-radius:10px;border:0;background:transparent;color:var(--mu7);display:flex;align-items:center;justify-content:center;padding:0;flex:none}
 .ckr{display:flex;gap:8px;margin-top:10px}.ckr button{flex:1;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--tx7);font:700 16px inherit}.ckr button.on{background:#15201A;color:#fff;border-color:#15201A}
 .gp .fx .sk{height:58px;padding:0 20px;border-radius:24px}
@@ -3186,44 +3188,82 @@ function openX(kind){
   const G=id=>GM[id]||{};
   const stat=(a,b,mid,turnU)=>`<div class="xst"><span style="display:flex;align-items:center;gap:8px;flex:1">${av(uid)}<b>${a}</b></span><span class="xm">${mid}</span><span style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end"><b>${b}</b>${av(o)}</span></div>`;
   const R={};
-  /* XOX */
-  R.xo=()=>{
-    const d=G('xo_1'),b=(d.b||'.........').split(''),t=d.t,w=d.w,X=d.x||uid,mark=u=>u===X?'X':'O';
-    const L=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]],wl=(L.find(l=>b[l[0]]!=='.'&&b[l[0]]===b[l[1]]&&b[l[1]]===b[l[2]])||[]);
-    const sc=scGet().xo||{},tu=w?(w==='d'?null:w):t,tm=tu?mark(tu):'';
-    const ttl=!d.b?'Başlayalım':w==='d'?'Berabere':w?(w===uid?'Kazandın!':esc(nm(w))+' kazandı'):(t===uid?'Sıra sende':'Sıra '+esc(nm(t))+'’de');
-    const sub=!d.b?'Yeni oyun başlat':w?'Oyun bitti':(tm+' oynuyor');
-    const cells=b.map((c,i)=>`<button class="xc ${wl.includes(i)?'w':''}" data-i="${i}" aria-label="Kare ${i+1}" style="color:${c==='X'?'#F26A44':'#15201A'}">${c==='.'?'':c}</button>`).join('');
-    shell('XOX',`<div class="p-cd" style="display:flex;align-items:center;gap:12px;padding:12px 14px;flex:none">${av(tu||uid)}<span style="flex:1;display:flex;flex-direction:column"><b style="font-size:15px;font-weight:700">${ttl}</b><span style="font-size:12px;color:var(--mu7)">${sub}</span></span><b style="font-size:28px;font-weight:800">${tm}</b></div><div class="xbd" style="grid-template-columns:repeat(3,1fr);gap:10px;max-width:none;margin-top:4px">${cells}</div><div style="display:flex;gap:10px;margin-top:4px"><button type="button" class="xb g" id="xn" style="flex:1;height:48px">Yeniden başlat</button><button type="button" class="xb" id="xq" style="flex:1;height:48px">Çık</button></div>`,'',`<span style="font-size:13px;font-weight:700;padding:8px 12px;border-radius:10px;background:var(--seg)">${sc[uid]||0} – ${sc[o]||0}</span>`);
-    $('#xq',el).onclick=()=>{un();close()};
-    $('#xn',el).onclick=()=>{gdoc('xo_1',{k:'xo',ts:Date.now(),b:'.........',t:d.x===uid?o:uid,x:d.x===uid?o:uid,w:''},false)};
-    $('.xbd',el).onclick=e=>{const c=e.target.closest('[data-i]');if(!c||!d.b||w||t!==uid)return;const i=+c.dataset.i;if(b[i]!=='.')return;if(navigator.vibrate)navigator.vibrate(12);b[i]=mark(uid);
-      const win=L.some(l=>b[l[0]]!=='.'&&b[l[0]]===b[l[1]]&&b[l[1]]===b[l[2]]),full=!b.includes('.');
-      GM.xo_1=Object.assign({},d,{b:b.join(''),t:o,w:win?uid:full?'d':''});R.xo();
-      gdoc('xo_1',{b:b.join(''),t:o,w:win?uid:full?'d':''}).then(()=>{if(win)scAdd('xo',uid)})};
-  };
-  /* Hafıza */
-  R.mm=()=>{
-    const d=G('mm_1'),c=d.c||[],m=d.m||[],op=d.o||[],p=d.p||{},t=d.t;
-    const done=c.length&&m.filter(Boolean).length===c.length;
-    const mid=!c.length?'':done?(((p[uid]||0)>(p[o]||0))?'Kazandın!':(p[uid]||0)<(p[o]||0)?nm(o)+' kazandı':'Berabere'):(t===uid?'Sıra sende':'Sıra '+esc(on)+'’de');
-    const cards=c.map((s,i)=>{const sh=m[i]||op.includes(i);return `<button class="xk ${m[i]?'m':sh?'o':''}" data-i="${i}" aria-label="Kart">${sh?ic(XSYM[s],26,2):''}</button>`}).join('');
-    shell('Hafıza',stat(p[uid]||0,p[o]||0,mid)+`<div class="xbd" style="grid-template-columns:repeat(4,1fr);gap:10px;max-width:none">${cards}</div><div style="font-size:13px;color:var(--mu7);text-align:center">${!c.length?'Başlamak için yeni oyun seç':done?'Oyun bitti':t===uid?'Eşini bul, iki kart aç':'Sıra '+esc(on)+'’de'}</div><div style="display:flex;gap:10px"><button type="button" class="xb g" id="xn" style="flex:1;height:48px">Yeniden başlat</button><button type="button" class="xb" id="xq" style="flex:1;height:48px">Çık</button></div>`);$('#xq',el).onclick=()=>{un();close()};
-    $('#xn',el).onclick=()=>{const a=[...Array(12).keys()].map(i=>i%6).sort(()=>Math.random()-.5);gdoc('mm_1',{k:'mm',ts:Date.now(),c:a,m:Array(12).fill(0),o:[],t:uid,p:{[uid]:0,[o]:0}},false)};
-    const resolve=()=>{if(window.__mmT)return;window.__mmT=setTimeout(()=>{window.__mmT=0;const d2=G('mm_1'),op2=d2.o||[];if(op2.length!==2||d2.t!==uid)return;const ok=d2.c[op2[0]]===d2.c[op2[1]],m2=(d2.m||[]).slice(),p2=Object.assign({},d2.p);
-      if(ok){op2.forEach(i=>m2[i]=1);p2[uid]=(p2[uid]||0)+1}
-      const fin=m2.every(Boolean);gdoc('mm_1',{o:[],m:m2,p:p2,t:ok?uid:o}).then(()=>{if(fin){const a=p2[uid]||0,b=p2[o]||0;if(a>b)scAdd('mm',uid)}})},900)};
-    if(op.length===2&&t===uid)resolve();
-    $('.xbd',el).onclick=e=>{const k=e.target.closest('[data-i]');if(!k||t!==uid||done)return;const i=+k.dataset.i;if(m[i]||op.includes(i)||op.length>=2)return;if(navigator.vibrate)navigator.vibrate(10);
-      const n=op.concat(i);GM.mm_1=Object.assign({},d,{o:n});R.mm();gdoc('mm_1',{o:n})};
-  };
-  /* Kelime avı */
+  /* ortak maç iskeleti */
+  const TMR=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+  const enc=w=>btoa(unescape(encodeURIComponent(w))),dec=x=>{try{return decodeURIComponent(escape(atob(x)))}catch(e){return ''}};
+  const norm=s=>String(s||'').trim().toLocaleUpperCase('tr').replace(/\s+/g,'');
+  const lev=(a,b)=>{const m=a.length,n=b.length,D=Array.from({length:m+1},(_,i)=>[i]);for(let j=1;j<=n;j++)D[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)D[i][j]=Math.min(D[i-1][j]+1,D[i][j-1]+1,D[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return D[m][n]};
+  const hintN=(w,l,T)=>{const e=1-l/T;return Math.min(Math.max(0,w.length-2),e>=.8?3:e>=.6?2:e>=.35?1:0)};
+  const hintPat=(w,n)=>{const ord=[...Array(w.length).keys()].sort((a,b)=>((a*5+w.charCodeAt(a))%11)-((b*5+w.charCodeAt(b))%11)||a-b).slice(0,n);return w.split('').map((c,i)=>ord.includes(i)?c:'_').join(' ')};
+  let mtI=0;const mtSet=new Set();
+  const mtRun=(dl,tot,onExp,onTick)=>{clearInterval(mtI);if(!dl)return;let fired=false;const tk=()=>{if(!alive||!el.isConnected){clearInterval(mtI);return}const l=dl-Date.now(),e=$('#mtT',el),b=$('#mtP',el);if(e){e.textContent=TMR(l);e.classList.toggle('lo',l<=5000)}if(b)b.style.width=Math.max(0,Math.min(100,l/tot*100))+'%';if(onTick)onTick(l);if(l<=0&&!fired){fired=true;clearInterval(mtI);if(onExp)onExp()}};tk();mtI=setInterval(tk,250)};
+  const mtBar=(sc,mid,dl,tot)=>`<div class="mtb"><div class="mtt"><span class="mtl">${av(uid)}<b>${(sc||{})[uid]||0}</b></span><span class="mtc">${mid}<b id="mtT">${dl?TMR(dl-Date.now()):''}</b></span><span class="mtl r"><b>${(sc||{})[o]||0}</b>${av(o)}</span></div>${dl?`<div class="mtp"><i id="mtP" style="width:${Math.max(0,Math.min(100,(dl-Date.now())/tot*100))}%"></i></div>`:''}</div>`;
+  const mtWin=sc=>{const a=(sc||{})[uid]||0,b=(sc||{})[o]||0;return a>b?uid:b>a?o:'d'};
+  const mtEnd=sc=>{const w=mtWin(sc);return `<div class="xcd d mte"><div class="xlb">${w==='d'?'BERABERE':w===uid?'KAZANDIN':esc(nm(o)).toUpperCase()+' KAZANDI'}</div><div class="mtn"><span>${av(uid)}<b>${(sc||{})[uid]||0}</b></span><i>–</i><span><b>${(sc||{})[o]||0}</b>${av(o)}</span></div></div>`};
+  const mtSettle=(id,kind,sc)=>{if(mtWin(sc)!==uid)return;const k=id+'|'+(G(id).ts);if(mtSet.has(k)||G(id).sa)return;mtSet.add(k);gdoc(id,{sa:true}).then(()=>scAdd(kind,uid))};
+  const mtBtns=(again)=>`<div style="display:flex;gap:10px"><button type="button" class="xb c" id="xn" style="flex:1;height:48px">${again||'Tekrar oyna'}</button><button type="button" class="xb g" id="xq" style="flex:1;height:48px">Çık</button></div>`;
+  let kwSig='',kwTm=0,xoTm=0,czTm=0;
   const scr=w=>{const a=w.split('');let s;do{s=a.slice().sort(()=>Math.random()-.5).join('')}while(s===w&&w.length>1);return s};
+  /* XOX: üç turluk seri */
+  const XT=15000,XL=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  R.xo=()=>{
+    const d=G('xo_1'),v2=d.v===2,ph=v2?d.ph:'',b=(d.b||'.........').split(''),t=d.t,w=d.w,X=d.x||uid,mark=u=>u===X?'X':'O',sw=d.sw||{};
+    const old=scGet().xo||{},wl=XL.find(l=>b[l[0]]!=='.'&&b[l[0]]===b[l[1]]&&b[l[1]]===b[l[2]])||[];
+    const start=first=>gdoc('xo_1',{k:'xo',v:2,ts:Date.now(),b:'.........',t:first,x:first,w:'',sw:{[uid]:0,[o]:0},rn:1,ph:'play',dl:Date.now()+XT,mv:0,lm:-1,sa:false},false);
+    clearTimeout(xoTm);
+    if(!ph){
+      shell('XOX',`<div class="xcd d mte"><div class="xlb">ÜÇ TURLUK SERİ</div><div style="font-size:15px;margin-top:8px;line-height:1.5">Önce 2 turu kazanan seriyi alır. Her hamle için ${XT/1000} saniyen var. Süre dolarsa hamle senin yerine otomatik yapılır.</div></div>${stat(old[uid]||0,old[o]||0,'kazanılan seri')}`,`<button class="xb c" id="xn" style="flex:1">Seriyi başlat</button>`);
+      $('#xn',el).onclick=()=>start(uid);return;
+    }
+    const st=ph==='end'?'':ph==='rs'?(w==='d'?'Berabere. Seri sürüyor':w===uid?'Turu sen aldın':esc(nm(w))+' turu aldı'):(t===uid?'Sıra sende · '+mark(uid):esc(nm(t))+' düşünüyor · '+mark(t));
+    const cells=b.map((c,i)=>`<button class="xc ${wl.includes(i)?'w':''} ${d.lm===i?'lm':''}" data-i="${i}" aria-label="Kare ${i+1}" style="color:${c==='X'?'#F26A44':'#15201A'}">${c==='.'?'':c}</button>`).join('');
+    shell('XOX',(ph==='end'?mtEnd(sw):mtBar(sw,'Tur '+d.rn,ph==='play'?d.dl:0,XT))+(st?`<div class="mts ${ph==='play'&&t===uid?'me':''}">${st}</div>`:'')+`<div class="xbd" style="grid-template-columns:repeat(3,1fr);gap:10px;max-width:none;margin-top:4px;${ph==='play'&&t!==uid?'opacity:.78':''}">${cells}</div>`+(ph==='rs'?`<button type="button" class="xb c" id="xr" style="height:48px">Sonraki tur</button>`:ph==='end'?mtBtns('Tekrar oyna'):`<button type="button" class="xb g" id="xq" style="height:48px">Çık</button>`));
+    const q=$('#xq',el);if(q)q.onclick=()=>{un();close()};
+    const mv=(i,by)=>{const cur=G('xo_1');if(cur.ph!=='play'||cur.t!==by||(cur.b||'')[i]!=='.')return;const bb=cur.b.split(''),xx=cur.x||uid;bb[i]=xx===by?'X':'O';const win=XL.some(l=>bb[l[0]]!=='.'&&bb[l[0]]===bb[l[1]]&&bb[l[1]]===bb[l[2]]),full=!bb.includes('.');const nsw=Object.assign({},cur.sw);let nph='play',nw='';if(win){nw=by;nsw[by]=(nsw[by]||0)+1;nph=nsw[by]>=2?'end':'rs'}else if(full){nw='d';nph='rs'}
+      const nd={b:bb.join(''),t:by===uid?o:uid,w:nw,sw:nsw,ph:nph,dl:nph==='play'?Date.now()+XT:0,lm:i,mv:(cur.mv||0)+1};GM.xo_1=Object.assign({},cur,nd);R.xo();gdoc('xo_1',nd)};
+    if(ph==='play'){
+      $('.xbd',el).onclick=e=>{const c=e.target.closest('[data-i]');if(!c||t!==uid)return;if(navigator.vibrate)navigator.vibrate(12);mv(+c.dataset.i,uid)};
+      mtRun(d.dl,XT,()=>{const rnd=()=>{const cur=G('xo_1');if(cur.ph!=='play')return;const em=cur.b.split('').map((c,i)=>c==='.'?i:-1).filter(i=>i>=0);if(em.length)mv(em[Math.floor(Math.random()*em.length)],cur.t)};if(t===uid){toast('Süre doldu, hamle otomatik yapıldı');rnd()}else xoTm=setTimeout(()=>{const cur=G('xo_1');if(cur.ph==='play'&&cur.mv===d.mv)rnd()},2500)});
+    }else clearInterval(mtI);
+    if(ph==='rs'){const nx=()=>{const cur=G('xo_1');if(cur.ph!=='rs')return;const n=cur.x===uid?o:uid;gdoc('xo_1',{b:'.........',t:n,x:n,w:'',rn:(cur.rn||1)+1,ph:'play',dl:Date.now()+XT,mv:(cur.mv||0)+1,lm:-1})};$('#xr',el).onclick=nx;if((d.x===uid?o:uid)===uid)xoTm=setTimeout(()=>{if(G('xo_1').rn===d.rn)nx()},3200)}
+    if(ph==='end'){$('#xn',el).onclick=()=>start(d.x===uid?o:uid);mtSettle('xo_1','xo',sw)}
+  };
+  /* Hafıza: süreli sıra + seri puanı */
+  const MT=20000;
+  R.mm=()=>{
+    const d=G('mm_1'),v2=d.v===2,ph=v2?d.ph:'',c=v2?(d.c||[]):[],m=d.m||[],op=d.o||[],p=d.p||{},t=d.t;
+    const start=()=>{const n=XSYM.length,a=[...Array(n*2).keys()].map(i=>i%n).sort(()=>Math.random()-.5);gdoc('mm_1',{k:'mm',v:2,ts:Date.now(),c:a,m:Array(n*2).fill(0),o:[],t:uid,p:{[uid]:0,[o]:0},cb:0,ph:'play',dl:Date.now()+MT,mv:0,sa:false},false)};
+    if(!ph){shell('Hafıza',`<div class="xcd d mte"><div class="xlb">EŞİNİ BUL</div><div style="font-size:15px;margin-top:8px;line-height:1.5">Sırayla iki kart aç. Eşleşme bulursan sıra sende kalır, art arda eşleşme bonus puan getirir. Her sıra için ${MT/1000} saniyen var.</div></div>${stat((scGet().mm||{})[uid]||0,(scGet().mm||{})[o]||0,'kazanılan oyun')}`,`<button class="xb c" id="xn" style="flex:1">Oyunu başlat</button>`);$('#xn',el).onclick=start;return}
+    const cards=c.map((s,i)=>{const sh=m[i]||op.includes(i);return `<button class="xk ${m[i]?'m':sh?'o':''}" data-i="${i}" aria-label="Kart">${sh?ic(XSYM[s],26,2):''}</button>`}).join('');
+    const st=ph==='end'?'':(t===uid?'Sıra sende · iki kart aç':esc(nm(t))+' oynuyor')+((d.cb||0)>=2?` · <b style="color:#F26A44">x${d.cb} seri</b>`:'');
+    shell('Hafıza',(ph==='end'?mtEnd(p):mtBar(p,'Eşleştir',d.dl,MT))+(st?`<div class="mts ${t===uid?'me':''}">${st}</div>`:'')+`<div class="xbd" style="grid-template-columns:repeat(4,1fr);gap:10px;max-width:none;${ph==='play'&&t!==uid?'opacity:.85':''}">${cards}</div>`+(ph==='end'?mtBtns('Tekrar oyna'):`<button type="button" class="xb g" id="xq" style="height:48px">Çık</button>`));
+    const q=$('#xq',el);if(q)q.onclick=()=>{un();close()};
+    if(ph==='end'){clearInterval(mtI);$('#xn',el).onclick=start;mtSettle('mm_1','mm',p);return}
+    const resolve=()=>{if(window.__mmT)return;window.__mmT=setTimeout(()=>{window.__mmT=0;const d2=G('mm_1'),op2=d2.o||[];if(op2.length!==2||d2.t!==uid||d2.ph!=='play')return;const ok=d2.c[op2[0]]===d2.c[op2[1]],m2=(d2.m||[]).slice(),p2=Object.assign({},d2.p),cb=ok?(d2.cb||0)+1:0;if(ok){op2.forEach(i=>m2[i]=1);p2[uid]=(p2[uid]||0)+cb}
+      const fin=m2.every(Boolean);gdoc('mm_1',{o:[],m:m2,p:p2,t:ok?uid:o,cb,ph:fin?'end':'play',dl:fin?0:Date.now()+MT,mv:(d2.mv||0)+1})},900)};
+    if(op.length===2&&t===uid)resolve();
+    $('.xbd',el).onclick=e=>{const k=e.target.closest('[data-i]');if(!k||t!==uid)return;const i=+k.dataset.i;if(m[i]||op.includes(i)||op.length>=2)return;if(navigator.vibrate)navigator.vibrate(10);const n=op.concat(i),nd={o:n,mv:(d.mv||0)+1};GM.mm_1=Object.assign({},d,nd);R.mm();gdoc('mm_1',nd)};
+    mtRun(d.dl,MT,()=>{const pass=()=>{const cur=G('mm_1');if(cur.ph!=='play'||cur.mv!==d.mv)return;gdoc('mm_1',{o:[],t:cur.t===uid?o:uid,cb:0,dl:Date.now()+MT,mv:(cur.mv||0)+1})};if(t===uid){toast('Süre doldu, sıra geçti');pass()}else setTimeout(pass,2500)});
+  };
+  /* Kelime avı: 5 tur, hızlı bulan çok puan alır */
+  const KT=45000,KR=5;
   R.kw=()=>{
-    const d=G('kw_1'),sc=scGet().kw||{},w=d.w;
-    shell('Kelime avı',stat(sc[uid]||0,sc[o]||0,w?(d.win?'Bitti':'İlk bulan kazanır'):'Başlayalım')+(w?`<div class="xcd d" style="text-align:center"><div class="xlb">Harfleri düzenle</div><div style="font-size:38px;font-weight:800;letter-spacing:6px;margin-top:6px">${esc(d.s)}</div></div>${d.win?`<div class="xcd" style="text-align:center"><b style="font-size:18px">${d.win===uid?'Sen buldun!':esc(on)+' buldu'}</b><div style="font-size:26px;font-weight:800;margin-top:4px">${esc(w)}</div></div>`:`<input class="xin" id="xi" placeholder="Kelimeyi yaz" autocomplete="off" autocapitalize="characters"><button class="xb" id="xg">Tahmin et</button>`}`:''),`<button class="xb c" id="xn" style="flex:1">${w&&!d.win?'Başka kelime':'Yeni kelime'}</button>`);
-    $('#xn',el).onclick=()=>{const k=XW[Math.floor(Math.random()*XW.length)];gdoc('kw_1',{k:'kw',ts:Date.now(),w:k,s:scr(k),win:''},false)};
-    const g=$('#xg',el);if(g)g.onclick=()=>{const v=($('#xi',el).value||'').trim().toLocaleUpperCase('tr');if(!v)return;if(v===w){GM.kw_1=Object.assign({},d,{win:uid});R.kw();gdoc('kw_1',{win:uid}).then(()=>scAdd('kw',uid))}else{toast('Olmadı, tekrar dene');$('#xi',el).value=''}};
+    const d=G('kw_1'),v2=d.v===2,ph=v2?d.ph:'',rn=d.rn||1,p=d.p||{},w=ph?dec((d.ws||[])[rn-1]||''):'';
+    const start=()=>{const pool=CZW.filter(x=>x.length>=4&&x.length<=8).sort(()=>Math.random()-.5).slice(0,KR);gdoc('kw_1',{k:'kw',v:2,ts:Date.now(),rn:1,ph:'play',dl:Date.now()+KT,ws:pool.map(enc),ss:pool.map(scr),p:{[uid]:0,[o]:0},tr:{[uid]:0,[o]:0},win:'',pt:0,sa:false},false)};
+    const sig=ph+'|'+rn+'|'+(d.ts||'')+'|'+(d.win||'');
+    if(ph==='play'&&sig===kwSig&&$('#kwx',el)){const t=$('#kwt',el);if(t)t.textContent=((d.tr||{})[o]||0)?nm(o)+' '+d.tr[o]+' kez denedi':'Henüz deneme yok';return}
+    kwSig=sig;clearTimeout(kwTm);
+    if(!ph){shell('Kelime avı',`<div class="xcd d mte"><div class="xlb">${KR} TUR · HIZLI OL</div><div style="font-size:15px;margin-top:8px;line-height:1.5">İkiniz de aynı karışık harflerden kelimeyi bulmaya çalışırsınız. Önce bulan puanı alır, süre ilerledikçe ipucu harfler açılır ama puan düşer.</div></div>${stat((scGet().kw||{})[uid]||0,(scGet().kw||{})[o]||0,'kazanılan oyun')}`,`<button class="xb c" id="xn" style="flex:1">Oyunu başlat</button>`);$('#xn',el).onclick=start;return}
+    if(ph==='end'){clearInterval(mtI);shell('Kelime avı',mtEnd(p)+mtBtns('Tekrar oyna'));$('#xn',el).onclick=start;$('#xq',el).onclick=()=>{un();close()};mtSettle('kw_1','kw',p);return}
+    if(ph==='rs'){clearInterval(mtI);shell('Kelime avı',mtBar(p,'Tur '+rn+'/'+KR,0,KT)+`<div class="xcd" style="text-align:center"><div class="xlb">KELİME</div><div style="font-size:34px;font-weight:800;letter-spacing:4px;margin:6px 0">${esc(w)}</div><b>${d.win===uid?'Sen buldun +'+d.pt:d.win?esc(nm(d.win))+' buldu +'+d.pt:'Süre doldu, kimse bulamadı'}</b></div><button type="button" class="xb c" id="xr" style="height:48px">${rn>=KR?'Sonuçları gör':'Sonraki tur'}</button>`);
+      const nx=()=>{const cur=G('kw_1');if(cur.ph!=='rs'||cur.rn!==rn)return;if(rn>=KR)gdoc('kw_1',{ph:'end'});else gdoc('kw_1',{rn:rn+1,ph:'play',dl:Date.now()+KT,win:'',pt:0,tr:{[uid]:0,[o]:0}})};$('#xr',el).onclick=nx;kwTm=setTimeout(nx,3500);return}
+    const n0=hintN(w,d.dl-Date.now(),KT);
+    shell('Kelime avı',mtBar(p,'Tur '+rn+'/'+KR,d.dl,KT)+`<div class="xcd d" style="text-align:center"><div class="xlb">HARFLERİ DÜZENLE</div><div style="font-size:38px;font-weight:800;letter-spacing:6px;margin-top:6px">${esc((d.ss||[])[rn-1]||'')}</div><div id="kwh" class="kwh">${hintPat(w,n0)}</div></div><i id="kwx" hidden></i><div class="hn" id="kwt" style="justify-content:center">${((d.tr||{})[o]||0)?esc(on)+' '+d.tr[o]+' kez denedi':'Henüz deneme yok'}</div>`,`<input class="xin" id="xi" placeholder="Kelimeyi yaz…" autocomplete="off" autocapitalize="characters" enterkeyhint="send" style="flex:1;height:58px;border-radius:24px;padding:0 20px;box-shadow:0 6px 18px rgba(0,0,0,.08)"><button class="nx" id="xg" aria-label="Tahmin et" style="flex:none;width:58px;padding:0">${ic('send',22)}</button>`);
+    const g=$('#xg',el),xi=$('#xi',el);xi.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();g.click()}};
+    g.onclick=()=>{const v=norm(xi.value);if(!v)return;const cur=G('kw_1');if(cur.ph!=='play')return;xi.value='';
+      if(v===norm(w)){const l=Math.max(0,cur.dl-Date.now()),pts=Math.max(20,Math.round(100+l/1000*2-hintN(w,l,KT)*15)),np=Object.assign({},cur.p);np[uid]=(np[uid]||0)+pts;const nd={ph:'rs',win:uid,pt:pts,p:np,dl:0};GM.kw_1=Object.assign({},cur,nd);R.kw();gdoc('kw_1',nd)}
+      else{if(navigator.vibrate)navigator.vibrate(20);toast(lev(v,norm(w))<=1?'Çok yakın!':'Olmadı, tekrar dene');gdoc('kw_1',{tr:{[uid]:((cur.tr||{})[uid]||0)+1}})}};
+    mtRun(d.dl,KT,()=>{const to=()=>{const cur=G('kw_1');if(cur.ph==='play'&&cur.rn===rn)gdoc('kw_1',{ph:'rs',win:'',pt:0,dl:0})};if(uid<o)to();else setTimeout(to,1500)},l=>{const e=$('#kwh',el);if(e)e.textContent=hintPat(w,hintN(w,l,KT))});
   };
   /* Çark */
   let whRot=0;
@@ -3279,29 +3319,55 @@ function openX(kind){
     shell('Seni düşünüyorum',`<div class="hn" style="justify-content:center;margin-top:4px">Dokun, ${esc(on)}’in telefonu titresin.</div><button type="button" class="xheart" id="xh" aria-label="Gönder">${ic('heart',64,1.8)}</button><div class="xlb" style="text-align:center">${d.ts?(mineLast?'Son gönderdiğin: ':esc(on)+' son gönderdi: ')+new Date(d.ts).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}):'Henüz gönderilmedi'}</div>`);
     $('#xh',el).onclick=e=>{const b=e.currentTarget;b.classList.remove('pl');void b.offsetWidth;b.classList.add('pl');if(navigator.vibrate)navigator.vibrate([30,40,30]);gdoc('dt_1',{k:'dt',from:uid,ts:Date.now()});};
   };
-  /* Çiz-bul */
-  const COL=['#15201A','#F26A44','#2E9E62','#4A7BD8'];
-  let czCol=0,czS=[],czKey='',cvs=null;
-  const czRedraw=()=>{if(!cvs)return;const r=cvs.getBoundingClientRect(),dp=Math.min(devicePixelRatio||1,2);if(cvs.width!==Math.round(r.width*dp)){cvs.width=Math.round(r.width*dp);cvs.height=Math.round(r.height*dp)}const x=cvs.getContext('2d');x.setTransform(dp,0,0,dp,0,0);x.clearRect(0,0,r.width,r.height);x.lineCap='round';x.lineJoin='round';x.lineWidth=5;czS.forEach(s=>{x.strokeStyle=s[0];x.beginPath();const p=s[1];for(let i=0;i<p.length;i+=2){const X=p[i]/1000*r.width,Y=p[i+1]/1000*r.height;i?x.lineTo(X,Y):x.moveTo(X,Y)}if(p.length===2)x.lineTo(p[0]/1000*r.width+.1,p[1]/1000*r.height);x.stroke()})};
-  const czHint=(w,l)=>w.split('').map((c,i)=>i===0&&l<=30?c:'_').join(' ');
-  const czGuesses=d=>(d.g||[]).map(g=>`<div style="font-size:14px;font-weight:600"><span class="xlb">${esc(nm(g.u))}</span> ${esc(g.t)}</div>`).join('');
+  /* Çiz-bul: tur, kelime seçimi, canlı çizim, hıza göre puan, ipucu */
+  const COLS=['#15201A','#F26A44','#F2C14E','#2E9E62','#4A7BD8','#8B5CF6','#EC4899','#8B5E3C'],SZ=[3,6,12],PK=12000;
+  let czCol=0,czSz=1,czEr=false,czS=[],czSig='',cvs=null,czCfg={R:6,T:80};
+  const czRedraw=()=>{if(!cvs||!cvs.isConnected)return;const r=cvs.getBoundingClientRect(),dp=Math.min(devicePixelRatio||1,2);if(cvs.width!==Math.round(r.width*dp)){cvs.width=Math.round(r.width*dp);cvs.height=Math.round(r.height*dp)}const x=cvs.getContext('2d');x.setTransform(dp,0,0,dp,0,0);x.clearRect(0,0,r.width,r.height);x.lineCap='round';x.lineJoin='round';czS.forEach(s=>{const er=s[0]==='E';x.globalCompositeOperation=er?'destination-out':'source-over';x.strokeStyle=er?'#000':s[0];x.lineWidth=(s[2]||6)*(er?2.5:1);x.beginPath();const q=s[1];for(let i=0;i<q.length;i+=2){const X=q[i]/1000*r.width,Y=q[i+1]/1000*r.height;i?x.lineTo(X,Y):x.moveTo(X,Y)}if(q.length===2)x.lineTo(q[0]/1000*r.width+.1,q[1]/1000*r.height);x.stroke()});x.globalCompositeOperation='source-over'};
+  const czFeed=d=>(d.g||[]).slice(-8).map(g=>`<div class="cgf ${g.c?'ok':''}"><b>${esc(nm(g.u))}</b> ${g.c?'doğru bildi ✓':esc(g.t)}</div>`).join('')||`<div class="hn" style="justify-content:center">Tahminler burada görünür</div>`;
   R.cz=()=>{
-    const d=G('cz_1'),w=d.w,drawer=d.by===uid,key=(d.ts||'')+'|'+(d.ok||'');
-    if(w&&key===czKey&&$('#cv',el)){czS=d.s?JSON.parse(d.s):[];if(!drawer)czRedraw();const gl=$('#xgl',el);if(gl)gl.innerHTML=czGuesses(d);return}
-    czKey=key;czS=d.s?JSON.parse(d.s):[];
-    const sc=scGet().cz||{};
-    shell('Çiz-bul',(w?`<div class="xcd d" style="display:flex;align-items:center"><span style="flex:1"><div class="xlb" style="color:#F2C14E">${drawer?'Senin kelimen':'Tahmin et'}</div><b style="font-size:24px;letter-spacing:${drawer||d.ok?0:4}px" id="czw">${drawer||d.ok?esc(w):czHint(w,60)}</b></span><span style="font-size:12px;color:#B8C7BE;text-align:right">${drawer?esc(on)+'<br>tahmin ediyor':esc(on)+'<br>çiziyor'}</span></div><div class="xcv"><canvas id="cv"></canvas></div>${drawer&&!d.ok?`<div style="display:flex;gap:10px;align-items:center;justify-content:center">${COL.map((c,i)=>`<button class="xsw ${i===czCol?'on':''}" data-c="${i}" style="background:${c}" aria-label="Renk"></button>`).join('')}<button class="cb" id="xu" style="width:40px;height:40px">${ic('undo',18)}</button><button class="cb" id="xt2" style="width:40px;height:40px">${ic('trash',18)}</button></div>`:''}${!drawer&&!d.ok?`<div class="hn" style="justify-content:center">${w.length} harfli bir kelime · 30 sn sonra ilk harf açılır</div>`:''}${d.ok?`<div class="xcd" style="text-align:center"><b>${d.ok===uid?'Doğru bildin!':esc(on)+' doğru bildi'}</b></div>`:''}<div id="xgl" style="display:flex;flex-direction:column;gap:4px">${czGuesses(d)}</div>`:`<div class="hn" style="justify-content:center">Bir kelime seç, çiz; ${esc(on)} tahmin etsin.</div>`)+stat(sc[uid]||0,sc[o]||0,'skor'),(w&&!drawer&&!d.ok?`<input class="xin" id="xi" placeholder="Tahminini yaz…" autocomplete="off" autocapitalize="characters" enterkeyhint="send" style="flex:1;height:58px;border-radius:24px;padding:0 20px;box-shadow:0 6px 18px rgba(0,0,0,.08)"><button class="nx" id="xg" aria-label="Tahmin et" style="flex:none;width:58px;padding:0">${ic('send',22)}</button>`:`<button class="xb c" id="xn" style="flex:1">${w&&!d.ok?'Başka kelime':'Yeni çizim'}</button>`),w?`<span id="czt" style="font-size:13px;font-weight:700;padding:8px 12px;border-radius:10px;background:var(--ink);color:var(--onink)">1:00</span>`:'');clearInterval(window.__czT);if(w&&!d.ok){const tk=()=>{const e=$('#czt',el);if(!e||!alive){clearInterval(window.__czT);return}const l=Math.max(0,60-Math.floor((Date.now()-(d.ts||Date.now()))/1000));e.textContent=Math.floor(l/60)+':'+String(l%60).padStart(2,'0');const cw=$('#czw',el);if(cw&&d.by!==uid)cw.textContent=czHint(d.w,l)};tk();window.__czT=setInterval(tk,1000)}
-    const xn=$('#xn',el);if(xn)xn.onclick=()=>{const k=XW[Math.floor(Math.random()*XW.length)];czKey='';czS=[];gdoc('cz_1',{k:'cz',ts:Date.now(),by:uid,w:k,s:'[]',g:[],ok:''},false)};
-    cvs=$('#cv',el);if(!cvs)return;requestAnimationFrame(czRedraw);
-    if(drawer&&!d.ok){let cur=null;const pt=e=>{const r=cvs.getBoundingClientRect();return [Math.round((e.clientX-r.left)/r.width*1000),Math.round((e.clientY-r.top)/r.height*1000)]};
-      cvs.onpointerdown=e=>{cvs.setPointerCapture(e.pointerId);cur=[COL[czCol],pt(e)];czS.push(cur);czRedraw()};
-      cvs.onpointermove=e=>{if(!cur)return;cur[1].push(...pt(e));czRedraw()};
-      const up=()=>{if(!cur)return;cur=null;sv()};cvs.onpointerup=up;cvs.onpointercancel=up;
-      const sv=()=>gdoc('cz_1',{s:JSON.stringify(czS)});
-      el.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{czCol=+b.dataset.c;el.querySelectorAll('[data-c]').forEach(x=>x.classList.toggle('on',x===b))});
-      $('#xu',el).onclick=()=>{czS.pop();czRedraw();sv()};$('#xt2',el).onclick=()=>{czS=[];czRedraw();sv()};
+    const d=G('cz_1'),v2=d.v===2,ph=v2?d.ph:'',rn=d.rn||1,RR=d.R||6,T=(d.T||80)*1000,p=d.p||{};
+    const drawer=ph?(rn%2?d.f:(d.f===uid?o:uid)):null,isD=drawer===uid,w=d.x?dec(d.x):'';
+    const sig=ph+'|'+rn+'|'+(d.ts||'')+'|'+(d.x||'')+'|'+(d.ok||'');
+    if(ph==='draw'&&sig===czSig&&$('#cv',el)){if(!isD){czS=d.s?JSON.parse(d.s):[];czRedraw()}const gl=$('#xgl',el);if(gl)gl.innerHTML=czFeed(d);return}
+    czSig=sig;clearTimeout(czTm);
+    const start=(f,R2,T2)=>{const pool=CZW.slice().sort(()=>Math.random()-.5),ow=[];for(let i=0;i<R2;i++)ow.push(pool.slice(i*3,i*3+3).map(enc).join('|'));gdoc('cz_1',{k:'cz',v:2,ts:Date.now(),R:R2,T:T2,f,rn:1,ph:'pick',dl:Date.now()+PK,ow,p:{[uid]:0,[o]:0},x:'',s:'[]',g:[],ok:'',pt:0,sa:false},false)};
+    const nm_=(a,b)=>`<div class="xseg">${a.map(([v,t])=>`<button type="button" data-${b}="${v}" class="${(b==='r'?czCfg.R:czCfg.T)===v?'on':''}">${t}</button>`).join('')}</div>`;
+    if(!ph){
+      shell('Çiz-bul',`<div class="xcd d mte"><div class="xlb">SIRAYLA ÇİZ, HIZLI BİL</div><div style="font-size:15px;margin-top:8px;line-height:1.5">Çizen kişi 3 kelimeden birini seçer ve çizer. Diğeri canlı izleyip tahmin eder. Ne kadar hızlı bilirsen o kadar çok puan, süre ilerledikçe ipucu harfler açılır.</div></div><div class="xlb">Tur sayısı</div>${nm_([[4,'4'],[6,'6'],[8,'8']],'r')}<div class="xlb">Çizim süresi</div>${nm_([[60,'60 sn'],[80,'80 sn'],[100,'100 sn']],'t')}`+stat((scGet().cz||{})[uid]||0,(scGet().cz||{})[o]||0,'kazanılan oyun'),`<button class="xb c" id="xn" style="flex:1">Oyunu başlat</button>`);
+      el.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{czCfg.R=+b.dataset.r;czSig='';R.cz()});el.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{czCfg.T=+b.dataset.t;czSig='';R.cz()});
+      $('#xn',el).onclick=()=>start(uid,czCfg.R,czCfg.T);return}
+    const hd=ph==='end'?'':mtBar(p,'Tur '+rn+'/'+RR,ph==='pick'?d.dl:ph==='draw'?d.dl:0,ph==='pick'?PK:T);
+    if(ph==='end'){clearInterval(mtI);shell('Çiz-bul',mtEnd(p)+mtBtns('Tekrar oyna'));$('#xn',el).onclick=()=>start(d.f===uid?o:uid,RR,d.T||80);$('#xq',el).onclick=()=>{un();close()};mtSettle('cz_1','cz',p);return}
+    if(ph==='pick'){
+      const ws=((d.ow||[])[rn-1]||'').split('|').filter(Boolean);
+      shell('Çiz-bul',hd+(isD?`<div class="xlb" style="text-align:center">ÇİZECEĞİN KELİMEYİ SEÇ</div>${ws.map(x=>`<button type="button" class="t7o" data-w="${x}"><span style="flex:1;font-size:19px;font-weight:800;letter-spacing:1px">${esc(dec(x))}</span><span class="xlb">${dec(x).length} harf</span></button>`).join('')}`:`<div class="xcd" style="text-align:center"><b style="font-size:17px">${esc(on)} kelime seçiyor…</b><div class="hn" style="justify-content:center;margin-top:6px">Hazır ol, çizim birazdan başlıyor.</div></div>`));
+      const pick=x=>{const cur=G('cz_1');if(cur.ph!=='pick'||cur.rn!==rn)return;gdoc('cz_1',{ph:'draw',x,ts:Date.now(),dl:Date.now()+T,s:'[]',g:[],ok:'',pt:0})};
+      el.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>pick(b.dataset.w));
+      const first=ws[0];mtRun(d.dl,PK,()=>{if(isD){toast('Süre doldu, kelime otomatik seçildi');pick(first)}else czTm=setTimeout(()=>pick(first),3000)});return}
+    /* draw / rs */
+    const live=ph==='draw';
+    czS=d.s?JSON.parse(d.s):[];
+    const msg=ph==='rs'?(d.ok?`<div class="xcd" style="text-align:center"><div class="xlb">KELİME</div><div style="font-size:30px;font-weight:800;letter-spacing:3px">${esc(w)}</div><b>${d.ok===uid?'Doğru bildin +'+d.pt:esc(nm(d.ok))+' doğru bildi +'+d.pt}${isD?' · çizen bonusu +'+d.dpt:d.ok===uid?'':''}</b></div>`:`<div class="xcd" style="text-align:center"><div class="xlb">SÜRE DOLDU · KELİME</div><div style="font-size:30px;font-weight:800;letter-spacing:3px">${esc(w)}</div></div>`):`<div class="xcd d" style="display:flex;align-items:center"><span style="flex:1"><div class="xlb" style="color:#F2C14E">${isD?'Çizeceğin kelime':'Tahmin et'}</div><b style="font-size:24px;letter-spacing:${isD?0:4}px" id="czw">${isD?esc(w):hintPat(w,hintN(w,d.dl-Date.now(),T))}</b></span><span style="font-size:12px;color:#B8C7BE;text-align:right">${isD?esc(on)+'<br>tahmin ediyor':esc(on)+'<br>çiziyor'}</span></div>`;
+    const tools=live&&isD?`<div class="cgt">${COLS.map((c,i)=>`<button type="button" class="xsw ${!czEr&&i===czCol?'on':''}" data-c="${i}" style="background:${c}" aria-label="Renk"></button>`).join('')}</div><div class="cgt"><div class="xseg" style="flex:1">${SZ.map((s,i)=>`<button type="button" data-z="${i}" class="${i===czSz?'on':''}"><i style="display:inline-block;width:${s+4}px;height:${s+4}px;border-radius:50%;background:currentColor"></i></button>`).join('')}</div><button class="cb ${czEr?'on':''}" id="xe" style="width:44px;height:44px" aria-label="Silgi">${ic('x',18)}</button><button class="cb" id="xu" style="width:44px;height:44px" aria-label="Geri al">${ic('undo',18)}</button><button class="cb" id="xt2" style="width:44px;height:44px" aria-label="Temizle">${ic('trash',18)}</button></div>`:'';
+    shell('Çiz-bul',hd+msg+`<div class="xcv" style="background:#fff"><canvas id="cv"></canvas></div>`+tools+(live?`<div id="xgl" class="cgl">${czFeed(d)}</div>`:'')+(ph==='rs'?`<button type="button" class="xb c" id="xr" style="height:48px">${rn>=RR?'Sonuçları gör':'Sonraki tur'}</button>`:''),live&&!isD?`<input class="xin" id="xi" placeholder="Tahminini yaz…" autocomplete="off" autocapitalize="characters" enterkeyhint="send" style="flex:1;height:58px;border-radius:24px;padding:0 20px;box-shadow:0 6px 18px rgba(0,0,0,.08)"><button class="nx" id="xg" aria-label="Tahmin et" style="flex:none;width:58px;padding:0">${ic('send',22)}</button>`:'');
+    cvs=$('#cv',el);requestAnimationFrame(czRedraw);
+    if(ph==='rs'){clearInterval(mtI);const nx=()=>{const cur=G('cz_1');if(cur.ph!=='rs'||cur.rn!==rn)return;if(rn>=RR)gdoc('cz_1',{ph:'end'});else gdoc('cz_1',{rn:rn+1,ph:'pick',dl:Date.now()+PK,x:'',s:'[]',g:[],ok:'',pt:0})};$('#xr',el).onclick=nx;czTm=setTimeout(nx,4500);return}
+    if(isD){let cur=null,tmr=0;const pt=e=>{const r=cvs.getBoundingClientRect();return [Math.round((e.clientX-r.left)/r.width*1000),Math.round((e.clientY-r.top)/r.height*1000)]};
+      const push=()=>{clearTimeout(tmr);tmr=0;gdoc('cz_1',{s:JSON.stringify(czS)})};
+      cvs.onpointerdown=e=>{cvs.setPointerCapture(e.pointerId);cur=[czEr?'E':COLS[czCol],pt(e),SZ[czSz]];czS.push(cur);czRedraw()};
+      cvs.onpointermove=e=>{if(!cur)return;cur[1].push(...pt(e));czRedraw();if(!tmr)tmr=setTimeout(push,300)};
+      const up=()=>{if(!cur)return;cur=null;push()};cvs.onpointerup=up;cvs.onpointercancel=up;
+      el.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{czCol=+b.dataset.c;czEr=false;el.querySelectorAll('[data-c]').forEach(x=>x.classList.toggle('on',x===b));$('#xe',el).classList.remove('on')});
+      el.querySelectorAll('[data-z]').forEach(b=>b.onclick=()=>{czSz=+b.dataset.z;el.querySelectorAll('[data-z]').forEach(x=>x.classList.toggle('on',x===b))});
+      $('#xe',el).onclick=e=>{czEr=!czEr;e.currentTarget.classList.toggle('on',czEr);el.querySelectorAll('[data-c]').forEach(x=>x.classList.toggle('on',!czEr&&+x.dataset.c===czCol))};
+      $('#xu',el).onclick=()=>{czS.pop();czRedraw();push()};$('#xt2',el).onclick=()=>{czS=[];czRedraw();push()};
+    }else{
+      const g=$('#xg',el),xi=$('#xi',el);xi.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();g.click()}};
+      g.onclick=()=>{const v=xi.value.trim();if(!v)return;const cur=G('cz_1');if(cur.ph!=='draw')return;xi.value='';const ok=norm(v)===norm(w),gl=(cur.g||[]).concat({u:uid,t:v,c:ok?1:0}).slice(-30);
+        if(ok){const l=Math.max(0,cur.dl-Date.now()),gp=Math.max(20,Math.round(100+l/1000*2-hintN(w,l,T)*10)),dp=Math.round(50+l/1000),np=Object.assign({},cur.p);np[uid]=(np[uid]||0)+gp;np[drawer]=(np[drawer]||0)+dp;const nd={g:gl,ok:uid,ph:'rs',dl:0,p:np,pt:gp,dpt:dp};GM.cz_1=Object.assign({},cur,nd);R.cz();gdoc('cz_1',nd)}
+        else{if(navigator.vibrate)navigator.vibrate(20);if(lev(norm(v),norm(w))<=1)toast('Çok yakın!');gdoc('cz_1',{g:gl});GM.cz_1=Object.assign({},cur,{g:gl});const f=$('#xgl',el);if(f)f.innerHTML=czFeed(GM.cz_1)}};
     }
-    const g=$('#xg',el);if(g){const xi=$('#xi',el);xi.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();g.click()}};}if(g)g.onclick=()=>{const v=($('#xi',el).value||'').trim();if(!v)return;const ok=v.toLocaleUpperCase('tr')===w;if(!ok){if(navigator.vibrate)navigator.vibrate(20);toast('Yanlış, tekrar dene')};const gl=(d.g||[]).concat({u:uid,t:v});gdoc('cz_1',{g:gl,ok:ok?uid:''}).then(()=>{if(ok)scAdd('cz',uid)});const xi2=$('#xi',el);if(xi2)xi2.value=''};
+    mtRun(d.dl,T,()=>{const to=()=>{const cur=G('cz_1');if(cur.ph==='draw'&&cur.rn===rn)gdoc('cz_1',{ph:'rs',ok:'',dl:0,pt:0})};if(!isD)to();else setTimeout(to,1500)},l=>{const e=$('#czw',el);if(e&&!isD)e.textContent=hintPat(w,hintN(w,l,T))});
   };
   /* Skor ve rozetler */
   R.sk=()=>{
@@ -3425,7 +3491,7 @@ function openX(kind){
     $('#xn',el).onclick=()=>{ctNw={title:'',qs:[{q:'',o:['',''],c:0}]};ctM='new';R.ct()};
     const l=$('#ctl',el);if(l)l.onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;const x=T.find(y=>y.id===b.dataset.t);ctId=x.id;ctI=0;ctA=[];ctM=(x.by===uid||(x.a||{})[uid])?'res':'take';R.ct()};
   };
-  window.__xr=()=>{if(!alive||!el.isConnected){un();return}const t=el.querySelector('textarea,input');if(kind!=='cz'&&kind!=='is'&&t&&t.value)return;if(kind==='tc'&&tcNew)return;if(kind==='ct'&&(ctM==='new'||ctM==='take'))return;if(kind==='lt'&&ltRun)return;if(kind==='ck'&&!(G('ck_'+wkKey()).a||{})[uid])return;if(kind==='bl'&&t&&t.value)return;if(kind==='dt'||kind==='wh'||kind==='is')return;R[kind]()};
+  window.__xr=()=>{if(!alive||!el.isConnected){un();return}const t=el.querySelector('textarea,input');if(kind!=='cz'&&kind!=='kw'&&kind!=='is'&&t&&t.value)return;if(kind==='tc'&&tcNew)return;if(kind==='ct'&&(ctM==='new'||ctM==='take'))return;if(kind==='lt'&&ltRun)return;if(kind==='ck'&&!(G('ck_'+wkKey()).a||{})[uid])return;if(kind==='bl'&&t&&t.value)return;if(kind==='dt'||kind==='wh'||kind==='is')return;R[kind]()};
   const ox=$('#xx',el);
   R[kind]();
 }
