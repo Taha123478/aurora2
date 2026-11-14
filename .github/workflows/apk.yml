@@ -58,6 +58,11 @@ jobs:
       - name: Surum numarasi
         run: sed -i "s/versionCode 1/versionCode ${{ github.run_number }}/" android/app/build.gradle
 
+      - name: Sabit imza anahtari
+        run: |
+          mkdir -p ~/.android
+          cp aurora-debug.keystore ~/.android/debug.keystore
+
       - name: APK derle
         run: cd android && chmod +x gradlew && ./gradlew assembleDebug
 
