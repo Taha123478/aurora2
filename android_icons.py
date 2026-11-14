@@ -266,4 +266,17 @@ public class MainActivity extends BridgeActivity {
     }
 }
 ''' % pkg)
+# 5) sabit imza: ~/.android'e guvenme, imza anahtarini build.gradle'a acikca bagla.
+# (Anahtar yoksa ya da bagli degilse her derleme rastgele imzalanir ve guncelleme "paket cakisti" hatasi verir)
+ks = os.path.join(ROOT, 'aurora-debug.keystore')
+if not os.path.exists(ks): die('aurora-debug.keystore reponun ana klasorunde yok')
+gradle = os.path.join(ROOT, 'android', 'app', 'build.gradle')
+g = open(gradle, encoding='utf-8').read()
+if 'aurora-debug.keystore' not in g:
+    block = ('android {\n    signingConfigs {\n        debug {\n            storeFile file("%s")\n            storePassword "android"\n'
+             '            keyAlias "androiddebugkey"\n            keyPassword "android"\n            storeType "jks"\n        }\n    }' % ks.replace('\\', '/'))
+    g, n = re.subn(r'(?m)^android\s*\{', lambda m: block, g, count=1)
+    if n != 1: die('build.gradle icinde android { blogu bulunamadi')
+    open(gradle, 'w', encoding='utf-8').write(g)
+print('Imza anahtari baglandi:', ks)
 print('Tamam: paket=%s, simgeler=%s' % (pkg, [i['id'] for i in ICONS]))
