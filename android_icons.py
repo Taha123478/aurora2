@@ -4,6 +4,123 @@ cap add android + cap sync SONRASI calistirilir. Bir sey ters giderse build'i du
 import base64, glob, os, re, sys
 
 ROOT = os.getcwd()
+UPDATE_JAVA = '''package __PKG__;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
+import androidx.core.content.FileProvider;
+import com.getcapacitor.JSObject;
+import com.getcapacitor.Plugin;
+import com.getcapacitor.PluginCall;
+import com.getcapacitor.PluginMethod;
+import com.getcapacitor.annotation.CapacitorPlugin;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+@CapacitorPlugin(name = "AuroraUpdate")
+public class AuroraUpdatePlugin extends Plugin {
+    private File apkFile() {
+        File d = new File(getContext().getCacheDir(), "update");
+        if (!d.exists()) d.mkdirs();
+        return new File(d, "aurora.apk");
+    }
+
+    @PluginMethod
+    public void canInstall(PluginCall call) {
+        boolean ok = Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+            || getContext().getPackageManager().canRequestPackageInstalls();
+        JSObject r = new JSObject();
+        r.put("allowed", ok);
+        call.resolve(r);
+    }
+
+    @PluginMethod
+    public void openInstallSettings(PluginCall call) {
+        try {
+            Intent i = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                Uri.parse("package:" + getContext().getPackageName()));
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(i);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("ayar acilamadi");
+        }
+    }
+
+    @PluginMethod
+    public void download(final PluginCall call) {
+        final String url = call.getString("url");
+        if (url == null || !url.startsWith("https://")) { call.reject("gecersiz adres"); return; }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpURLConnection c = null;
+                try {
+                    c = (HttpURLConnection) new URL(url).openConnection();
+                    c.setConnectTimeout(15000);
+                    c.setReadTimeout(30000);
+                    c.setInstanceFollowRedirects(true);
+                    int code = c.getResponseCode();
+                    if (code != 200) { call.reject("sunucu " + code); return; }
+                    long total = c.getContentLengthLong();
+                    File f = apkFile();
+                    if (f.exists()) f.delete();
+                    long done = 0;
+                    int last = -1;
+                    InputStream in = c.getInputStream();
+                    FileOutputStream out = new FileOutputStream(f);
+                    try {
+                        byte[] buf = new byte[32768];
+                        int n;
+                        while ((n = in.read(buf)) > 0) {
+                            out.write(buf, 0, n);
+                            done += n;
+                            int p = total > 0 ? (int) (done * 100 / total) : 0;
+                            if (p != last) {
+                                last = p;
+                                JSObject e = new JSObject();
+                                e.put("loaded", done);
+                                e.put("total", total);
+                                notifyListeners("progress", e);
+                            }
+                        }
+                    } finally {
+                        out.close();
+                        in.close();
+                    }
+                    if (total > 0 && done != total) { f.delete(); call.reject("indirme eksik"); return; }
+                    call.resolve();
+                } catch (Exception e) {
+                    call.reject("indirilemedi: " + e.getMessage());
+                } finally {
+                    if (c != null) c.disconnect();
+                }
+            }
+        }).start();
+    }
+
+    @PluginMethod
+    public void install(PluginCall call) {
+        try {
+            File f = apkFile();
+            if (!f.exists() || f.length() < 1000000) { call.reject("apk yok"); return; }
+            Uri u = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".aurorafiles", f);
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setDataAndType(u, "application/vnd.android.package-archive");
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(i);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("kurulum acilamadi: " + e.getMessage());
+        }
+    }
+}
+'''
 ANDROID = os.path.join(ROOT, 'android', 'app', 'src', 'main')
 RES = os.path.join(ANDROID, 'res')
 MANIFEST = os.path.join(ANDROID, 'AndroidManifest.xml')
@@ -55,7 +172,11 @@ for ic in ICONS:
                 '                <category android:name="android.intent.category.LAUNCHER" />\n            </intent-filter>\n        </activity-alias>'
                 % (pkg, cls, pkg, 'true' if i == DEFAULT else 'false', i, i))
 if '</application>' not in m: die('</application> yok')
-m = m.replace('</application>', aliases + '\n    </application>', 1)
+provider = ('\n        <provider android:name="%s.AuroraFileProvider" android:authorities="${applicationId}.aurorafiles" android:exported="false" android:grantUriPermissions="true">'
+            '\n            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/aurora_update_paths" />\n        </provider>' % pkg)
+m = m.replace('</application>', aliases + provider + '\n    </application>', 1)
+if 'REQUEST_INSTALL_PACKAGES' not in m:
+    m = m.replace('</manifest>', '    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />\n</manifest>', 1)
 if m.count('android.intent.category.LAUNCHER') != len(ICONS): die('LAUNCHER sayisi beklenenden farkli')
 # uygulama duzeyindeki (varsayilan) simgeyi de yeni ana simge yap: kurulum ekrani, uygulama bilgisi ve
 # bazi launcher'lar alias yerine bunu kullaniyor; eski logo burada kaliyordu
@@ -64,6 +185,13 @@ m, n2 = re.subn(r'(<application\b[^>]*?android:roundIcon=")[^"]*(")', r'\g<1>@mi
 if not n1: die('<application android:icon> bulunamadi')
 if not n2: m = m.replace('<application', '<application android:roundIcon="@mipmap/ic_launcher_%s"' % DEFAULT, 1)
 put(MANIFEST, m)
+
+# 4a) guncelleme eklentisi (APK indir + kurulum ekranini ac)
+put(os.path.join(RES, 'xml', 'aurora_update_paths.xml'),
+    '<?xml version="1.0" encoding="utf-8"?>\n<paths>\n    <cache-path name="aurora_update" path="update/" />\n</paths>\n')
+put(os.path.join(jdir, 'AuroraFileProvider.java'),
+    'package %s;\n\nimport androidx.core.content.FileProvider;\n\npublic class AuroraFileProvider extends FileProvider {}\n' % pkg)
+put(os.path.join(jdir, 'AuroraUpdatePlugin.java'), UPDATE_JAVA.replace('__PKG__', pkg))
 
 # 4) eklenti + MainActivity
 ids = ', '.join('"%s"' % i['id'] for i in ICONS)
@@ -133,6 +261,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(AuroraIconPlugin.class);
+        registerPlugin(AuroraUpdatePlugin.class);
         super.onCreate(savedInstanceState);
     }
 }
