@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -34,6 +36,9 @@ jobs:
       - name: Firebase yollarini yerel yap
         run: sed -i 's|https://www.gstatic.com/firebasejs/10.14.1/|./vendor/|g' www/index.html
 
+      - name: Surum numarasini uygulamaya yaz
+        run: sed -i "s/__BUILD__/${{ github.run_number }}/g" www/index.html
+
       - run: npm install
 
       - run: npx cap add android
@@ -52,7 +57,7 @@ jobs:
           sed -i 's|</manifest>|<uses-permission android:name="android.permission.CAMERA"/><uses-permission android:name="android.permission.RECORD_AUDIO"/><uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/><uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/><uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/><uses-feature android:name="android.hardware.camera" android:required="false"/></manifest>|' $M
           grep -E "CAMERA|RECORD_AUDIO" $M
 
-      - name: Degistirilebilir simgeler
+      - name: Degistirilebilir simgeler ve guncelleme sistemi
         run: python3 android_icons.py
 
       - name: Surum numarasi
@@ -70,3 +75,11 @@ jobs:
         with:
           name: aurora-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Release yayinla
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTES: ${{ github.event.head_commit.message }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk aurora.apk
+          gh release create "v${{ github.run_number }}" aurora.apk --title "Aurora v${{ github.run_number }}" --notes "${NOTES:-Yeni surum}" --latest
